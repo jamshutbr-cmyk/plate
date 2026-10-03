@@ -1,0 +1,83 @@
+/* === слой 1: базовый вид номера (бывший plates-legacy.css) === */
+.plate{border-radius:14px;border:2px solid #0d0d12;background:linear-gradient(180deg,#f4f4f6 0%,#dcdce0 45%,#b9b9c0 100%);box-shadow:0 10px 26px #000a,0 2px 0 #fff6 inset,0 -12px 22px #0000002e inset,0 0 0 1px #ffffff22}
+.plate::before{content:'';position:absolute;inset:4px;border:2px solid #14141a;border-radius:10px;pointer-events:none;opacity:.85;background:radial-gradient(circle at 9px 50%,#8a8a92 0 2.5px,#3a3a40 3px 3.5px,transparent 4px),radial-gradient(circle at calc(100% - 9px) 50%,#8a8a92 0 2.5px,#3a3a40 3px 3.5px,transparent 4px)}
+.plate .pm{border-right:2px solid #14141a;margin:4px 0 4px 4px;color:#101014;text-shadow:0 1.5px 0 #ffffffd0,0 -1px 0 #0006,1px 3px 4px #0005;letter-spacing:.04em}
+.plate .pr{margin:4px 4px 4px 0;color:#101014;text-shadow:0 1.5px 0 #ffffffd0,0 -1px 0 #0006,1px 3px 3px #0005}
+.plate small .flag{border-radius:2px;border-color:#14141a;box-shadow:0 1px 2px #0006}
+.plate.t-police,.plate.t-police .pm,.plate.t-police .pr{color:#fff}
+.plate.t-police{border-color:#fff}.plate.t-police::before{border-color:#fff}.plate.t-police .pm{border-right-color:#fff;text-shadow:0 2px 3px #0009}.plate.t-police .pr{text-shadow:0 2px 3px #0009}
+.plate.t-taxi{background:linear-gradient(180deg,#ffe14d,#f0b800 55%,#c99700)}
+.plate.in::after,.plate.sh::after{background:linear-gradient(105deg,transparent 38%,#ffffffd9 50%,transparent 62%)}
+
+/* === плашки v3: объём, рельеф, редкости === */
+html .plate{border:3px solid #0b0b10;border-radius:15px;--rzc:transparent;
+box-shadow:0 14px 30px #000b,0 3px 0 #0006,inset 0 0 0 2px #ffffffb0,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040,0 0 0 1px #ffffff1c}
+html .plate:not(.t-police):not(.t-taxi){background:
+linear-gradient(180deg,#ffffffd9 0%,#ffffff00 38%,#00000000 62%,#00000030 100%),
+repeating-linear-gradient(90deg,#ffffff00 0 3px,#0000000a 3px 4px),
+linear-gradient(var(--pl1),var(--pl2))}
+html .plate.t-taxi{background:linear-gradient(180deg,#fff3 0%,#fff0 40%,#0003 100%),repeating-linear-gradient(90deg,#0000 0 3px,#0000000a 3px 4px),linear-gradient(180deg,#ffe85c,#f4bd00 55%,#cf9a00)}
+html .plate.t-police{background:linear-gradient(180deg,#fff4 0%,#fff0 40%,#0004 100%),repeating-linear-gradient(90deg,#0000 0 3px,#0000000d 3px 4px),linear-gradient(180deg,#5f93f7,#2858c9 55%,#173f9c)}
+html .plate::before{inset:5px;border:2px solid #101016;border-radius:10px;opacity:.9;box-shadow:inset 0 0 0 1px #ffffff55,0 0 0 1px #ffffff40}
+html .plate.t-police::before{border-color:#fff;box-shadow:inset 0 0 0 1px #0003}
+html .plate .pm{margin:7px 0 7px 7px;font-weight:700;letter-spacing:.06em;color:#0c0c11;
+text-shadow:0 1px 0 #fffffff0,0 -1px 0 #0000008c,0 3px 3px #0000004d,0 0 1px #000;border-right:2px solid #101016}
+html .plate .pr{margin:7px 7px 7px 0;color:#0c0c11;display:flex;flex-direction:column;align-items:center;justify-content:center;text-shadow:0 1px 0 #fffffff0,0 -1px 0 #0000008c,0 2px 3px #0000004d}
+html .plate.t-police .pm,html .plate.t-police .pr{color:#fff;text-shadow:0 2px 0 #0a2a7a,0 3px 4px #0008;border-color:#fff}
+html .plate small{gap:5px;letter-spacing:.12em;font-weight:700;margin-top:-6px}
+html .plate small .flag{width:1.55em;height:1em;border:1px solid #101016;border-radius:2px;box-shadow:0 1px 2px #0007,inset 0 0 0 1px #ffffff55}
+html .plate.t-police small .flag{border-color:#fff}
+html .plate .fl-RU{background:linear-gradient(#fff 33.3%,#1c57a5 33.3% 66.6%,#d52b1e 66.6%)}
+html .plate .fl-BY{background:linear-gradient(#c8313e 66.6%,#2f9a4a 66.6%)}
+/* редкости: цветная кромка и свечение */
+html .plate.rz1{--rzc:#4ade80}html .plate.rz2{--rzc:#5b8cff}html .plate.rz3{--rzc:#a855f7}html .plate.rz4{--rzc:#f5b82e}
+html .plate.rz1{box-shadow:0 12px 26px #000a,0 0 14px -4px #4ade8088,inset 0 0 0 2px #ffffffb0,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040}
+html .plate.rz2{box-shadow:0 12px 26px #000a,0 0 22px -3px #5b8cffaa,inset 0 0 0 2px #ffffffb0,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040}
+html .plate.rz3{box-shadow:0 12px 26px #000a,0 0 30px -2px #a855f7cc,inset 0 0 0 2px #ffffffb0,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040}
+html .plate.rz4{box-shadow:0 12px 26px #000a,0 0 38px 0 #f5b82ee0,inset 0 0 0 2px #fff0b8,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040}
+html .plate.rz2::before{border-color:#1d3f9a}html .plate.rz3::before{border-color:#5a1d9a}html .plate.rz4::before{border-color:#8a5d00;border-width:2.5px}
+html .plate.rz3:not(.t-police):not(.t-taxi){background:linear-gradient(180deg,#ffffffd9 0%,#fff0 38%,#0000 62%,#00000030 100%),linear-gradient(115deg,#f0e6ff,#d9c2ff 30%,#c4f0ff 55%,#ffd6f5 80%,#e6d4ff)}
+html .plate.rz4:not(.t-police):not(.t-taxi){background:linear-gradient(180deg,#fff9 0%,#fff0 38%,#0000 62%,#0003 100%),linear-gradient(115deg,#fff1b8,#f5d160 28%,#ffe9a0 50%,#e0aa30 75%,#fbe28a)}
+html .plate.rz3::after,html .plate.rz4::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,#ffffffb3 50%,transparent 60%);transform:translateX(-130%);animation:shine 3.4s 1s infinite}
+html .plate.rz4 .pm,html .plate.rz4 .pr{text-shadow:0 1px 0 #fff8,0 -1px 0 #5a3a0099,0 3px 3px #0005}
+html .grow.row2 .plate.rz3::after,html .grow.row2 .plate.rz4::after,html .row2 .plate.rz3::after,html .row2 .plate.rz4::after{animation-duration:4.5s}
+html .plate.blur::after{display:none}
+
+/* === вид номера как на эталоне (финальный блок, перекрывает прежние) === */
+html body .plate{container-type:inline-size;border:0;border-radius:14px;padding:0;
+ font-family:'Barlow Semi Condensed','DIN Alternate','Arial Narrow',Arial,sans-serif;font-weight:700;
+ background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%);
+ box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a}
+html body .plate::before{content:'';position:absolute;inset:4px;border:2px solid #17171b;border-radius:10px;opacity:1;pointer-events:none;
+ box-shadow:none;
+ background:radial-gradient(circle at max(7px,1.9cqw) 50%,#9a9aa2 0 max(2px,.55cqw),#46464c max(2.3px,.62cqw) max(3px,.78cqw),transparent max(3.3px,.82cqw)),radial-gradient(circle at calc(100% - max(7px,1.9cqw)) 50%,#9a9aa2 0 max(2px,.55cqw),#46464c max(2.3px,.62cqw) max(3px,.78cqw),transparent max(3.3px,.82cqw))}
+html body .plate .pm{margin:6px 0 6px 6px;padding:0 2.5cqw 0 4cqw;border-right:2px solid #17171b;display:flex;align-items:center;justify-content:center;
+ font-size:15.5cqw;line-height:1;letter-spacing:.01em;color:#0d0d10;text-shadow:0 1px 0 #ffffffb0,0 -1px 0 #0004}
+html body .plate .pr{margin:6px 6px 6px 0;width:27%;padding:0 0 .5cqw;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;
+ font-size:11.5cqw;line-height:1;letter-spacing:0;color:#0d0d10;text-shadow:0 1px 0 #ffffffb0,0 -1px 0 #0004}
+html body .plate small{display:flex;align-items:center;justify-content:center;gap:1.1cqw;margin-top:.6cqw;font-size:3.9cqw;font-weight:800;letter-spacing:.03em;line-height:1}
+html body .plate small .flag{width:6.4cqw;height:4.2cqw;border:1px solid #1b1b20;border-radius:1px;box-shadow:none}
+html body .plate:has(.fl-BY) .pm{font-size:12cqw}
+/* такси и полиция */
+html body .plate.plate:not(.t-police):not(.t-taxi){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
+html body .plate.t-taxi{background:linear-gradient(180deg,#ffe55a,#f6c800 60%,#dcaa00)}
+html body .plate.t-police{background:linear-gradient(180deg,#5f93f7,#2858c9 60%,#1a449f);box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a}
+html body .plate.t-police::before{border-color:#fff}
+html body .plate.t-police .pm{border-right-color:#fff}
+html body .plate.t-police .pm,html body .plate.t-police .pr,html body .plate.t-police small{color:#fff;text-shadow:0 1px 2px #0007}
+html body .plate.t-police small .flag{border-color:#fff}
+/* редкость: только свечение снаружи, сам номер остаётся честным */
+html body .plate.rz1{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 16px -2px #4ade80aa}
+html body .plate.rz2{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 24px -2px #5b8cffcc}
+html body .plate.rz3{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 32px 0 #a855f7dd}
+html body .plate.rz4{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 42px 2px #f5b82eee}
+html body .plate.rz3:not(.t-police):not(.t-taxi),html body .plate.rz4:not(.t-police):not(.t-taxi){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
+html body .plate.rz2::before,html body .plate.rz3::before,html body .plate.rz4::before{border-color:#17171b;border-width:2px}
+html body .plate.t-police.rz2::before,html body .plate.t-police.rz3::before,html body .plate.t-police.rz4::before{border-color:#fff}
+/* карточки каталога */
+html body .cf b{font-size:clamp(17px,5vw,26px);white-space:nowrap}html body .cf span{font-size:clamp(12px,3.5vw,19px);white-space:nowrap}html body .cf{gap:6px;padding-left:14px;padding-right:14px}html body .cf>div:first-child{min-width:0;font-size:clamp(15px,4.6vw,19px)}html body .cf .dots i{width:clamp(16px,5vw,24px)}
+/* мелкие номера в списках */
+html body .row2 .plate::before{inset:3px;border-width:1.5px;border-radius:7px;background:none}
+html body .row2 .plate .pm{margin:4.5px 0 4.5px 4.5px;padding:0 1cqw;border-right-width:1.5px}
+html body .row2 .plate .pr{margin:4.5px 4.5px 4.5px 0}
+

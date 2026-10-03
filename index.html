@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<title>Генератор номеров</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/gen.css">
+<link rel="stylesheet" href="css/plates.css">
+<link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+<div id="boot"><div class="bootmsg"><b>Генератор номеров</b><span>Загрузка…</span></div></div>
+<div id="big"></div><div id="glow"></div><div id="flash"></div>
+<div id="v-main" class="view on">
+  <div class="top"><button class="burger" data-click="go" data-arg="menu">☰</button><span class="bal"></span></div>
+  <div id="banner"><i>🔓</i><div><b id="bt">Открыто новое</b><span id="bn"></span></div></div>
+  <div class="stage" id="stage" data-click="gen" data-pointermove="tilt"></div>
+  <div class="tl" id="st" style="text-align:center;position:relative;z-index:2;margin-bottom:8px"></div>
+  <button class="chip" id="chip" data-click="go" data-arg="gen"></button>
+</div>
+<div id="v-menu" class="view">
+  <div class="head"><button class="burger" data-click="go" data-arg="main">←</button>Меню</div>
+  <div class="menu">
+    <div class="tile w" style="animation-delay:0ms" data-click="go" data-arg="main"><div class="art"><span class="mp L" style=""><span>А777АА</span><em>777</em></span></div><div class="lbl">ГЕНЕРАТОР</div></div>
+    <div class="tile w" style="animation-delay:20ms" data-click="go" data-arg="profile"><div class="art"><svg viewBox="0 0 120 80" width="100"><circle cx="60" cy="28" r="17" fill="#cfd8f0" stroke="#7d8fb8" stroke-width="2"/><path d="M22 76c2-22 18-30 38-30s36 8 38 30z" fill="#566b95" stroke="#9fb0d4" stroke-width="2"/></svg></div><div class="lbl">ПРОФИЛЬ</div></div>
+    <div class="tile" style="animation-delay:40ms" data-click="go" data-arg="col"><div class="art"><div class="stk"><span class="mp" style="top:6px;--r:-9deg;--x:-30px"><span>Х789УЕ</span><em>12</em></span><span class="mp" style="top:26px;--r:5deg;--x:22px"><span>А777АА</span><em>77</em></span><span class="mp" style="top:46px;--r:-3deg;--x:-8px"><span>К004АО</span><em>18</em></span></div></div><div class="lbl">КОЛЛЕКЦИЯ</div></div>
+    <div class="tile" style="animation-delay:80ms" data-click="go" data-arg="safe"><div class="art"><svg viewBox="0 0 120 80" width="100"><rect x="8" y="6" width="104" height="68" rx="8" fill="#3b4a6e" stroke="#7d8fb8" stroke-width="2"/><rect x="18" y="20" width="30" height="12" rx="2" fill="#cfd3dc"/><rect x="18" y="38" width="30" height="12" rx="2" fill="#cfd3dc"/><rect x="58" y="14" width="46" height="52" rx="5" fill="#566b95" stroke="#9fb0d4" stroke-width="2"/><circle cx="80" cy="40" r="9" fill="#2b3552" stroke="#c9d2e8" stroke-width="2"/><rect x="92" y="22" width="8" height="12" rx="1" fill="#c9d2e8"/></svg></div><div class="lbl">СЕЙФ</div></div>
+    <div class="tile" style="animation-delay:120ms" data-click="go" data-arg="auto"><div class="art"><span class="mp " style=""><span>Е123ВК</span><em>77</em></span><svg viewBox="0 0 30 20" width="30"><path d="M2 10h20M16 3l8 7-8 7" fill="none" stroke="#cfe0ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg><svg viewBox="0 0 50 36" width="52"><rect x="4" y="18" width="40" height="14" rx="2" fill="#5fae6a"/><rect x="6" y="12" width="40" height="14" rx="2" fill="#78c483"/><rect x="2" y="6" width="40" height="14" rx="2" fill="#93d79c" stroke="#4b8f55"/><circle cx="22" cy="13" r="4" fill="#5fae6a"/></svg></div><div class="lbl">АВТОПРОДАЖА</div></div>
+    <div class="tile" style="animation-delay:160ms" data-click="go" data-arg="up"><div class="art"><svg viewBox="0 0 120 80" width="100"><rect x="10" y="8" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="28" y="8" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="46" y="8" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="10" y="26" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="28" y="26" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="46" y="26" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="10" y="44" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="28" y="44" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="46" y="44" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="10" y="62" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="28" y="62" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="46" y="62" width="15" height="12" rx="2" fill="#aeb7c9"/><rect x="68" y="6" width="44" height="68" rx="6" fill="#0c1020" stroke="#4a5880" stroke-width="2"/><path d="M90 30v20M80 40h20" stroke="#dfe7ff" stroke-width="4" stroke-linecap="round"/></svg></div><div class="lbl">УЛУЧШЕНИЯ</div></div>
+    <div class="tile" style="animation-delay:200ms" data-click="go" data-arg="cat"><div class="art"><div class="stk"><span class="mp c0" style="left:8%;top:12px;--r:-12deg"><span>К382ТВ</span><em>50</em></span><span class="mp c1" style="left:27%;top:26px;--r:-6deg"><span>М404ОР</span><em>61</em></span><span class="mp c2" style="left:46%;top:12px;--r:0deg"><span>В777ОР</span><em>77</em></span><span class="mp c3" style="left:65%;top:26px;--r:6deg"><span>Р555РР</span><em>97</em></span><span class="mp c4" style="left:84%;top:12px;--r:12deg"><span>А001АА</span><em>77</em></span></div></div><div class="lbl">КАТАЛОГ РЕДКОСТЕЙ</div></div>
+    <div class="tile" style="animation-delay:240ms" data-click="go" data-arg="stat"><div class="art"><svg viewBox="0 0 120 80" width="100"><rect x="10" y="12" width="17" height="62" rx="3" fill="#9a9aab"/><rect x="32" y="26" width="17" height="48" rx="3" fill="#4ade80"/><rect x="54" y="38" width="17" height="36" rx="3" fill="#5b8cff"/><rect x="76" y="50" width="17" height="24" rx="3" fill="#a855f7"/><rect x="98" y="62" width="17" height="12" rx="3" fill="#f5b82e"/></svg></div><div class="lbl">СТАТИСТИКА</div></div>
+    <div class="tile" style="animation-delay:280ms" data-click="go" data-arg="theme"><div class="art"><svg viewBox="0 0 120 80" width="100"><rect x="52" y="14" width="22" height="58" rx="5" fill="#2f2f3a" transform="rotate(-44 63 72)"/><rect x="52" y="14" width="22" height="58" rx="5" fill="#f2f2f4" transform="rotate(-22 63 72)"/><rect x="52" y="14" width="22" height="58" rx="5" fill="#f3a9cf" transform="rotate(0 63 72)"/><rect x="52" y="14" width="22" height="58" rx="5" fill="#c9ced8" transform="rotate(22 63 72)"/><rect x="52" y="14" width="22" height="58" rx="5" fill="#e2b53a" transform="rotate(44 63 72)"/></svg></div><div class="lbl">ТЕМА</div></div>
+    <div class="tile" style="animation-delay:320ms" data-click="go" data-arg="set"><div class="art"><svg viewBox="0 0 80 80" width="84"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3e9f7"/><stop offset="1" stop-color="#8e9ab8"/></linearGradient></defs><path d="M33.70 13.75 L35.21 4.32 L44.79 4.32 L46.30 13.75 L54.11 16.98 L61.84 11.38 L68.62 18.16 L63.02 25.89 L66.25 33.70 L75.68 35.21 L75.68 44.79 L66.25 46.30 L63.02 54.11 L68.62 61.84 L61.84 68.62 L54.11 63.02 L46.30 66.25 L44.79 75.68 L35.21 75.68 L33.70 66.25 L25.89 63.02 L18.16 68.62 L11.38 61.84 L16.98 54.11 L13.75 46.30 L4.32 44.79 L4.32 35.21 L13.75 33.70 L16.98 25.89 L11.38 18.16 L18.16 11.38 L25.89 16.98Z" fill="url(#gg)" stroke="#5d6a8a" stroke-width="1.5" stroke-linejoin="round"/><circle cx="40" cy="40" r="19" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><circle cx="40" cy="40" r="11" fill="#1f2842" stroke="#5d6a8a" stroke-width="2"/></svg></div><div class="lbl">НАСТРОЙКИ</div></div>
+    <h4>Скоро в игре</h4>
+    <div class="tile d" style="animation-delay:0ms"><div class="art"></div><div class="lbl">МАГАЗИН</div></div>
+    <div class="tile d" style="animation-delay:0ms"><div class="art"></div><div class="lbl">КЕЙСЫ</div></div>
+  </div>
+</div>
+<div id="v-list" class="view">
+  <div class="top" style="align-items:flex-start"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button><span id="lt"></span></div><div style="text-align:right"><div class="bal"></div><div class="tl" id="cnt"></div></div></div>
+  <div class="sub"><span style="font-size:13px">Удерживайте номер — режим выбора</span><span id="tot"></span></div>
+  <div class="chips" id="chips"></div>
+  <div id="rows"></div>
+  <div class="bar" id="lbar"></div>
+</div>
+<div id="v-cat" class="view">
+  <div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Каталог редкостей</div>
+  <div class="csel" id="csel"></div><div id="ccards"></div><p class="tl" style="text-align:center">Шанс одинаков в любом регионе — меняются только цены. Нажмите на карточку для подробностей.</p>
+</div>
+<div id="v-profile" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Профиль</div><div id="profC"></div></div>
+<div id="v-up" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Улучшения</div><div id="upC"></div></div>
+<div id="v-auto" class="view"><div class="head"><button class="burger" data-click="go" data-arg="up">←</button>Автопродажа</div><div id="autoC"></div></div>
+<div id="v-stat" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Статистика</div><div id="statC"></div></div>
+<div id="v-theme" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Тема</div><div id="themeC"></div></div>
+<div id="v-gen" class="view"><div class="head"><button class="burger" data-click="go" data-arg="main">←</button>Настройка генерации</div><div id="genC"></div></div>
+<div id="v-set" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Настройки</div><div id="setC"></div></div>
+<div class="md" id="md" data-click="backdrop"><div class="sheet" id="sh"></div></div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

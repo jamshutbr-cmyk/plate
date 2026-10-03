@@ -1,0 +1,46 @@
+/* === экран настройки генерации === */
+#genC{display:flex;flex-direction:column;flex:1;min-height:0}
+.gh{font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:22px 6px 8px}
+.gcard{background:var(--card);border:1px solid color-mix(in srgb,var(--tx) 9%,transparent);border-radius:20px;overflow:hidden}
+.grow{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;background:none;border:0;border-top:1px solid color-mix(in srgb,var(--tx) 8%,transparent);color:var(--tx);text-align:left;cursor:pointer;transition:background .15s}
+.grow:first-child{border-top:0}.grow:active{background:color-mix(in srgb,var(--tx) 6%,transparent)}
+.grow .ic{width:42px;height:42px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;background:color-mix(in srgb,var(--ac) 16%,transparent)}
+.grow .ic .flag{width:100%;height:100%;border:0;display:block}
+.grow .ic svg{width:22px;height:22px;stroke:var(--ac);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.grow .tx{flex:1;min-width:0}.grow .tx b{display:block;font-size:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grow .tx span{display:block;font-size:13px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grow .go{font-size:24px;color:var(--mut);line-height:1;flex:none}
+.grow.row2{margin:0;border-radius:0;border-width:1px 0 0;border-color:color-mix(in srgb,var(--tx) 8%,transparent);animation:none;background:none;padding:14px 16px;justify-content:flex-start}
+.grow.row2:first-child{border-top-width:0}
+.grow.row2 .plate{width:56%;max-width:270px;flex:none;box-shadow:0 3px 10px #0006;container-type:inline-size}
+.grow.row2 .plate .pm{font-size:17.5cqw;padding:3.5cqw 0}.grow.row2 .plate .pr{font-size:13.5cqw;padding-top:3cqw}.grow.row2 .plate small{font-size:max(7px,5.4cqw);gap:2px;letter-spacing:1px}
+.grow.row2 .plate .flag{width:1.5em;height:.8em}
+.grow.row2 .rt{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-end;gap:10px;text-align:right}
+.grow.row2 .tx{flex:none}.grow.row2 .tx b{font-size:15px;overflow:visible;text-overflow:clip}.grow.row2 .tx span{font-size:22px;font-weight:700;color:var(--tx);margin-top:2px}
+.grow.row2.st{cursor:default}.grow.row2.st:active{background:none}
+.grow.row2.off{opacity:.45}.grow.row2.off .plate{filter:grayscale(1)}.grow.row2.off .tx span{color:var(--mut)}
+.sw{width:46px;height:28px;border-radius:14px;background:var(--off);position:relative;transition:background .2s;flex:none}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px #0006;transition:left .2s}
+.sw.on{background:var(--ac)}.sw.on::after{left:21px}
+.gfoot{position:sticky;bottom:0;margin-top:auto;display:flex;align-items:center;gap:14px;padding:14px 0 6px;background:linear-gradient(transparent,var(--bg) 22%)}
+.gfoot .cs{flex:1;min-width:0}.gfoot .cs small{display:block;font-size:13px;color:var(--mut);font-weight:600}.gfoot .cs b{display:block;font-size:28px;font-weight:800;white-space:nowrap}
+.gfoot .cs em{display:block;font-style:normal;font-size:12px;color:var(--mut);margin-top:1px}
+.gfoot .btn{flex:none;width:42%;max-width:220px;padding:16px 10px;font-size:17px;background:var(--ac);color:#fff;border-color:transparent}
+.gl{max-height:50vh;overflow:auto;padding:4px 0 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}.gl::-webkit-scrollbar{display:none}
+.gq{width:100%;box-sizing:border-box;margin:10px 0 8px;padding:14px 16px;border-radius:16px;border:1px solid color-mix(in srgb,var(--tx) 14%,transparent);background:color-mix(in srgb,var(--tx) 6%,transparent);color:var(--tx);font-size:16px;outline:none}.gq:focus{border-color:var(--ac)}
+.gopt{display:flex;align-items:center;gap:14px;padding:13px 16px;margin:0 0 8px;border-radius:18px;background:color-mix(in srgb,var(--tx) 6%,transparent);border:2px solid transparent;cursor:pointer;transition:transform .12s}.gopt:active{transform:scale(.98)}
+.gopt.a{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 16%,transparent)}
+.gopt .flag{width:44px;height:30px;border-radius:5px;flex:none}
+.gopt div{flex:1;min-width:0}.gopt b{display:block;font-size:17px}.gopt span{display:block;font-size:12.5px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gopt i.ck{font-style:normal;font-weight:800;color:var(--ac);font-size:20px}.gopt em{font-style:normal;font-weight:800;font-size:14px;color:var(--mut)}.gopt.a em{color:var(--ac)}
+.gnone{text-align:center;color:var(--mut);padding:26px 0}
+/* исправления */
+.plate.t-police{background:linear-gradient(180deg,#6b9bf5,#2f5fd0 55%,#1a42a0)}
+.row2 .plate .pm{font-size:clamp(20px,7.2vw,38px);letter-spacing:0;padding:8px 0}
+.row2 .plate .pr{font-size:clamp(16px,6vw,30px);padding-top:6px}
+.row2 .plate small{font-size:clamp(8px,2.6vw,13px);margin-top:0}
+.row2 .plate::before{inset:3px;border-width:1.5px;border-radius:8px;background:none}
+#v-gen .head{font-size:22px}
+
+.sheet .bd>.btn{display:block;width:100%;margin-top:4px}
+
