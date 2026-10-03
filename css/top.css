@@ -4,3 +4,4 @@
 .tn{flex:1;min-width:0}.tn b{display:block;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tn .tl{font-size:13px}
 .tpr{font-size:18px;white-space:nowrap}
 .tsep{text-align:center;color:var(--mut);margin:6px 0}
+.tr.emp{opacity:.4}.tr.emp .tn b{color:var(--mut);font-weight:600}
