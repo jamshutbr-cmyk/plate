@@ -5,8 +5,9 @@ import {$, esc, fmt} from '../util.js';
 
 // Таблица лидеров: рейтинг по самому дорогому номеру. Данные приходят с сервера и кэшируются на 30 секунд.
 let TOP=null,AT=0,LOAD=false,ERR=false;
-const MEDAL=['🥇','🥈','🥉'];
+const MEDAL=['🥇','🥈','🥉'],MIN=10;   // сколько мест показывать минимум: пустые рисуются заглушками
 const row=(r,me)=>`<div class="tr${me?' me':''}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><b>${esc(r.nick||'Игрок')}</b><span class="tl">Уровень ${r.lvl} · номеров: ${fmt(r.total)}</span></div><b class="tpr">${fmt(r.best)} ₽</b></div>`;
+const empty=n=>`<div class="tr emp"><span class="rk">${MEDAL[n-1]||n}</span><div class="tn"><b>Свободно</b></div></div>`;
 async function load(){
  LOAD=true;ERR=false;
  try{TOP=await rpc('get_leaderboard')}catch(e){console.error(e);ERR=true}
@@ -17,7 +18,9 @@ export function drawTop(){
  if(!TOP)h=ERR?`<p class="tl" style="text-align:center">Не удалось загрузить рейтинг</p>`:`<p class="tl" style="text-align:center">Загрузка…</p>`;
  else{
   const me=TOP.me;
-  h=TOP.top.length?TOP.top.map(r=>row(r,r.me)).join(''):`<p class="tl" style="text-align:center">Пока никого. Сгенерируйте номер!</p>`;
+  h=TOP.top.length?'':`<p class="tl" style="text-align:center">Пока никого. Сгенерируйте номер!</p>`;
+  h+=TOP.top.map(r=>row(r,r.me)).join('');
+  for(let n=TOP.top.length+1;n<=MIN;n++)h+=empty(n);
   if(me&&me.rk>50)h+=`<div class="tsep">· · ·</div>`+row(me,true);
  }
  $('topC').innerHTML=h+`<button class="btn" style="width:100%;margin-top:10px" data-click="topRefresh">Обновить</button>`}
