@@ -1,0 +1,6 @@
+.tr{display:flex;align-items:center;gap:12px;padding:14px 12px;margin-bottom:8px;border-radius:16px;background:var(--card);border:1px solid color-mix(in srgb,var(--tx) 10%,transparent)}
+.tr.me{border-color:color-mix(in srgb,var(--tx) 60%,transparent)}
+.rk{width:38px;text-align:center;font-size:22px;font-weight:800;color:var(--mut)}
+.tn{flex:1;min-width:0}.tn b{display:block;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tn .tl{font-size:13px}
+.tpr{font-size:18px;white-space:nowrap}
+.tsep{text-align:center;color:var(--mut);margin:6px 0}
