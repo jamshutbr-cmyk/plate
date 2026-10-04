@@ -13,7 +13,7 @@ let STY={};   // титулы и рамки игроков {id:{title,skin}}: о
 const titleOf=r=>r.me?S.equip.title:(STY[r.id]||{}).title;
 async function loadStyles(ids){ids=ids.filter(Boolean);if(!ids.length)return;try{Object.assign(STY,await rpc('get_styles',{ids})||{})}catch(e){console.warn('styles',e)}}
 const MEDAL=['🥇','🥈','🥉'],MIN=10;   // сколько мест показывать минимум: пустые рисуются заглушками
-const row=(r,me)=>`<div class="tr${me?' me':''}" data-click="openPlayer" data-arg="${r.id}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><b>${esc(r.nick||'Игрок')}</b>${titleHTML(titleOf(r))}<span class="tl">Уровень ${r.lvl} · номеров: ${fmt(r.total)}</span></div><b class="tpr">${fmt(r.best)} ₽</b></div>`;
+const row=(r,me)=>`<div class="tr${me?' me':''}" data-click="openPlayer" data-arg="${r.id}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><div class="tnr"><b>${esc(r.nick||'Игрок')}</b>${titleHTML(titleOf(r))}</div><span class="tl">Уровень ${r.lvl} · номеров: ${fmt(r.total)}</span></div><b class="tpr">${fmt(r.best)} ₽</b></div>`;
 const empty=n=>`<div class="tr emp"><span class="rk">${MEDAL[n-1]||n}</span><div class="tn"><b>Свободно</b></div></div>`;
 async function load(){
  LOAD=true;ERR=false;

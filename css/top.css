@@ -8,3 +8,10 @@
 .tr[data-click]{cursor:pointer}.tr[data-click]:active{opacity:.7}
 .tsec{margin:16px 0 8px;font-size:19px;color:var(--mut)}
 .tbadge{display:none;position:absolute;top:8px;right:10px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#e5484d;color:#fff;font:700 13px/22px sans-serif;font-style:normal;text-align:center;box-sizing:border-box}.tbadge.on{display:block}
+
+/* ник и титул в одну строку: ник сжимается с многоточием, титул всегда справа от него */
+.tnr{display:flex;align-items:center;gap:8px;min-width:0}
+.tnr b{flex:0 1 auto;min-width:0}
+.tnr .ttl{flex:none;margin:0}
+.tnr .ttl{font-size:10px;padding:1px 7px;letter-spacing:.02em}
+.tnr{gap:6px}

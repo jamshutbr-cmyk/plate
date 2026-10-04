@@ -6,3 +6,13 @@
 #profC .st2 b{font-size:clamp(17px,5.4vw,26px);white-space:nowrap}
 .dlg .gq{width:100%;margin-bottom:12px}
 
+
+/* профиль: титул справа от ника */
+.phd>div{display:flex;flex-wrap:wrap;align-items:center;column-gap:10px;row-gap:2px;min-width:0}
+.phd .pn{display:block;max-width:100%}
+.phd .ttl{margin:0;flex:none}
+.phd .tl{flex-basis:100%}
+.phd .ttl{font-size:11px;padding:1px 8px}
+.phd .pn{font-size:22px}
+.phd>div{column-gap:8px}
+.phd .ttl{font-size:10px;padding:1px 7px;letter-spacing:.02em}
