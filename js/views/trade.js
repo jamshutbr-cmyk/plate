@@ -1,6 +1,7 @@
 import {CN, TYPES} from '../config.js';
 import {DRAW, go, render} from '../router.js';
-import {loadAll, rpc} from '../server.js';
+import {haptic} from '../platform.js';
+import {loadAll, rpc, sb} from '../server.js';
 import {S} from '../state.js';
 import {on} from '../ui/actions.js';
 import {banner, cm, sm} from '../ui/modal.js';
@@ -17,15 +18,36 @@ const msg=e=>{const m=(e&&e.message)||'';
  return /too many/.test(m)?'Не больше 10 активных предложений':/duplicate/.test(m)?'Такое предложение уже отправлено':/bad (give|want)/.test(m)?'Один из номеров уже недоступен':'Не получилось, попробуйте ещё раз'};
 
 function badge(){const b=$('tb'),n=TR?TR.in.length:0;if(!b)return;b.textContent=n;b.classList.toggle('on',n>0)}
+
+// Синхронизация обменов с сервером. Вызывается при входе, каждые 15 секунд, когда игра открыта, и при возвращении в приложение.
+// Показывает плашки о новых предложениях и о судьбе наших предложений (принято / отклонено) и обновляет коллекцию после обмена.
+let KNOWN=null;
+const DONE_KEY='trDone';
+const doneSeen=()=>{try{return new Set(JSON.parse(localStorage.getItem(DONE_KEY)||'[]'))}catch(_){return new Set()}};
+const saveDone=d=>{try{localStorage.setItem(DONE_KEY,JSON.stringify([...d].slice(-100)))}catch(_){}};
+async function sync(){
+ const r=await rpc('my_trades'),first=!KNOWN;
+ const fresh=r.in.filter(t=>first||!KNOWN.has(t.id));
+ KNOWN=new Set(r.in.map(t=>t.id));
+ TR=r;TAT=Date.now();badge();
+ const seen=doneSeen(),nd=(r.done||[]).filter(d=>!seen.has(d.id));
+ if(nd.length){nd.forEach(d=>seen.add(d.id));saveDone(seen)}
+ if(nd.some(d=>d.status=='accepted'))await loadAll();    // номера поменялись: обновляем свою коллекцию
+ const q=[];
+ if(fresh.length)q.push(['Обмены',fresh.length==1?(fresh[0].nick||'Игрок')+' предлагает обмен':'Новых предложений обмена: '+fresh.length]);
+ for(const d of nd)q.push([d.status=='accepted'?'Обмен принят':'Обмен отклонён',d.nick||'Игрок']);
+ q.forEach((m,i)=>setTimeout(()=>banner(m[0],m[1]),(first?3200:0)+i*2800));
+ if(q.length)haptic('medium');
+ if(q.length||$('v-trades').classList.contains('on'))render(true)}
 async function loadTr(){
  TLOAD=true;TERR=false;
- try{TR=await rpc('my_trades')}catch(e){console.error(e);TERR=true}
- TLOAD=false;TAT=Date.now();badge();render(true)}
-// Вызывается при входе в игру: красный счётчик на тайле и плашка, если есть входящие предложения
-export async function initTrades(){
- try{TR=await rpc('my_trades');TAT=Date.now();badge();
-  if(TR.in.length)setTimeout(()=>banner('Обмены','Вам предложили обмен: '+TR.in.length),3200)}
- catch(e){console.warn('trades',e)}}
+ try{await sync()}catch(e){console.error(e);TERR=true}
+ TLOAD=false;TAT=Date.now();render(true)}
+let PT=null;
+export function initTrades(){
+ const tick=()=>{if(!document.hidden)sync().catch(e=>console.warn('trades',e))};
+ tick();clearInterval(PT);PT=setInterval(tick,15000);
+ document.addEventListener('visibilitychange',tick)}
 
 export function drawTrades(){
  if(!TLOAD&&Date.now()-TAT>10000)loadTr();
@@ -66,7 +88,8 @@ export function drawTnew(){
   +`<h3 class="tsec">Что отдадите</h3>`+(mine.length?mine.map(p=>row(p,'pickGive',p.id==GIVE)).join(''):'<p class="tl">В вашей коллекции нет номеров (сейф в обмене не участвует)</p>');
  $('tnBar').innerHTML=`<div style="flex:1;font-size:14px;color:var(--mut)">${w&&g?`Отдаёте ${fmt(g.price)} ₽ · получаете ${fmt(w.price)} ₽`:'Выберите оба номера'}</div><button class="btn" style="flex:none;width:50%" ${w&&g?'':'disabled'} data-click="sendTrade">Предложить</button>`}
 async function sendTrade(){
- try{await rpc('propose_trade',{p_to:TID,p_give:GIVE,p_want:WANT});banner('Обмен','Предложение отправлено');TAT=0;go('trades')}
+ try{const tid=await rpc('propose_trade',{p_to:TID,p_give:GIVE,p_want:WANT});banner('Обмен','Предложение отправлено');TAT=0;go('trades');
+  sb.functions.invoke('notify-trade',{body:{trade_id:tid}}).catch(()=>{})}   // пуш в Telegram получателю; если не получится, не страшно
  catch(e){console.error(e);banner('Ошибка',msg(e))}}
 
 DRAW.trades=drawTrades;
