@@ -24,7 +24,7 @@ const typeName=t=>TYPES.find(x=>x.k==t).n;
 // Строка с номером. skin '' = без рамки (чужие номера), по умолчанию рамка игрока.
 const row=(p,click,sub='',skin=S.equip.skin)=>`<div class="row2 r${p.cls}"${click?` data-click="${click}" data-arg="${p.id}"`:''}>${plateHTML(p,'',skin)}<div class="ri"><span>${CN[p.country].n} · ${typeName(p.type)}${sub}</span>${dots(p.cls)}<b>${fmt(p.price)} ₽</b></div></div>`;
 // Лот: рядом цена продавца и оценка игры
-const lot=(l,mine)=>`<div class="row2 lot r${l.cls}" data-click="${mine?'mCancelDlg':'mBuyDlg'}" data-arg="${l.id}">${plateHTML(l,'',mine?S.equip.skin:'')}<div class="ri"><span>${mine?'Ваш лот':esc(l.nick)} · ${typeName(l.type)}</span>${dots(l.cls)}<b>${fmt(l.ask)} ₽</b><span class="est">оценка игры ${fmt(l.price)} ₽</span></div></div>`;
+const lot=(l,mine)=>`<div class="row2 lot r${l.cls}" data-click="${mine?'mCancelDlg':'mBuyDlg'}" data-arg="${l.id}">${plateHTML(l,'',mine?S.equip.skin:'')}<div class="lf"><div class="lm"><span>${mine?'Ваш лот':esc(l.nick)}</span><small>${typeName(l.type)}</small>${dots(l.cls)}</div><div class="lp"><b>${fmt(l.ask)} ₽</b><span class="est">оценка ${fmt(l.price)} ₽</span></div></div></div>`;
 
 // ---------- загрузка ----------
 async function loadLots(more=false){
@@ -67,11 +67,11 @@ export function initMarket(){
 // ---------- экраны ----------
 export function drawMarket(){
   if(!LOAD&&Date.now()-AT>10000)refresh();
-  const tabs=`<div class="chips"><button class="${TAB=='buy'?'a':''}" data-click="mTab" data-arg="buy">Рынок</button><button class="${TAB=='mine'?'a':''}" data-click="mTab" data-arg="mine">Мои лоты${MINE&&MINE.lots.length?' · '+MINE.lots.length:''}</button></div>`;
+  const tabs=`<div class="chips seg"><button class="${TAB=='buy'?'a':''}" data-click="mTab" data-arg="buy">Рынок</button><button class="${TAB=='mine'?'a':''}" data-click="mTab" data-arg="mine">Мои лоты${MINE&&MINE.lots.length?' · '+MINE.lots.length:''}</button></div>`;
   let h=tabs;
   if(TAB=='buy'){
     h+=`<div class="chips"><button class="${CLS==null?'a':''}" data-click="mCls" data-arg="-1">Все</button>${RAR.map((r,i)=>`<button class="${CLS===i?'a':''}" data-click="mCls" data-arg="${i}">${r.n}</button>`).join('')}</div>`
-      +`<div class="chips">${SORTS.map(([k,n])=>`<button class="${SORT==k?'a':''}" data-click="mSort" data-arg="${k}">${n}</button>`).join('')}</div>`;
+      +`<div class="chips seg srt">${SORTS.map(([k,n])=>`<button class="${SORT==k?'a':''}" data-click="mSort" data-arg="${k}">${n}</button>`).join('')}</div>`;
     if(!LOTS)h+=`<p class="tl" style="text-align:center">${ERR?'Не удалось загрузить рынок':'Загрузка…'}</p>`;
     else{
       h+=LOTS.length?LOTS.map(l=>lot(l,false)).join(''):`<p class="tl" style="text-align:center">Лотов пока нет.<br>Выставите свой номер во вкладке «Мои лоты».</p>`;

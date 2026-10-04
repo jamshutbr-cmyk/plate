@@ -2,3 +2,29 @@
 .lot .ri .est{margin-top:4px;font-size:12px}
 #mkC .chips,#mnC .tl{margin-bottom:10px}
 .dlg .gq{width:100%;margin:0 0 8px;font-size:20px;font-weight:700}
+
+/* --- карточки лотов: номер на всю ширину, снизу продавец и цена --- */
+.lot{flex-direction:column;align-items:stretch;gap:10px;padding:12px;border-radius:18px}
+.lot .plate{width:100%;flex:none;container-type:inline-size}
+.lot .plate .pm,.dlg .plate .pm{font-size:17.5cqw;padding:3.5cqw 0;letter-spacing:0}
+.lot .plate .pr,.dlg .plate .pr{font-size:13.5cqw;padding-top:3cqw}
+.lot .plate small,.dlg .plate small{font-size:max(8px,5.2cqw);gap:2px;letter-spacing:1px;margin-top:0}
+.lot .lf{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.lot .lm{display:flex;flex-direction:column;gap:5px;min-width:0;align-items:flex-start}
+.lot .lm span{font-size:16px;font-weight:700;color:var(--tx);max-width:48vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lot .lm small{font-size:13px;color:var(--mut)}
+.lot .lp{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.lot .lp b{font-size:24px;line-height:1.1;color:var(--tx);margin:0}
+.lot .lp .est{font-size:12px;color:var(--mut);margin:0}
+
+/* --- диалоги: номер всегда помещается в окно --- */
+.dlg .plate{width:100%;max-width:100%;container-type:inline-size}
+.dlg{max-height:calc(100dvh - 32px);overflow-y:auto}
+.dlg .tl{overflow-wrap:anywhere}
+
+/* --- вкладки и фильтры --- */
+.chips.seg{background:var(--card);border-radius:999px;padding:4px;gap:4px}
+.chips.seg button{background:none;border:0;padding:10px 8px;flex:1}
+.chips.seg .a{background:var(--ac);color:#fff}
+.chips.srt button{font-size:13px;padding:7px 8px}
+#mkC>.chips:not(.seg){margin-top:0}
