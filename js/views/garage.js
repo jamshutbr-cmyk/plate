@@ -17,7 +17,9 @@ try{Object.assign(G,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(G))}catch(e){}};
 
 export function drawGarage(){
-  const have=c=>S.cars.includes(c.id),mine=CARS.filter(have),car=mine.find(c=>c.id==G.car)||mine[0]||CARS[0],every=S.col.concat(S.safe).sort((a,b)=>b.price-a.price),all=every.filter(x=>F=='all'||x.type==F);
+  const have=c=>S.cars.includes(c.id),mine=CARS.filter(have),car=mine.find(c=>c.id==G.car)||mine[0],every=S.col.concat(S.safe).sort((a,b)=>b.price-a.price),all=every.filter(x=>F=='all'||x.type==F);
+  if(!car){$('garC').innerHTML=`<div class="gcs">${CARS.map(c=>`<button class="lk" data-click="garLock" data-arg="${c.id}"><img src="${c.img}" alt=""><i>🔒</i>???</button>`).join('')}</div>
+  <div class="card" style="text-align:center"><h3 style="justify-content:center">Гараж пуст</h3><p>Машины выпадают из кейсов. Откройте кейс, и первая машина появится здесь.</p><button class="big2" data-click="go" data-arg="cases">К кейсам</button></div>`;return}
   const p=every.find(x=>x.id==G.on[car.id]),bg=S.equip&&S.equip.bg?' scn-'+S.equip.bg:'';
   $('garC').innerHTML=`<div class="gcs">${CARS.map(c=>have(c)?`<button class="${c.id==car.id?'a':''}" data-click="garCar" data-arg="${c.id}"><img src="${c.img}" alt="">${c.n}</button>`:`<button class="lk" data-click="garLock" data-arg="${c.id}"><img src="${c.img}" alt=""><i>🔒</i>???</button>`).join('')}</div>
   <div class="gst${bg}"><div class="gcar${Z?' z':''}" style="aspect-ratio:${car.ar};transform-origin:${car.x}% ${car.y}%" data-click="garZoom"><img src="${car.img}" alt="${car.n}">${p?`<div class="gpl pfit" style="left:${car.x}%;top:${car.y}%;width:${car.w*1.04}%" data-sy="${car.sy||1}"><div class="pin">${plateHTML(p)}</div></div>`:''}</div></div>
@@ -31,5 +33,5 @@ function fit(){document.querySelectorAll('#garC .pfit').forEach(w=>{const i=w.fi
 window.addEventListener('resize',fit);
 // Выбранная машина всегда по центру ленты, сколько бы их ни было
 function centerCar(){const a=document.querySelector('#garC .gcs .a');if(a){const c=a.parentNode;c.scrollLeft=a.offsetLeft-(c.clientWidth-a.offsetWidth)/2}}
-DRAW.garage=()=>{drawGarage();fit();centerCar()};
+DRAW.garage=()=>{drawGarage();fit();centerCar()};   // fit/centerCar при пустом гараже ничего не находят и ничего не делают
 on({garF:a=>{F=a;render()},garZoom:()=>{Z=!Z;render()},garCar:a=>{if(!S.cars.includes(a))return;G.car=a;save();render()},garLock:()=>banner('Машина закрыта','Выпадает из кейсов'),garPlate:a=>{G.on[G.car]=+a;save();render()},garClear:()=>{delete G.on[G.car];save();render()}});

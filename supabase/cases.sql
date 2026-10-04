@@ -4,9 +4,11 @@
 -- Зеркала для интерфейса: CASES / CAR_VAL / DUP_PCT в js/config.js и CARS в js/data/cars.js; сверяет tests/cases.test.mjs.
 
 -- ---------- Машины игрока ----------
--- Стартовая машина у всех: zhiguli (и у уже существующих игроков).
-alter table public.players add column if not exists cars text[] not null default '{zhiguli}';
-update public.players set cars = array_prepend('zhiguli', cars) where not ('zhiguli' = any(cars));
+-- Стартовых машин нет: гараж пуст, первая машина выпадает из кейса.
+alter table public.players add column if not exists cars text[] not null default '{}';
+alter table public.players alter column cars set default '{}';   -- если колонку создавала прежняя версия файла (со стартовой машиной)
+-- Один раз, если нужно забрать прежнюю стартовую машину у всех (раскомментируйте, выполните и закомментируйте обратно):
+-- update public.players set cars = array_remove(cars, 'zhiguli');
 
 -- ---------- Классы машин: стоимость класса (₽). Дубликат возвращает DUP_PCT % от неё ----------
 create table if not exists public.car_classes (
@@ -62,10 +64,10 @@ on conflict (id) do update set r = excluded.r;
 
 -- Новый кейс или правка шансов: строка здесь И в CASES (js/config.js). Кейсы, которых нет в списке, удаляются.
 insert into public.case_defs (id, price, w0, w1, w2, w3, w4) values
-  ('garage', 60000, 62, 30, 7.5, 0.5, 0),
-  ('standard', 250000, 10, 52, 33, 5, 0),
-  ('premium', 2000000, 0, 15, 50, 32, 3),
-  ('legend', 12000000, 0, 0, 20, 55, 25)
+  ('garage', 150000, 62, 30, 7.5, 0.5, 0),
+  ('standard', 600000, 10, 52, 33, 5, 0),
+  ('premium', 5000000, 0, 15, 50, 32, 3),
+  ('legend', 30000000, 0, 0, 20, 55, 25)
 on conflict (id) do update set price = excluded.price,
   w0 = excluded.w0, w1 = excluded.w1, w2 = excluded.w2, w3 = excluded.w3, w4 = excluded.w4;
 delete from public.case_defs where id <> all (array['garage', 'standard', 'premium', 'legend']);
@@ -125,13 +127,13 @@ begin
                             'player', jsonb_build_object('balance', new_bal, 'cars', to_jsonb(new_cars)));
 end $$;
 
--- ---------- Сброс прогресса: как в schema.sql, плюс машины возвращаются к стартовой ----------
+-- ---------- Сброс прогресса: как в schema.sql, плюс гараж снова пуст ----------
 create or replace function public.reset_progress() returns void
 language plpgsql security definer set search_path = public as $$
 begin
   delete from plates where owner = auth.uid();
   update players set balance = 50000, usd = 0, xp = 0, lvl = 1, cap_c = 100, cap_s = 5,
-    daily_last = null, daily_streak = 0, rescue_last = null, seen = '{}', cars = array['zhiguli'],
+    daily_last = null, daily_streak = 0, rescue_last = null, seen = '{}', cars = '{}',
     stats = '{"n":0,"best":0,"cls":[0,0,0,0,0],"f":{}}',
     autosell = '{"lvl":0,"on":true,"t1":true,"t2":true,"sp":true,"old":false,"cheap":false,"ceil":0,"every":false,"low":false}'
   where id = auth.uid();

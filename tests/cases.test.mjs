@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync, existsSync} from 'node:fs';
-import {CASES, CAR_CLS, CAR_VAL, DUP_PCT, RAR, START, START_CAR, dupRefund} from '../js/config.js';
+import {CASES, CAR_CLS, CAR_VAL, DUP_PCT, RAR, START, dupRefund} from '../js/config.js';
 import {CARS, caseOdds, carsOfClass} from '../js/data/cars.js';
 import {fresh, playerToState} from '../js/state.js';
 
@@ -56,15 +56,14 @@ test('классы: названия, стоимость и доля возвр�
   CAR_VAL.forEach((v, r) => assert.equal(dupRefund(r), Math.floor((v * DUP_PCT) / 100)));
   assert.ok(CAR_VAL.every((v, r) => r == 0 || v > CAR_VAL[r - 1]), 'стоимость классов растёт');
 });
-test('стартовая машина: есть в cars.js, в car_defs, в default колонки и в reset_progress', () => {
-  assert.ok(CARS.some((c) => c.id == START_CAR));
-  assert.ok(sql.includes(`default '{${START_CAR}}'`));
-  assert.ok(sql.includes(`cars = array['${START_CAR}']`));
-  assert.ok(sql.includes(`array_prepend('${START_CAR}', cars)`));   // существующим игрокам стартовая машина добавляется
-  assert.deepEqual(fresh().cars, [START_CAR]);
-  assert.deepEqual(playerToState({balance: 1, cars: ['niva', 'zhiguli']}).cars, ['niva', 'zhiguli']);
-  assert.deepEqual(playerToState({balance: 1}).cars, [START_CAR]);   // старая строка без cars
-  assert.deepEqual(playerToState({balance: 1, cars: []}).cars, [START_CAR]);
+test('гараж изначально пуст: default колонки, reset_progress и клиентский кэш', () => {
+  assert.ok(sql.includes("add column if not exists cars text[] not null default '{}'"));
+  assert.ok(sql.includes("alter column cars set default '{}'"));
+  assert.ok(sql.includes("cars = '{}',"));
+  assert.ok(!/array_prepend|default '\{zhiguli\}'/.test(sql));
+  assert.deepEqual(fresh().cars, []);
+  assert.deepEqual(playerToState({balance: 1, cars: ['niva']}).cars, ['niva']);
+  assert.deepEqual(playerToState({balance: 1}).cars, []);   // старая строка без cars
 });
 test('честные шансы: сумма 100%, класс без машин получает 0, остальные делят его долю', () => {
   for (const c of CASES) {
