@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="css/shop.css">
 <link rel="stylesheet" href="css/garage.css">
 <link rel="stylesheet" href="css/cases.css">
+<link rel="stylesheet" href="css/market.css">
 </head>
 <body>
 <div id="boot"><div class="bootmsg"><b>Генератор номеров</b><span>Загрузка…</span></div></div>
@@ -45,6 +46,7 @@
     <h4>Игроки</h4>
     <div class="tile" style="animation-delay:200ms" data-click="go" data-arg="top"><div class="art"><svg viewBox="0 0 120 80" width="100"><path d="M36 10h48v22c0 15-10 24-24 24S36 47 36 32z" fill="#f5b82e" stroke="#b9851a" stroke-width="2"/><path d="M36 16H20c0 14 6 22 18 24M84 16h16c0 14-6 22-18 24" fill="none" stroke="#f5b82e" stroke-width="4" stroke-linecap="round"/><rect x="54" y="56" width="12" height="10" fill="#d9a21f"/><rect x="42" y="66" width="36" height="8" rx="3" fill="#b9851a"/></svg></div><div class="lbl">РЕЙТИНГ</div></div>
     <div class="tile" style="animation-delay:225ms" data-click="go" data-arg="trades"><div class="art"><svg viewBox="0 0 120 80" width="100"><path d="M20 28h70m0 0-14-14m14 14-14 14" fill="none" stroke="#5b8cff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M100 54H30m0 0 14-14m-14 14 14 14" fill="none" stroke="#f5b82e" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><i class="tbadge" id="tb"></i><div class="lbl">ОБМЕНЫ</div></div>
+    <div class="tile w" style="animation-delay:238ms" data-click="go" data-arg="market"><div class="art"><svg viewBox="0 0 120 80" width="100"><path d="M14 30l10-18h72l10 18z" fill="#f5b82e" stroke="#b9851a" stroke-width="2" stroke-linejoin="round"/><rect x="18" y="30" width="84" height="40" rx="4" fill="#3b4a6e" stroke="#7d8fb8" stroke-width="2"/><rect x="46" y="44" width="28" height="26" rx="3" fill="#1c2236"/><circle cx="32" cy="48" r="7" fill="#f5b82e" stroke="#b9851a" stroke-width="2"/><circle cx="88" cy="48" r="7" fill="#f5b82e" stroke="#b9851a" stroke-width="2"/></svg></div><div class="lbl">РЫНОК</div></div>
     <div class="tile w" style="animation-delay:250ms" data-click="go" data-arg="set"><div class="art"><svg viewBox="0 0 80 80" width="84"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3e9f7"/><stop offset="1" stop-color="#8e9ab8"/></linearGradient></defs><path d="M33.70 13.75 L35.21 4.32 L44.79 4.32 L46.30 13.75 L54.11 16.98 L61.84 11.38 L68.62 18.16 L63.02 25.89 L66.25 33.70 L75.68 35.21 L75.68 44.79 L66.25 46.30 L63.02 54.11 L68.62 61.84 L61.84 68.62 L54.11 63.02 L46.30 66.25 L44.79 75.68 L35.21 75.68 L33.70 66.25 L25.89 63.02 L18.16 68.62 L11.38 61.84 L16.98 54.11 L13.75 46.30 L4.32 44.79 L4.32 35.21 L13.75 33.70 L16.98 25.89 L11.38 18.16 L18.16 11.38 L25.89 16.98Z" fill="url(#gg)" stroke="#5d6a8a" stroke-width="1.5" stroke-linejoin="round"/><circle cx="40" cy="40" r="19" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><circle cx="40" cy="40" r="11" fill="#1f2842" stroke="#5d6a8a" stroke-width="2"/></svg></div><div class="lbl">НАСТРОЙКИ</div></div>
     <h4>Магазин</h4>
     <div class="tile" style="animation-delay:0ms" data-click="go" data-arg="shop"><div class="art"><span class="mp"><span>А001АА</span><em>01</em></span></div><div class="lbl">МАГАЗИН</div></div>
@@ -66,6 +68,8 @@
 <div id="v-shop" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Магазин</div><div id="shopC"></div></div>
 <div id="v-profile" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Профиль</div><div id="profC"></div></div>
 <div id="v-pub" class="view"><div class="head"><button class="burger" data-click="go" data-arg="top">←</button>Профиль игрока</div><div id="pubC"></div></div>
+<div id="v-market" class="view"><div class="top" style="align-items:flex-start"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Рынок</div><div style="text-align:right"><div class="bal"></div></div></div><div id="mkC"></div></div>
+<div id="v-mnew" class="view"><div class="head"><button class="burger" data-click="go" data-arg="market">←</button>Выставить номер</div><div id="mnC"></div></div>
 <div id="v-trades" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Обмены</div><div id="trC"></div></div>
 <div id="v-tnew" class="view"><div class="head"><button class="burger" data-click="go" data-arg="pub">←</button>Новый обмен</div><div id="tnC"></div><div class="bar" id="tnBar"></div></div>
 <div id="v-top" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Рейтинг</div><div id="topC"></div></div>

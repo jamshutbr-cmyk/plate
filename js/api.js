@@ -68,6 +68,33 @@ export const api={
   let r;try{r=await rpc('open_case',{case_id:id})}catch(e){if(notEnough(e)){await loadPlayer();return {err:1,need:c.p}}throw e}
   S.bal=+r.player.balance;S.cars=r.player.cars;
   return {car_id:r.car_id,dup:!!r.dup,refund:+r.refund}},
+  // Рынок игроков: цену, комиссию и права проверяет сервер (market.sql). Номер на время лота уходит из коллекции.
+ async marketList(plateId,ask){
+  try{await rpc('market_list_plate',{p_plate:plateId,p_ask:ask})}
+  catch(e){const m=(e&&e.message)||'';
+   if(/bad price/.test(m))return {err:'price'};
+   if(/too many/.test(m))return {err:'lots'};
+   if(/bad plate/.test(m)){await loadPlates();return {err:'plate'}}
+   throw e}
+  await loadPlates();return {ok:1}},
+ async marketCancel(id){
+  try{await rpc('market_cancel',{p_id:id})}
+  catch(e){const m=(e&&e.message)||'';
+   if(/collection full/.test(m))return {err:'full'};
+   if(/gone/.test(m))return {err:'gone'};
+   throw e}
+  await loadPlates();return {ok:1}},
+ async marketBuy(id){
+  let r;
+  try{r=await rpc('market_buy',{p_id:id})}
+  catch(e){const m=(e&&e.message)||'';
+   if(/not enough/i.test(m)){await loadPlayer();return {err:'money'}}
+   if(/collection full/.test(m))return {err:'full'};
+   if(/gone/.test(m))return {err:'gone'};
+   if(/own lot/.test(m))return {err:'own'};
+   throw e}
+  await loadAll();return {ok:1,main:r.main,ask:+r.ask}},
+ async marketAck(upto){await rpc('market_ack_sales',{p_upto:upto})},
  async syncPlayer(){await loadPlayer()},   // сверить кэш с сервером (например, после обрыва связи во время открытия)
  setSettings(patch){
   Object.assign(S,patch);Object.assign(setPend,patch);clearTimeout(setT);

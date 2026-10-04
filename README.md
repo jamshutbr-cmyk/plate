@@ -66,3 +66,4 @@ tests/                тесты правил, входа, кэша клиент
 | `api.setSettings({...})` | `set_settings(s)` |
 | `api.resetProgress()` | `reset_progress()` |
 | `api.openCase(id)` | `open_case(case_id)` (`cases.sql`) |
+| `api.marketList(id, ask)` / `marketCancel(id)` / `marketBuy(id)` / `marketAck(upto)` | `market_list_plate` / `market_cancel` / `market_buy` / `market_ack_sales` (`market.sql`) |
