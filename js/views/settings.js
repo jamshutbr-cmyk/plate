@@ -1,4 +1,5 @@
 import {api} from '../api.js';
+import {THEMES} from '../config.js';
 import {DRAW, go, render} from '../router.js';
 import {S} from '../state.js';
 import {on} from '../ui/actions.js';
@@ -9,7 +10,8 @@ import {$} from '../util.js';
 
 // Настройки и сброс. Всё хранится на сервере (settings игрока); экспорта/импорта сохранения больше нет: прогресс в облаке.
 export function drawSet(){const tg=(k)=>`<button class="tg ${S[k]?'':'off'}" data-click="togg" data-arg="${k}">${S[k]?'Вкл':'Выкл'}</button>`;
- $('setC').innerHTML=`<div class="setr"><span>Язык</span><span style="color:var(--mut);font-size:14px">Русский (других пока нет)</span></div>
+ $('setC').innerHTML=`<div class="setr" style="cursor:pointer" data-click="go" data-arg="theme"><span>Тема</span><span class="tg off">${(THEMES[S.theme]||THEMES.dark).n} ›</span></div>
+ <div class="setr"><span>Язык</span><span style="color:var(--mut);font-size:14px">Русский (других пока нет)</span></div>
  <div class="setr"><span>Звук</span><button class="tg ${S.mute?'off':''}" data-click="togg" data-arg="mute">${S.mute?'Выкл':'Вкл'}</button><input type="range" min="0" max="100" value="${S.vol}" data-input="setVol" data-change="volBeep"></div>
  <div class="setr"><span>Музыка</span>${tg('music')}</div>
  <div class="setr"><span>Вибрация</span>${tg('vib')}</div>
