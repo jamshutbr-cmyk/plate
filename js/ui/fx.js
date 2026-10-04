@@ -10,6 +10,31 @@ function ctx(){AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(A
 export function beep(f,d=.08,t='sine',v=.05,at=0){if(S.mute)return;try{ctx();const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime+at;o.type=t;o.frequency.value=f;g.gain.setValueAtTime(Math.max(.0002,v*S.vol/100),n);g.gain.exponentialRampToValueAtTime(.0001,n+d);o.connect(g);g.connect(AC.destination);o.start(n);o.stop(n+d)}catch(e){}}
 export function chime(c){[523,659,784,1047,1319,1568].slice(0,c+3).forEach((f,i)=>beep(f,.3,'triangle',.07,i*.09))}
 
+// Звуки выпадения по редкости. Все уважают S.mute и S.vol.
+function boom(v=.5,at=0){if(S.mute)return;try{const A=ctx(),t=A.currentTime+at,o=A.createOscillator(),g=A.createGain();
+  o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(40,t+.3);
+  g.gain.setValueAtTime(v*S.vol/100,t);g.gain.exponentialRampToValueAtTime(.0001,t+.5);
+  o.connect(g);g.connect(A.destination);o.start(t);o.stop(t+.55)}catch(e){}}
+// Нарастающий свист перед открытием эпического и легендарного номера
+export function riser(dur=1.3){if(S.mute)return;try{const A=ctx(),t=A.currentTime,s=A.createBufferSource(),f=A.createBiquadFilter(),g=A.createGain();
+  s.buffer=noiseBuf();s.loop=true;f.type='bandpass';f.Q.value=1.2;
+  f.frequency.setValueAtTime(200,t);f.frequency.exponentialRampToValueAtTime(7000,t+dur);
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.1*S.vol/100,t+dur*.85);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+  s.connect(f);f.connect(g);g.connect(A.destination);s.start(t);s.stop(t+dur+.05)}catch(e){}}
+export function dropSound(c){
+  if(c<2){chime(c);return}
+  if(c==2){chime(2);[2093,2637].forEach((f,i)=>beep(f,.4,'sine',.04,.45+i*.1));return}
+  if(c==3){
+    boom(.5);
+    [392,494,587,784,988,1175].forEach((f,i)=>beep(f,.35,'triangle',.07,.05+i*.07));
+    [784,988,1175,1568].forEach(f=>beep(f,.9,'sine',.05,.5));
+    return}
+  boom(.8);boom(.5,.18);
+  [523,659,784,1047].forEach((f,i)=>{beep(f,.25,'sawtooth',.045,i*.11);beep(f,.25,'triangle',.07,i*.11)});
+  [523,659,784,1047,1319].forEach(f=>beep(f,1.6,'sine',.06,.5));
+  for(let i=0;i<10;i++)beep(2000+Math.random()*2500,.18,'sine',.025,.6+i*.12);
+}
+
 // Фоновая музыка: лоу-фай бит 90 BPM (кик, хэт, клэп, бас, арпеджио, пэд), всё синтезируется в браузере.
 // Планировщик с «заглядыванием вперёд» держит ровный темп, в отличие от обычного setInterval.
 const BPM=90,STEP=60/BPM/4;
