@@ -58,7 +58,7 @@ grant select on public.leaderboard to anon, authenticated;
 
 -- ---------- Действия игрока (аналог api.* в клиенте) ----------
 
--- Продажа: 50% от суммы цен, как в игре
+-- Продажа: 95% от суммы цен (SELL_PCT в js/config.js, сверяет tests/market.test.mjs)
 create or replace function public.sell_plates(ids bigint[]) returns bigint
 language plpgsql security definer set search_path = public as $$
 declare gain bigint;
@@ -66,7 +66,7 @@ begin
   with del as (
     delete from plates where owner = auth.uid() and id = any(ids) returning price
   )
-  select floor(coalesce(sum(price), 0) / 2.0) into gain from del;
+  select floor(coalesce(sum(price), 0) * 95 / 100) into gain from del;
   update players set balance = balance + gain where id = auth.uid();
   return gain;
 end $$;
@@ -261,7 +261,7 @@ begin
   if ids is null then return null; end if;
 
   with del as (delete from plates where owner = p.id and id = any(ids) returning price)
-  select floor(coalesce(sum(price), 0) / 2.0), count(*) into t, n from del;
+  select floor(coalesce(sum(price), 0) * 95 / 100), count(*) into t, n from del;
   update players set balance = balance + t where id = p.id;
   return json_build_object('n', n, 'gain', t);
 end $$;

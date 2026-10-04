@@ -129,7 +129,7 @@ export type CustomResult = { plate: Plate; cost: number } | { error: string };
 
 // Проверка и цена номера, который игрок собрал сам. Тип всегда гражданский.
 // price — обычная «рыночная» стоимость номера (как у выпавшего), cost — сколько стоит его купить.
-// cost всегда сильно больше price, поэтому купить и продать дороже нельзя (продажа даёт 50% price).
+// cost всегда сильно больше price, поэтому купить и продать дороже нельзя (продажа даёт 95% price).
 export function customPlate(country: string, letters: string, digits: string, regCode: string, regs: Region[]): CustomResult {
   if (country != 'RU' && country != 'BY') return { error: 'bad country' };
   const ru = country == 'RU', L = ru ? RU_L : BY_L;

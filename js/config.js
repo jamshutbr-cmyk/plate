@@ -53,4 +53,6 @@ export const CASES=[
 // Рынок игроков. Комиссию, лимиты и права проверяет ТОЛЬКО сервер (supabase/market.sql); здесь данные для показа.
 // Должны совпадать с market.sql, это сверяет tests/market.test.mjs.
 export const MARKET={fee:5,min:1000,max:100000000000,lots:10,page:30};   // fee — % с продавца, min/max — цена лота, ₽, lots — лотов на игрока, page — размер страницы
+export const SELL_PCT=95;                                                 // сколько % цены игра платит за проданный номер (зеркало sell_plates / autosell в schema.sql)
+export const sellGain=t=>Math.floor(t*SELL_PCT/100);
 export const marketFee=ask=>Math.floor(ask*MARKET.fee/100);                // сколько удерживает рынок (продавец получает ask минус это)

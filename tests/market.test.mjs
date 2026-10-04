@@ -84,3 +84,12 @@ test('сброс прогресса очищает рынок и не теряе
   assert.ok(/delete from market_listings where seller = auth\.uid\(\)/.test(rp));
   assert.ok(/cars = '\{\}'/.test(rp));
 });
+
+test('продажа игре: SELL_PCT в config.js совпадает с schema.sql (sell_plates и autosell)', async () => {
+  const {SELL_PCT, sellGain} = await import('../js/config.js');
+  const schema = readFileSync(new URL('../supabase/schema.sql', import.meta.url), 'utf8');
+  const m = [...schema.matchAll(/sum\(price\), 0\) \* (\d+) \/ 100/g)].map((x) => +x[1]);
+  assert.deepEqual(m, [SELL_PCT, SELL_PCT]);
+  assert.equal(sellGain(1000), 950);
+  assert.equal(sellGain(999), 949);
+});
