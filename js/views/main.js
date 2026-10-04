@@ -40,7 +40,7 @@ export function show(p,unlock){
   $('stage').innerHTML=`<div class="badge" style="color:${R.c}"><div>${R.n}${dots(p.cls)}</div><b id="pp">0 ₽</b></div>${plateHTML(p,'in')}<div class="tl">${CN[p.country].n} · ${p.reg} · ${p.rn} · ${TYPES.find(t=>t.k==p.type).n}</div>${p.cls>=2?`<div class="tl" style="color:${R.c};font-weight:700">+${[0,0,2,10,100][p.cls]} $</div>`:''}<div class="hint" style="font-size:14px;margin-top:12px">Нажмите ещё раз (−${fmt(genCost())} ₽)</div>`;
   count($('pp'),p.price);render(true);chime(p.cls);if(p.cls>=3){const b=$('big');b.textContent=R.n.toUpperCase()+'!';b.classList.remove('on');void b.offsetWidth;b.classList.add('on')}
   if(unlock)banner('Открыто новое',unlock);
-  if(S.vib)haptic(p.cls>2?'heavy':'light');
+  haptic(p.cls>2?'heavy':'light');
   if(p.cls>=2)setTimeout(()=>burst(R.c,p.cls*14),500);
   if(p.cls==4&&S.fx<2){document.body.classList.remove('shake');void document.body.offsetWidth;document.body.classList.add('shake');$('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on')}}
 export function stageMsg(t){$('stage').innerHTML=`<div class="hint">${t}</div>`}
