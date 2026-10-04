@@ -10,7 +10,7 @@ import { loadRegions } from '../_shared/regions.ts';
 const url = Deno.env.get('SUPABASE_URL')!;
 const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
 
-Deno.serve(async (req) => {
+async function handle(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const token = (req.headers.get('Authorization') || '').replace(/^Bearer /, '');
   const { data: au, error: ae } = await admin.auth.getUser(token);
@@ -38,4 +38,10 @@ Deno.serve(async (req) => {
   }
   const { data: p2 } = await admin.from('players').select('balance').eq('id', uid).single();
   return json({ plate: { ...res.plate, id: data.id, ts: data.ts }, cost: res.cost, player: p2 });
+}
+
+// Любой сбой (например, не загрузились регионы) отдаём JSON с CORS-заголовками: иначе браузер видит «сетевую» ошибку без причины
+Deno.serve(async (req) => {
+  try { return await handle(req); }
+  catch (e) { console.error('custom-plate', e); return json({ error: 'server' }, 500); }
 });
