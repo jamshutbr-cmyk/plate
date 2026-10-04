@@ -1,5 +1,5 @@
 import {api} from '../api.js';
-import {CN, RAR, RESCUE_MS, TYPES} from '../config.js';
+import {CN, COST, FXE, RAR, RESCUE_MS, TYPES} from '../config.js';
 import {fake, genCost} from '../engine.js';
 import {haptic, hapticDrop} from '../platform.js';
 import {painters, render} from '../router.js';
@@ -41,14 +41,17 @@ export function show(p,unlock){
   count($('pp'),p.price);render(true);dropSound(p.cls);if(p.cls>=3){const b=$('big');b.textContent=R.n.toUpperCase()+'!';b.classList.remove('on');void b.offsetWidth;b.classList.add('on')}
   if(unlock)banner('Открыто новое',unlock);
   hapticDrop(p.cls);
-  if(p.cls>=2)setTimeout(()=>burst(R.c,p.cls*14),500);
-  if(p.cls==4&&S.fx<2){document.body.classList.remove('shake');void document.body.offsetWidth;document.body.classList.add('shake');$('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on')}}
+  const fe=S.equip.drop,E=fe&&FXE[fe],bn=p.cls>=2?p.cls*14:E?8:0;   // купленный эффект: свои частицы и вспышка, у обычных номеров лёгкий всплеск
+  if(bn)setTimeout(()=>burst(R.c,bn,fe),500);
+  if(p.cls==4&&S.fx<2){document.body.classList.remove('shake');void document.body.offsetWidth;document.body.classList.add('shake');$('flash').style.background=E?E.flash:'';$('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on')}}
 export function stageMsg(t){$('stage').innerHTML=`<div class="hint">${t}</div>`}
-export function brokeMsg(){if(!S.col.length&&!S.safe.length){const m=Math.ceil((RESCUE_MS-(Date.now()-(S.rs||0)))/60000);return 'Деньги закончились, номеров нет. Помощь на одну генерацию будет через '+Math.max(1,m)+' мин.'}return 'Не хватает денег. Продайте номера из коллекции.'}
+export function brokeMsg(){
+  if(S.reg&&S.bal>=COST&&S.bal<genCost())return 'Не хватает на прокрут с регионом «'+S.reg+'»: '+fmt(genCost())+' ₽. Выберите «Все регионы», тогда прокрут стоит '+fmt(COST)+' ₽.';
+  if(!S.col.length&&!S.safe.length){const m=Math.ceil((RESCUE_MS-(Date.now()-(S.rs||0)))/60000);return 'Деньги закончились, номеров нет. Помощь на одну генерацию будет через '+Math.max(1,m)+' мин.'}return 'Не хватает денег. Продайте номера из коллекции.'}
 let bailBusy=false;
 // Помощь при банкротстве: просим сервер только когда по кэшу она может быть положена (не на каждой отрисовке)
 function maybeBailout(){
-  if(bailBusy||S.bal>=genCost()||S.col.length||S.safe.length||Date.now()-(S.rs||0)<RESCUE_MS)return;
+  if(bailBusy||S.bal>=COST||S.col.length||S.safe.length||Date.now()-(S.rs||0)<RESCUE_MS)return;
   bailBusy=true;
   api.bailout().then(ok=>{if(ok){render(true);setTimeout(()=>banner('Банкротство','Выдано '+fmt(genCost())+' ₽ на одну генерацию'),400)}}).finally(()=>{bailBusy=false})}
 function mainPaint(keepStage){

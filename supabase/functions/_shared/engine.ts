@@ -11,6 +11,12 @@ const RU_L = 'АВЕКМНОРСТУХ';
 const BY_L = 'ABEIKMHOPCTX';
 export const RU_AVG = 1.956;
 
+// ---- магазин (баланс; клиент зеркалит REGION_FEE_BASE в js/config.js, это сверяет tests/shop.test.mjs) ----
+export const COST = 3000;            // базовая цена прокрута
+export const REGION_FEE_BASE = 3000; // доплата за выбранный регион: BASE * mult² (округление до 100)
+export const CUSTOM_BASE = 200000;   // самый дешёвый свой номер
+export const CUSTOM_EXP = 0.6;       // цена растёт как множитель комбинации в этой степени
+
 export type Region = { code: string; name: string; mult: number; rich: boolean };
 export type Prefs = { country: 'RU' | 'BY'; reg: string };
 export type Plate = {
@@ -98,4 +104,45 @@ export function feats(p: Pick<Plate, 'main' | 'reg' | 'type'>): number[] {
   if (/^0+[1-9]$/.test(d)) o.push(7);
   o.push(({ civil: 8, taxi: 9, police: 10 } as Record<string, number>)[p.type]);
   return o;
+}
+
+// ---------- платный выбор региона ----------
+// Средний множитель региона по названию (у региона может быть несколько кодов). 0, если региона нет.
+export function regionMult(regs: Region[], reg: string): number {
+  const f = reg ? regs.filter((r) => r.name == reg) : [];
+  return f.length ? f.reduce((a, r) => a + r.mult, 0) / f.length : 0;
+}
+// Доплата к каждому прокруту с выбранным регионом. Без региона — 0.
+export function regionFee(regs: Region[], reg: string): number {
+  const m = regionMult(regs, reg);
+  return m ? Math.round((REGION_FEE_BASE * m * m) / 100) * 100 : 0;
+}
+
+// ---------- свой номер ----------
+const LAT2CYR: Record<string, string> = { A: 'А', B: 'В', E: 'Е', K: 'К', M: 'М', H: 'Н', O: 'О', P: 'Р', C: 'С', T: 'Т', Y: 'У', X: 'Х' };
+// Заглавные буквы без пробелов; для РФ латинские двойники превращаются в кириллицу
+export function normLetters(s: string, country: string): string {
+  const u = String(s ?? '').toUpperCase().replace(/\s+/g, '');
+  return country == 'RU' ? [...u].map((c) => LAT2CYR[c] ?? c).join('') : u;
+}
+export type CustomResult = { plate: Plate; cost: number } | { error: string };
+
+// Проверка и цена номера, который игрок собрал сам. Тип всегда гражданский.
+// price — обычная «рыночная» стоимость номера (как у выпавшего), cost — сколько стоит его купить.
+// cost всегда сильно больше price, поэтому купить и продать дороже нельзя (продажа даёт 50% price).
+export function customPlate(country: string, letters: string, digits: string, regCode: string, regs: Region[]): CustomResult {
+  if (country != 'RU' && country != 'BY') return { error: 'bad country' };
+  const ru = country == 'RU', L = ru ? RU_L : BY_L;
+  const ls = normLetters(letters, country), d = String(digits ?? '').trim();
+  if (ls.length != (ru ? 3 : 2) || [...ls].some((c) => !L.includes(c))) return { error: 'bad letters' };
+  if (d.length != (ru ? 3 : 4) || !/^\d+$/.test(d) || /^0+$/.test(d)) return { error: 'bad digits' };
+  const r = regs.find((x) => x.code == String(regCode ?? '').trim());
+  if (!r) return { error: 'bad region' };
+  const main = ru ? ls[0] + d + ls.slice(1) : d + ' ' + ls + '-';
+  const { cls, kd } = classify(d, ls);
+  const combo = RAR_M[cls], f = cls ? 1 + kd / 9 * .6 : 1, rg = r.mult * regNorm(regs, country);
+  const price = Math.round(100 * combo * f * rg);
+  const raw = CUSTOM_BASE * Math.pow(combo, CUSTOM_EXP) * f * rg / regAvg(regs, country);
+  const cost = Math.max(CUSTOM_BASE, Math.round(raw / 1000) * 1000);
+  return { plate: { country, type: 'civil', main, reg: r.code, rn: r.name, cls, mu: [combo, f, rg, 1], price }, cost };
 }

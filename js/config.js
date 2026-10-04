@@ -18,3 +18,16 @@ export const CST=[100,150,200,300,500],CCO=[5e5,2e6,8e6,25e6],SST=[5,10,20,35,50
 export const SAMP={RU:{civil:['К013АВ','К013АА','К012КК','К111КК','А777АА'],taxi:['КВ 013','КК 013','КВ 111','КК 111']},BY:['3841 AB-','3841 AA-','7773 AB-','7773 AA-','7777 AA-']};
 export const CD=['Без повторов и закономерностей','Две одинаковые буквы или цифры','Три цифры подряд, три одинаковые цифры или пара букв вместе с парой цифр','Три одинаковые цифры и пара одинаковых букв','Три или четыре одинаковые цифры и все буквы одинаковые'];
 export const RESCUE_MS=30*60000;
+
+// Платный регион и магазин. Должны совпадать с supabase/_shared/engine.ts (REGION_FEE_BASE) и supabase/shop.sql (shop_items),
+// это сверяет tests/shop.test.mjs. Цена своего номера приходит с сервера, здесь её нет.
+export const REGION_FEE_BASE=3000;
+export const regFee=m=>m?Math.round(REGION_FEE_BASE*m*m/100)*100:0;   // доплата к каждому прокруту с выбранным регионом
+export const SHOP={
+ skin:[{id:'carbon',n:'Карбон',p:1500000,d:'Тёмная карбоновая плашка'},{id:'gold',n:'Золото',p:3000000,d:'Золотая рамка и фон'},{id:'neon',n:'Неон',p:8000000,d:'Светящаяся неоновая рамка'}],
+ title:[{id:'driver',n:'Водитель',p:300000,c:'#9aa3b8'},{id:'collector',n:'Коллекционер',p:2000000,c:'#4ade80'},{id:'major',n:'Мажор',p:10000000,c:'#5b8cff'},{id:'king',n:'Король номеров',p:50000000,c:'#a855f7'},{id:'oligarch',n:'Олигарх',p:250000000,c:'#f5b82e'}],
+ drop:[{id:'sparks',n:'Искры',p:1000000,d:'Золотые звёздочки'},{id:'fire',n:'Огонь',p:2500000,d:'Огненные частицы и вспышка'},{id:'ice',n:'Лёд',p:2500000,d:'Ледяные частицы и вспышка'},{id:'rainbow',n:'Радуга',p:6000000,d:'Частицы всех цветов'}]};
+export const SLOTS=[['skin','Рамки'],['title','Титулы'],['drop','Эффекты']];
+// Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
+export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1}};
+export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}return null};

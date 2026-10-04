@@ -30,9 +30,9 @@ js/
   api.js              ДЕЙСТВИЯ игрока: всё, что меняет состояние, запрос к серверу (async)
   router.js           go(), render(), реестр экранов DRAW
   ui/                 плашка номера, эффекты, модалки, тема, состояние списка, actions.js (события)
-  views/              по файлу на экран: main, list, catalog, upgrades, stats, theme, settings, profile, gen, album, achievements
+  views/              по файлу на экран: main, list, catalog, upgrades, stats, theme, settings, profile, gen, album, achievements, shop (+ custom: свой номер)
 supabase/
-  schema.sql          таблицы, RLS, SQL-функции;  seed_regions.sql — регионы
+  schema.sql          таблицы, RLS, SQL-функции;  seed_regions.sql — регионы;  shop.sql — магазин
   functions/          tg-auth (вход), generate (выдача номера), _shared/engine.ts (ПРАВИЛА игры)
 tests/                тесты правил, входа, кэша клиента
 ```

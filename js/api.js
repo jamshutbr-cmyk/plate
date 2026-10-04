@@ -1,4 +1,4 @@
-import {AL, CCO, CST, RAR, RESCUE_MS, SCO, SST, TYPES} from './config.js';
+import {AL, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
 import {genCost, trackSession} from './engine.js';
 import {loadAll, loadPlates, loadPlayer, rpc, sb} from './server.js';
 import {S, SESS, applyPlayer, flags} from './state.js';
@@ -9,6 +9,13 @@ import {fmt} from './util.js';
 // Бизнес-отказы (не хватает денег и т.п.) возвращаются значением, как раньше.
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
+
+async function customCall(body){
+ const {data,error}=await sb.functions.invoke('custom-plate',{body});
+ if(error){let e=null;try{e=await error.context.json()}catch(_){}
+  if(e&&e.error)return {error:e.error};   // отказы по правилам (формат, регион, деньги, место) приходят значением
+  throw error}
+ return data}
 
 export const api={
  async generatePlate(){
@@ -46,13 +53,27 @@ export const api={
   return {ds:r.ds,text:t}},
  async setNick(n){S.nick=await rpc('set_nick',{n:String(n||'')});return S.nick},
  async bailout(){
-  if(S.bal>=genCost()||S.col.length||S.safe.length||Date.now()-(S.rs||0)<RESCUE_MS)return false;
+  if(S.bal>=COST||S.col.length||S.safe.length||Date.now()-(S.rs||0)<RESCUE_MS)return false;
   const ok=await rpc('bailout');if(ok)await loadPlayer();return !!ok},
  async autoToggle(k){await rpc('autosell_toggle',{k});await loadPlayer()},
  async autosell(){
   if(!S.as.lvl||!S.as.on)return null;
   const r=await rpc('autosell');if(!r)return null;
   await loadAll();return {n:r.n,gain:+r.gain}},
+  // Магазин: цены и права проверяет сервер (buy_item / equip_item в shop.sql)
+ async buyItem(id){
+  const it=itemOf(id);if(!it)return {err:1,need:0};
+  if(S.owned.includes(id))return {ok:1};
+  if(S.bal<it.p)return {err:1,need:it.p};
+  try{await rpc('buy_item',{item_id:id})}catch(e){if(notEnough(e))return {err:1,need:it.p};throw e}
+  await loadPlayer();return {ok:1}},
+ async equipItem(slot,id){await rpc('equip_item',{slot_name:slot,item_id:id||''});await loadPlayer()},
+ // Свой номер: Edge Function custom-plate. quote → {quote:{plate,cost}} | {error}; buy → {plate,cost} | {error:'full'|'money'|...}
+ async customQuote(letters,digits,reg){return customCall({action:'quote',letters,digits,reg})},
+ async customBuy(letters,digits,reg){
+  const r=await customCall({action:'buy',letters,digits,reg});
+  if(r.error){if(r.error=='full'||r.error=='money')await loadAll();return r}
+  S.col.push(r.plate);S.bal=+r.player.balance;return r},
  // Страна и регион меняют цены, поэтому живут на сервере
  async setGenPrefs(country,reg){await rpc('set_gen_prefs',{c:country,r:reg||''});await loadPlayer()},
  // Настройки интерфейса (тема, звук, вибрация...): применяются сразу, на сервер уходят пачкой

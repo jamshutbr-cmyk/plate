@@ -1,24 +1,13 @@
 // Edge Function generate: выдаёт игроку номер. Клиент передаёт только JWT — всё остальное считает сервер.
+// Выбранный регион платный: к 3000 ₽ добавляется regionFee (считает сервер, списывается атомарно в commit_plate_fee).
 // Выход: { plate, unlock: 'cls'|'type'|null, lvup, player: { balance, usd, xp, lvl } } либо { error }.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { cors, json } from '../_shared/cors.ts';
-import { mk, feats, type Region } from '../_shared/engine.ts';
+import { mk, feats, regionFee } from '../_shared/engine.ts';
+import { loadRegions } from '../_shared/regions.ts';
 
 const url = Deno.env.get('SUPABASE_URL')!;
 const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
-
-// Справочник регионов кэшируется на время жизни инстанса функции
-let regCache: Record<string, Region[]> | null = null;
-let regAt = 0;
-async function regions(): Promise<Record<string, Region[]>> {
-  if (regCache && Date.now() - regAt < 10 * 60_000) return regCache;
-  const { data, error } = await admin.from('regions').select('country, code, name, mult, rich');
-  if (error || !data?.length) throw new Error('regions');
-  const m: Record<string, Region[]> = { RU: [], BY: [] };
-  for (const r of data) m[r.country].push({ code: r.code, name: r.name, mult: Number(r.mult), rich: r.rich });
-  regCache = m; regAt = Date.now();
-  return m;
-}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -30,9 +19,10 @@ Deno.serve(async (req) => {
   const { data: pl } = await admin.from('players').select('country, reg').eq('id', uid).single();
   if (!pl) return json({ error: 'no player' }, 404);
 
-  const regs = (await regions())[pl.country];
+  const regs = (await loadRegions(admin))[pl.country];
   const plate = mk({ country: pl.country, reg: pl.reg }, regs);
-  const { data, error } = await admin.rpc('commit_plate', { uid, pl: plate, ft: feats(plate) });
+  const fee = regionFee(regs, pl.reg);
+  const { data, error } = await admin.rpc('commit_plate_fee', { uid, pl: plate, ft: feats(plate), fee });
   if (error) {
     const m = error.message;
     if (m.includes('collection full')) return json({ error: 'full' }, 409);

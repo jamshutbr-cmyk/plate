@@ -1,5 +1,5 @@
-import {BY_L, COST, RAR, RU_L, TYPES} from './config.js';
-import {BR, RR} from './data/regions.js';
+import {BY_L, COST, RAR, RU_L, TYPES, regFee} from './config.js';
+import {BR, RR, regList} from './data/regions.js';
 import {S, SESS} from './state.js';
 import {pick, rnd} from './util.js';
 
@@ -22,5 +22,8 @@ export function fake(){
   const main=ru?(taxi?ls+' '+d:ls[0]+d+ls.slice(1)):d+' '+ls+'-',reg=pick(Object.keys(ru?RR:BR));
   let x=Math.random()*100,cls=0;for(let i=0;i<RAR.length;i++){x-=RAR[i].p;if(x<0){cls=i;break}}
   return {country:S.country,type:taxi?'taxi':'civil',main,reg,cls}}
-export function genCost(){return COST}
+// Доплата за выбранный регион (на сервере её считает regionFee в _shared/engine.ts). Кэш: genCost зовётся на каждой отрисовке.
+let FK='',FV=0;
+export function regFeeNow(){const k=S.country+'|'+S.reg;if(k!==FK){const r=S.reg&&regList(S.country).find(x=>x.n==S.reg);FV=r?regFee(r.m):0;FK=k}return FV}
+export function genCost(){return COST+regFeeNow()}
 export function onTypes(){return TYPES}

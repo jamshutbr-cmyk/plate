@@ -1,8 +1,9 @@
+import {FXE} from '../config.js';
 import {S} from '../state.js';
 import {$, fmt} from '../util.js';
 
 // Эффекты: частицы, счётчик, ripple, звук.
-export function burst(c,n){n=Math.round(n*[1,.5,0][S.fx||0]);for(let i=0;i<n;i++){const e=document.createElement('span'),a=Math.random()*6.28,r=120+Math.random()*220;e.className='p';e.style.cssText=`--c:${c};--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px;animation-delay:${Math.random()*.2}s`;document.body.appendChild(e);setTimeout(()=>e.remove(),1600)}}
+export function burst(c,n,eff){const E=eff&&FXE[eff];n=Math.round(n*[1,.5,0][S.fx||0]);for(let i=0;i<n;i++){const e=document.createElement('span'),a=Math.random()*6.28,r=120+Math.random()*220;e.className='p'+(E&&E.star?' st':'');e.style.cssText=`--c:${E?E.pal[i%E.pal.length]:c};--x:${Math.cos(a)*r}px;--y:${Math.sin(a)*r}px;animation-delay:${Math.random()*.2}s`;document.body.appendChild(e);setTimeout(()=>e.remove(),1600)}}
 export function count(el,to,ms=900){if(S.fx>=2){el.textContent=fmt(to)+' ₽';return}const t0=performance.now();(function s(t){const k=Math.min(1,(t-t0)/ms);el.textContent=fmt(to*(1-Math.pow(1-k,3)))+' ₽';if(k<1)requestAnimationFrame(s)})(t0)}
 export function ripple(e){if(S.fx>=2)return;const r=document.createElement('span');r.className='ripple';r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';document.body.appendChild(r);setTimeout(()=>r.remove(),700)}
 let AC;
