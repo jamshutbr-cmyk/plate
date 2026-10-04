@@ -6,6 +6,7 @@ import './views/upgrades.js';
 import './views/stats.js';
 import './views/theme.js';
 import './views/album.js';
+import './views/garage.js';
 import './views/achievements.js';
 import './views/settings.js';
 import './views/profile.js';
