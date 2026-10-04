@@ -6,3 +6,6 @@ export function plateHTML(p,c='',skin=S.equip.skin){return `<div class="plate t-
 export function dots(r){return `<div class="dots">${RAR.map((_,i)=>`<i style="${i<=r?'background:'+RAR[r].c:''}"></i>`).join('')}</div>`}
 // Титул игрока (плашка с цветом). Пусто, если титула нет.
 export function titleHTML(id){const it=id&&itemOf(id);return it&&it.c?`<span class="ttl" style="--tc:${it.c}">${it.n}</span>`:''}
+
+// Класс эффекта ника из магазина (id надетого предмета или пусто).
+export const nickCls=id=>id?' nk nk-'+id:'';

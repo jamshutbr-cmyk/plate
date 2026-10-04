@@ -61,7 +61,7 @@ test('свой номер: купить и продать за 50% невыго�
 
 test('каталог магазина в config.js совпадает с shop.sql', () => {
   const sql = readFileSync(new URL('../supabase/shop.sql', import.meta.url), 'utf8');
-  const rows = [...sql.matchAll(/\(\s*'(\w+)',\s*'(skin|title|drop)',\s*(\d+)\s*\)/g)].map((m) => [m[1], m[2], +m[3]]);
+  const rows = [...sql.matchAll(/\(\s*'(\w+)',\s*'(skin|title|drop|nick|bg|show)',\s*(\d+)\s*\)/g)].map((m) => [m[1], m[2], +m[3]]);
   const cfg = Object.entries(SHOP).flatMap(([slot, a]) => a.map((it) => [it.id, slot, it.p]));
   assert.ok(rows.length > 0);
   assert.deepEqual(rows.sort(), cfg.sort());

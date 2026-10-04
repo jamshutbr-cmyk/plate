@@ -13,6 +13,7 @@ import './views/top.js';
 import './views/trade.js';
 import './views/gen.js';
 import './views/shop.js';
+import './ui/scene.js';
 import {login, loadAll} from './server.js';
 import {render} from './router.js';
 import {bind, on} from './ui/actions.js';
