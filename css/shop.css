@@ -107,3 +107,7 @@ html .plate.sk-hologram{animation:skholo 7s linear infinite}
 .scs .plate{width:min(100%,320px)}
 .scx{width:min(100%,320px);height:68px;border:1px dashed color-mix(in srgb,var(--tx) 25%,transparent);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px}
 .sp.scs{display:flex}
+
+/* вкладки магазина: сетка 3×2, все видны сразу, без горизонтальной прокрутки (в Telegram свайп по ним не работал) */
+#shopC .chips{display:grid;grid-template-columns:repeat(3,1fr);overflow:visible;gap:8px}
+#shopC .chips button{width:100%;padding-left:6px;padding-right:6px;white-space:nowrap}
