@@ -1,4 +1,4 @@
-import {AL, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
+import {AL, CASES, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
 import {genCost, trackSession} from './engine.js';
 import {loadAll, loadPlates, loadPlayer, rpc, sb} from './server.js';
 import {S, SESS, applyPlayer, flags} from './state.js';
@@ -61,6 +61,14 @@ export const api={
   try{await rpc('buy_item',{item_id:id})}catch(e){if(notEnough(e))return {err:1,need:it.p};throw e}
   await loadPlayer();return {ok:1}},
  async equipItem(slot,id){await rpc('equip_item',{slot_name:slot,item_id:id||''});await loadPlayer()},
+  // Кейсы: класс, машину и возврат за дубликат выбирает сервер (open_case в cases.sql). Клиент только показывает результат.
+ async openCase(id){
+  const c=CASES.find(x=>x.id==id);if(!c)return {err:1,need:0};
+  if(S.bal<c.p)return {err:1,need:c.p};
+  let r;try{r=await rpc('open_case',{case_id:id})}catch(e){if(notEnough(e)){await loadPlayer();return {err:1,need:c.p}}throw e}
+  S.bal=+r.player.balance;S.cars=r.player.cars;
+  return {car_id:r.car_id,dup:!!r.dup,refund:+r.refund}},
+ async syncPlayer(){await loadPlayer()},   // сверить кэш с сервером (например, после обрыва связи во время открытия)
  setSettings(patch){
   Object.assign(S,patch);Object.assign(setPend,patch);clearTimeout(setT);
   setT=setTimeout(()=>{const b=setPend;setPend={};rpc('set_settings',{s:b}).catch(e=>console.warn('settings',e))},400)},

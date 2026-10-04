@@ -36,3 +36,17 @@ export const SHOWCASE_MAX=3;
 // Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
 export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1}};
 export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}return null};
+
+// Кейсы с машинами. Шансы, цены и выдачу считает ТОЛЬКО сервер (supabase/cases.sql: open_case); здесь данные для показа.
+// Должны совпадать с cases.sql, это сверяет tests/cases.test.mjs.
+export const START_CAR='zhiguli';                                          // стартовая машина у всех
+export const CAR_CLS=['Хлам','Обычная','Редкая','Эпическая','Легендарная'];   // названия классов машин (r = индекс RAR), цвет берётся из RAR[r].c
+export const CAR_VAL=[20000,80000,500000,4000000,40000000];                // стоимость класса, ₽
+export const DUP_PCT=50;                                                   // дубликат возвращает столько % от стоимости класса
+export const dupRefund=r=>Math.floor(CAR_VAL[r]*DUP_PCT/100);
+// w — веса классов 0..4 в процентах (сумма 100). col — только цвет карточки. Класс без машин в cars.js не выпадает, его шанс уходит остальным.
+export const CASES=[
+ {id:'garage',n:'Гаражный',p:60000,w:[62,30,7.5,.5,0],col:'#8f95a8',d:'Хлам и обычные, редкие реже'},
+ {id:'standard',n:'Стандарт',p:250000,w:[10,52,33,5,0],col:'#4ade80',d:'Обычные и редкие, эпические иногда'},
+ {id:'premium',n:'Премиум',p:2000000,w:[0,15,50,32,3],col:'#a855f7',d:'Редкие и эпические, шанс легендарной'},
+ {id:'legend',n:'Легендарный',p:12000000,w:[0,0,20,55,25],col:'#f5b82e',d:'Высокие шансы на эпик и легендарку'}];

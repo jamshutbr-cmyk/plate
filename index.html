@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="css/album.css">
 <link rel="stylesheet" href="css/shop.css">
 <link rel="stylesheet" href="css/garage.css">
+<link rel="stylesheet" href="css/cases.css">
 </head>
 <body>
 <div id="boot"><div class="bootmsg"><b>Генератор номеров</b><span>Загрузка…</span></div></div>
@@ -47,8 +48,7 @@
     <div class="tile w" style="animation-delay:250ms" data-click="go" data-arg="set"><div class="art"><svg viewBox="0 0 80 80" width="84"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e3e9f7"/><stop offset="1" stop-color="#8e9ab8"/></linearGradient></defs><path d="M33.70 13.75 L35.21 4.32 L44.79 4.32 L46.30 13.75 L54.11 16.98 L61.84 11.38 L68.62 18.16 L63.02 25.89 L66.25 33.70 L75.68 35.21 L75.68 44.79 L66.25 46.30 L63.02 54.11 L68.62 61.84 L61.84 68.62 L54.11 63.02 L46.30 66.25 L44.79 75.68 L35.21 75.68 L33.70 66.25 L25.89 63.02 L18.16 68.62 L11.38 61.84 L16.98 54.11 L13.75 46.30 L4.32 44.79 L4.32 35.21 L13.75 33.70 L16.98 25.89 L11.38 18.16 L18.16 11.38 L25.89 16.98Z" fill="url(#gg)" stroke="#5d6a8a" stroke-width="1.5" stroke-linejoin="round"/><circle cx="40" cy="40" r="19" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><circle cx="40" cy="40" r="11" fill="#1f2842" stroke="#5d6a8a" stroke-width="2"/></svg></div><div class="lbl">НАСТРОЙКИ</div></div>
     <h4>Магазин</h4>
     <div class="tile w" style="animation-delay:0ms" data-click="go" data-arg="shop"><div class="art"><span class="mp L" style=""><span>А001АА</span><em>01</em></span></div><div class="lbl">МАГАЗИН</div></div>
-    <h4>Скоро в игре</h4>
-    <div class="tile d" style="animation-delay:0ms"><div class="art"></div><div class="lbl">КЕЙСЫ</div></div>
+    <div class="tile w" style="animation-delay:25ms" data-click="go" data-arg="cases"><div class="art"><svg viewBox="0 0 120 80" width="150"><ellipse cx="60" cy="74" rx="46" ry="5" fill="#f5b82e" opacity=".28"/><rect x="14" y="28" width="92" height="44" rx="8" fill="#1d2236" stroke="#f5b82e" stroke-width="3"/><rect x="54" y="16" width="12" height="56" fill="#f5b82e" opacity=".45"/><rect x="10" y="16" width="100" height="18" rx="6" fill="#f5b82e" opacity=".9"/><rect x="54" y="16" width="12" height="18" fill="#fff" opacity=".25"/><circle cx="60" cy="48" r="7" fill="#0c1020" stroke="#fff" stroke-opacity=".6" stroke-width="2"/><rect x="58.5" y="46" width="3" height="7" rx="1" fill="#fff" opacity=".8"/></svg></div><div class="lbl">КЕЙСЫ</div></div>
   </div>
 </div>
 <div id="v-list" class="view">
@@ -62,6 +62,7 @@
   <div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Каталог редкостей</div>
   <div class="csel" id="csel"></div><div id="ccards"></div><p class="tl" style="text-align:center">Шанс одинаков в любом регионе — меняются только цены. Нажмите на карточку для подробностей.</p>
 </div>
+<div id="v-cases" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Кейсы</div><div id="casesC"></div></div>
 <div id="v-shop" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Магазин</div><div id="shopC"></div></div>
 <div id="v-profile" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Профиль</div><div id="profC"></div></div>
 <div id="v-pub" class="view"><div class="head"><button class="burger" data-click="go" data-arg="top">←</button>Профиль игрока</div><div id="pubC"></div></div>
@@ -77,6 +78,7 @@
 <div id="v-theme" class="view"><div class="head"><button class="burger" data-click="go" data-arg="set">←</button>Тема</div><div id="themeC"></div></div>
 <div id="v-gen" class="view"><div class="head"><button class="burger" data-click="go" data-arg="main">←</button>Настройка генерации</div><div id="genC"></div></div>
 <div id="v-set" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Настройки</div><div id="setC"></div></div>
+<div class="cso" id="csOv"></div>
 <div class="md" id="md" data-click="backdrop"><div class="sheet" id="sh"></div></div>
 <script type="module" src="js/main.js"></script>
 </body>
