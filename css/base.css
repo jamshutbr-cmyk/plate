@@ -1,4 +1,3 @@
-
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#111118;--card:#1c1c26;--tx:#e8e8f0;--mut:#8a8a9a;--rc:#4a4a5c}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -196,3 +195,11 @@ body{font-family:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;fo
 #boot{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:var(--bg)}
 .bootmsg{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:24px;color:var(--tx)}
 .bootmsg b{font-size:22px}.bootmsg span{color:var(--mut)}
+
+/* Качество эффектов: «Среднее» убирает бесконечные анимации, «Низкое» — все декоративные */
+body.fx1::before,body.fx2::before{animation:none}
+body.fx1 .badge,body.fx1 .cc.r3,body.fx1 .cc.r4,body.fx2 .badge,body.fx2 .cc.r3,body.fx2 .cc.r4{animation:none}
+body.fx1 .hint,body.fx2 .hint{animation:none}
+body.fx1 .plate.rz3::after,body.fx1 .plate.rz4::after,body.fx2 .plate.rz3::after,body.fx2 .plate.rz4::after{animation:none;display:none}
+body.fx2 .plate.in,body.fx2 .plate.in::after,body.fx2 .plate.sh::after,body.fx2 .row2,body.fx2 .tile,body.fx2 .cc,body.fx2 .sheet,body.fx2 #big.on{animation:none}
+body.fx2 .cf{backdrop-filter:none}
