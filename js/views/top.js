@@ -21,7 +21,13 @@ const row=(r,me)=>`<div class="tr${me?' me':''}" data-click="openPlayer" data-ar
 const empty=n=>`<div class="tr emp"><span class="rk">${MEDAL[n-1]||n}</span><div class="tn"><b>Свободно</b></div></div>`;
 async function load(){
  const k=KIND;LOAD=true;ERR=false;
- try{const d=await rpc('get_leaderboard',{p_kind:k});await loadStyles([...d.top.map(r=>r.id),d.me&&d.me.id]);TOPS[k]=d}catch(e){console.error(e);ERR=true}
+ try{let d;
+  try{d=await rpc('get_leaderboard',{p_kind:k})}
+  catch(e){   // сервер ещё со старой функцией без аргумента (leaderboard.sql не запускали заново): рейтинг по номеру работает как раньше
+   if(k!='best')throw e;
+   d=await rpc('get_leaderboard');console.warn('get_leaderboard(p_kind) нет на сервере, запустите supabase/leaderboard.sql',e)}
+  for(const r of [...d.top,d.me])if(r&&r.val==null)r.val=r.best;
+  await loadStyles([...d.top.map(r=>r.id),d.me&&d.me.id]);TOPS[k]=d}catch(e){console.error(e);ERR=true}
  LOAD=false;ATS[k]=Date.now();render(true)}
 export function drawTop(){
  const TOP=TOPS[KIND];

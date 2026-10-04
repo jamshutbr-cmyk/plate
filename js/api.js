@@ -114,6 +114,8 @@ export const api={
    throw e}
   await loadAll();return {ok:1,main:r.main,ask:+r.ask}},
  async marketAck(upto){await rpc('market_ack_sales',{p_upto:upto})},
+ // Страна и регион генерации: set_gen_prefs (schema.sql). Сервер сам сбросит регион, если его нет в стране.
+ async setGenPrefs(c,r){await rpc('set_gen_prefs',{c,r:r||''});await loadPlayer()},
  async syncPlayer(){await loadPlayer()},   // сверить кэш с сервером (например, после обрыва связи во время открытия)
  setSettings(patch){
   Object.assign(S,patch);Object.assign(setPend,patch);clearTimeout(setT);
