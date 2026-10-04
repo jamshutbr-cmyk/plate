@@ -8,11 +8,10 @@ import {burst} from '../ui/fx.js';
 import {banner} from '../ui/modal.js';
 import {plateHTML, titleHTML} from '../ui/plate.js';
 import {$, fmt} from '../util.js';
-import {customHTML} from './custom.js';
 
-// Магазин: свой номер, рамки, титулы и эффекты выпадения за рубли. Цены и права проверяет сервер (buy_item / equip_item).
-let TAB='plate';
-const TABS=[['plate','Свой номер'],...SLOTS];
+// Магазин: рамки, титулы и эффекты выпадения за рубли. Цены и права проверяет сервер (buy_item / equip_item).
+let TAB='skin';
+const TABS=SLOTS;
 const SAMPLE={type:'civil',main:'А777АА',reg:'77',country:'RU',cls:1};
 function preview(slot,it){
   if(slot=='skin')return `<div class="sp">${plateHTML(SAMPLE,'',it.id)}</div>`;
@@ -27,7 +26,7 @@ const card=(slot,it)=>{
 export function drawShop(){
   $('shopC').innerHTML=`<div class="sub" style="margin:0 6px 4px"><span>Баланс</span><b style="color:var(--tx)">${fmt(S.bal)} ₽</b></div>
    <div class="chips">${TABS.map(([k,n])=>`<button class="${TAB==k?'a':''}" data-click="shopTab" data-arg="${k}">${n}</button>`).join('')}</div>`
-   +(TAB=='plate'?customHTML():SHOP[TAB].map(it=>card(TAB,it)).join(''))}
+   +SHOP[TAB].map(it=>card(TAB,it)).join('')}
 export async function shopBuy(id){
   const it=itemOf(id);if(!it)return;
   const r=await api.buyItem(id);

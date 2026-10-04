@@ -10,13 +10,6 @@ import {fmt} from './util.js';
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
 
-async function customCall(body){
- const {data,error}=await sb.functions.invoke('custom-plate',{body});
- if(error){let e=null;try{e=await error.context.json()}catch(_){}
-  if(e&&e.error)return {error:e.error};   // отказы по правилам (формат, регион, деньги, место) приходят значением
-  throw error}
- return data}
-
 export const api={
  async generatePlate(){
   if(S.col.length>=S.capC||S.bal<genCost())return null;
@@ -68,15 +61,6 @@ export const api={
   try{await rpc('buy_item',{item_id:id})}catch(e){if(notEnough(e))return {err:1,need:it.p};throw e}
   await loadPlayer();return {ok:1}},
  async equipItem(slot,id){await rpc('equip_item',{slot_name:slot,item_id:id||''});await loadPlayer()},
- // Свой номер: Edge Function custom-plate. quote → {quote:{plate,cost}} | {error}; buy → {plate,cost} | {error:'full'|'money'|...}
- async customQuote(letters,digits,reg){return customCall({action:'quote',letters,digits,reg})},
- async customBuy(letters,digits,reg){
-  const r=await customCall({action:'buy',letters,digits,reg});
-  if(r.error){if(r.error=='full'||r.error=='money')await loadAll();return r}
-  S.col.push(r.plate);S.bal=+r.player.balance;return r},
- // Страна и регион меняют цены, поэтому живут на сервере
- async setGenPrefs(country,reg){await rpc('set_gen_prefs',{c:country,r:reg||''});await loadPlayer()},
- // Настройки интерфейса (тема, звук, вибрация...): применяются сразу, на сервер уходят пачкой
  setSettings(patch){
   Object.assign(S,patch);Object.assign(setPend,patch);clearTimeout(setT);
   setT=setTimeout(()=>{const b=setPend;setPend={};rpc('set_settings',{s:b}).catch(e=>console.warn('settings',e))},400)},

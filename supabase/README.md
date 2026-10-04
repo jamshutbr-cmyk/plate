@@ -9,7 +9,7 @@
    supabase secrets set BOT_TOKEN=<токен бота> PASSWORD_PEPPER=<длинная случайная строка, например openssl rand -hex 32>
    ```
    `PASSWORD_PEPPER` менять нельзя: от него зависят пароли всех игроков.
-4. Деплой: `supabase functions deploy tg-auth`, `supabase functions deploy generate` и `supabase functions deploy custom-plate`.
+4. Деплой: `supabase functions deploy tg-auth`, `supabase functions deploy generate`.
    У `tg-auth` включить «verify JWT = off» (`--no-verify-jwt`): её зовут до входа.
 5. В `_shared/cors.ts` заменить `*` на домен Mini App перед выходом в прод.
 

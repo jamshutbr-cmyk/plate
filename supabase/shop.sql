@@ -18,9 +18,19 @@ create policy shop_items_read on public.shop_items for select using (true);
 revoke insert, update, delete on public.shop_items from anon, authenticated;
 
 insert into public.shop_items (id, slot, price) values
-  ('carbon',    'skin',  1500000),
-  ('gold',      'skin',  3000000),
-  ('neon',      'skin',  8000000),
+  ('carbon', 'skin', 1500000),
+  ('silver', 'skin', 2500000),
+  ('bronze', 'skin', 2500000),
+  ('gold', 'skin', 3000000),
+  ('rose', 'skin', 4000000),
+  ('emerald', 'skin', 5000000),
+  ('ruby', 'skin', 5000000),
+  ('sapphire', 'skin', 5000000),
+  ('sunset', 'skin', 7000000),
+  ('neon', 'skin', 8000000),
+  ('midnight', 'skin', 9000000),
+  ('aurora', 'skin', 12000000),
+  ('hologram', 'skin', 15000000),
   ('driver',    'title',  300000),
   ('collector', 'title', 2000000),
   ('major',     'title', 10000000),
