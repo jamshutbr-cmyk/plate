@@ -1,0 +1,10 @@
+/* === альбом регионов и достижения === */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-top:14px}
+.ac{border-radius:14px;padding:10px 6px;text-align:center;background:var(--card);border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);cursor:pointer;min-height:64px;display:flex;flex-direction:column;justify-content:center;gap:2px;opacity:.5}
+.ac b{font-size:20px}
+.ac span{font-size:11px;color:var(--mut);line-height:1.15;overflow:hidden;text-overflow:ellipsis}
+.ac.f{opacity:1;background:linear-gradient(135deg,var(--m1),var(--m2));border-color:transparent;color:#fff}
+.ac.f span{color:#ffffffcc}
+.ach .stars{letter-spacing:2px;color:#f5b82e;font-size:16px}
+.ach.max{border-color:#f5b82e66}
+.ach .pb i.max{background:#f5b82e}

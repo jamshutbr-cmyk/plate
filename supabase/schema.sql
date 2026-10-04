@@ -17,7 +17,7 @@ create table public.players (
   rescue_last   timestamptz,
   stats         jsonb  not null default '{"n":0,"best":0,"cls":[0,0,0,0,0],"f":{}}',
   autosell      jsonb  not null default '{"lvl":0,"on":true,"t1":true,"t2":true,"sp":true,"old":false,"cheap":false,"ceil":0,"every":false,"low":false}',
-  settings      jsonb  not null default '{"theme":"dark","vol":100,"vib":true,"reel":true,"fx":0,"mute":false}',
+  settings      jsonb  not null default '{"theme":"dark","vol":100,"vib":true,"reel":true,"fx":0,"mute":false,"music":false}',
   country       text   not null default 'RU' check (country in ('RU','BY')),
   reg           text   not null default '',      -- выбранный регион (название) или '' = все
   seen          text[] not null default '{}',    -- открытые редкости/типы: 'c0'..'c4', 'tcivil'...
@@ -299,7 +299,7 @@ declare cur jsonb; k text;
 begin
   select settings into cur from players where id = auth.uid() for update;
   for k in select jsonb_object_keys(s) loop
-    if k in ('vib','reel','mute') then
+    if k in ('vib','reel','mute','music') then
       if jsonb_typeof(s->k) = 'boolean' then cur := jsonb_set(cur, array[k], s->k); end if;
     elsif k in ('vol','fx') then
       if jsonb_typeof(s->k) = 'number' then
@@ -337,3 +337,23 @@ grant execute on function
 to authenticated;
 -- commit_plate НЕ выдаётся клиентам: её зовёт только Edge Function generate с service_role.
 grant execute on function public.commit_plate(uuid, jsonb, int[]) to service_role;
+
+-- Альбом регионов (триггер): см. album.sql
+-- Альбом регионов: при появлении номера (выпал, обмен) у игрока запоминается ключ 'r:СТРАНА:КОД' в players.seen.
+-- Ничего не заменяет: commit_plate и остальные функции остаются как есть. Можно выполнять повторно.
+create or replace function public.track_region_seen() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare k text := 'r:' || new.country || ':' || new.reg;
+begin
+  update players set seen = seen || k where id = new.owner and not (k = any(seen));
+  return new;
+end $$;
+
+drop trigger if exists plates_region_seen on public.plates;
+create trigger plates_region_seen after insert or update of owner on public.plates
+  for each row execute function public.track_region_seen();
+
+-- Один раз: открыть регионы по номерам, которые у игроков уже есть (проданные ранее вернуть нельзя)
+update public.players p set seen = (select array(select distinct unnest(p.seen || r.keys)))
+from (select owner, array_agg(distinct 'r:' || country || ':' || reg) as keys from public.plates group by owner) r
+where r.owner = p.id;

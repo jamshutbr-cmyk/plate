@@ -20,5 +20,8 @@ export function plateFromRow(r){return {id:r.id,country:r.country,type:r.type,ma
 export function applyPlayer(r){Object.assign(S,playerToState(r))}
 export function applyPlates(rows){S.col=rows.filter(r=>!r.in_safe).map(plateFromRow);S.safe=rows.filter(r=>r.in_safe).map(plateFromRow)}
 export function replaceState(x){for(const k of Object.keys(S))delete S[k];Object.assign(S,x)}
+// Открытые регионы лежат в S.seen как 'r:RU:77' (пишет серверный триггер track_region_seen)
+export const regKey=(c,code)=>'r:'+c+':'+code;
+export const seenRegions=c=>S.seen.filter(k=>k.startsWith('r:'+(c?c+':':''))).length;
 export function all(){return [...S.col,...S.safe]}
 export function find(id){return all().find(p=>p.id==id)}
