@@ -6,3 +6,5 @@
 .tsep{text-align:center;color:var(--mut);margin:6px 0}
 .tr.emp{opacity:.4}.tr.emp .tn b{color:var(--mut);font-weight:600}
 .tr[data-click]{cursor:pointer}.tr[data-click]:active{opacity:.7}
+.tsec{margin:16px 0 8px;font-size:19px;color:var(--mut)}
+.tbadge{display:none;position:absolute;top:8px;right:10px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#e5484d;color:#fff;font:700 13px/22px sans-serif;font-style:normal;text-align:center;box-sizing:border-box}.tbadge.on{display:block}
