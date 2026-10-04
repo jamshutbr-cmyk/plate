@@ -9,6 +9,13 @@ import {fmt} from './util.js';
 // Бизнес-отказы (не хватает денег и т.п.) возвращаются значением, как раньше.
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
+// Банковская операция: ошибку сервера превращаем в {err:'код'}, успех — в {ok:1,res}, затем сверяем кэш игрока
+const BANK_ERR=[['not enough usd','usd'],['not enough rub','rub'],['limit','limit'],['too many','many'],['not ready','ready'],['gone','gone'],['bad amount','amount'],['already owned','owned']];
+async function bankCall(f){
+ let res;
+ try{res=await f()}
+ catch(e){const m=(e&&e.message)||'',h=BANK_ERR.find(x=>m.includes(x[0]));if(h){await loadPlayer();return {err:h[1]}}throw e}
+ await loadPlayer();return {ok:1,res}}
 
 export const api={
  async generatePlate(){
@@ -68,6 +75,18 @@ export const api={
   let r;try{r=await rpc('open_case',{case_id:id})}catch(e){if(notEnough(e)){await loadPlayer();return {err:1,need:c.p}}throw e}
   S.bal=+r.player.balance;S.cars=r.player.cars;
   return {car_id:r.car_id,dup:!!r.dup,refund:+r.refund}},
+  // Банк: цены, проценты и лимиты проверяет сервер (bank.sql). Бизнес-отказы возвращаются как {err:'код'}.
+ async bankState(){return await rpc('bank_state')},
+ async bankExchange(dir,n){return await bankCall(()=>rpc('bank_exchange',{p_dir:dir,p_amount:n}))},
+ async bankDepositOpen(cur,amount,days){return await bankCall(()=>rpc('bank_deposit_open',{p_cur:cur,p_amount:amount,p_days:days}))},
+ async bankDepositClaim(id){return await bankCall(()=>rpc('bank_deposit_claim',{p_id:id}))},
+ async bankBuyLuck(){return await bankCall(()=>rpc('bank_buy_luck'))},
+ async bankBuyLots(){return await bankCall(()=>rpc('bank_buy_lots'))},
+ async bankBuyItem(id){return await bankCall(()=>rpc('bank_buy_item',{p_item:id}))},
+ async openCaseUsd(id){
+  const r=await bankCall(()=>rpc('open_case_usd',{case_id:id}));
+  if(r.err)return r;
+  return {car_id:r.res.car_id,dup:!!r.res.dup,refund:+r.res.refund}},
   // Рынок игроков: цену, комиссию и права проверяет сервер (market.sql). Номер на время лота уходит из коллекции.
  async marketList(plateId,ask){
   try{await rpc('market_list_plate',{p_plate:plateId,p_ask:ask})}

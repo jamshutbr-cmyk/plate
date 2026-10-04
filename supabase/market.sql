@@ -9,6 +9,7 @@
 --  * покупатель платит цену лота, продавец получает её минус комиссия (она просто исчезает из игры, это «слив» денег);
 --  * всё в одной транзакции под блокировками, двойной покупки и потери номера быть не может.
 -- Константы (зеркало MARKET в js/config.js, сверяет tests/market.test.mjs): fee_pct, min_ask, max_ask, max_lots.
+-- Лимит лотов игрока = max_lots + players.extra_lots (слоты за $ в банке).
 
 -- ---------- Лоты ----------
 create table if not exists public.market_listings (
@@ -46,6 +47,9 @@ create table if not exists public.market_sales (
 );
 create index if not exists market_sales_seller_idx on public.market_sales(seller, seen);
 
+-- Дополнительные слоты лотов (покупаются за $ в банке, bank.sql). Колонка здесь, чтобы рынок работал и без банка.
+alter table public.players add column if not exists extra_lots int not null default 0 check (extra_lots >= 0);
+
 -- Прямого доступа у клиента нет: читает и пишет только через функции ниже
 alter table public.market_listings enable row level security;
 alter table public.market_sales    enable row level security;
@@ -64,7 +68,7 @@ begin
   if p_ask is null or p_ask < min_ask or p_ask > max_ask then raise exception 'bad price'; end if;
   select * into p from players where id = auth.uid() for update;
   if not found then raise exception 'no player'; end if;
-  if (select count(*) from market_listings where seller = p.id) >= max_lots then raise exception 'too many'; end if;
+  if (select count(*) from market_listings where seller = p.id) >= max_lots + p.extra_lots then raise exception 'too many'; end if;
   select * into pl from plates where id = p_plate and owner = p.id for update;
   if not found then raise exception 'bad plate'; end if;
 
@@ -158,7 +162,8 @@ begin
              from market_listings l where l.seller = auth.uid()),
     'sold', (select coalesce(jsonb_agg(jsonb_build_object('id', s.id, 'main', s.main, 'ask', s.ask, 'fee', s.fee,
                'nick', s.buyer_nick) order by s.id), '[]'::jsonb)
-             from market_sales s where s.seller = auth.uid() and not s.seen)
+             from market_sales s where s.seller = auth.uid() and not s.seen),
+    'slots', 10 + (select extra_lots from players where id = auth.uid())
   );
 end $$;
 
@@ -178,6 +183,8 @@ begin
   delete from plates where owner = auth.uid();
   delete from market_listings where seller = auth.uid();
   delete from market_sales where seller = auth.uid();
+  -- Банк (bank.sql): вклады и буст удачи сбрасываются; купленные слоты и предметы остаются, как и купленное в магазине
+  if to_regprocedure('public.bank_reset(uuid)') is not null then execute 'select public.bank_reset($1)' using auth.uid(); end if;
   update players set balance = 50000, usd = 0, xp = 0, lvl = 1, cap_c = 100, cap_s = 5,
     daily_last = null, daily_streak = 0, rescue_last = null, seen = '{}', cars = '{}',
     stats = '{"n":0,"best":0,"cls":[0,0,0,0,0],"f":{}}',

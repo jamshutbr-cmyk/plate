@@ -1,0 +1,133 @@
+/* Банк. Вкладки-сегменты и .cs-card берутся из market.css / cases.css */
+#bankC{--g:#22c55e;--g2:#15803d;--au:#f5b82e}
+/* шапка с балансом */
+.bk-hero{position:relative;overflow:hidden;border-radius:22px;padding:18px 18px 16px;margin-bottom:12px;color:#fff;background:linear-gradient(135deg,#0f3d2b 0%,#14315a 60%,#1b2447 100%);border:1px solid #ffffff1c;box-shadow:0 10px 28px #0006}
+.bk-hero::before{content:'';position:absolute;right:-30px;top:-40px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,#4ade8055,transparent 70%)}
+.bk-hero .bk-coin{position:absolute;right:16px;top:14px;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#0b4d22;background:linear-gradient(#a7f3b8,#22c55e);box-shadow:inset 0 -4px 0 #0f7a36,0 6px 16px #0007;transform:rotate(12deg)}
+.bk-bals{display:flex;gap:26px;position:relative}
+.bk-bals small{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.65;margin-bottom:2px}
+.bk-bals b{font-size:21px;font-variant-numeric:tabular-nums}.bk-bals .g{color:#86efac}
+.bk-rate{position:relative;display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.bk-rate span{font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;background:#ffffff18}
+/* вкладки: иконка над подписью */
+.bk-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:14px}
+.bk-tabs button{border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);background:var(--card);color:var(--mut);border-radius:14px;padding:9px 2px 8px;font-size:11.5px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bk-tabs button i{font-style:normal;font-size:20px;line-height:1}
+.bk-tabs button.a{color:#fff;border-color:transparent;background:linear-gradient(160deg,#3b82f6,#2146b3);box-shadow:0 6px 16px #2146b355}
+.bk-tabs button:active{transform:scale(.96)}
+/* карточки */
+.bk-card{background:var(--card);border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);border-radius:20px;padding:16px;margin-bottom:12px}
+.bk-card h3{margin:0 0 4px;font-size:18px}
+.bk-card .tl{margin-bottom:10px}
+.bk-h{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.bk-ic{flex:none;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;background:color-mix(in srgb,var(--cc,var(--ac)) 22%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--cc,var(--ac)) 45%,transparent)}
+.bk-h h3{margin:0}.bk-h .tl{margin:2px 0 0;font-size:13.5px}
+/* переключатель направления/валюты */
+.bk-sw{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:color-mix(in srgb,var(--tx) 7%,transparent);border-radius:14px;padding:4px;margin-bottom:12px}
+.bk-sw button{border:0;border-radius:11px;padding:11px 6px;font-size:15px;font-weight:800;background:none;color:var(--mut);cursor:pointer}
+.bk-sw button.a{color:#fff;background:linear-gradient(#3b82f6,#2c58d6)}
+.bk-sw.buy button.a{background:linear-gradient(#34d27b,#15a24f)}
+.bk-sw.sell button.a{background:linear-gradient(#f7c948,#d9981a);color:#3a2705}
+/* быстрые суммы обмена */
+.bk-q{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.bk-q button{border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);border-radius:16px;padding:14px 8px;background:var(--b2);color:var(--tx);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bk-q button b{font-size:22px}.bk-q button small{font-size:12.5px;font-weight:700;color:var(--mut)}
+.bk-q.buy button:not(:disabled){border-color:#22c55e55;background:linear-gradient(#22c55e1c,transparent)}
+.bk-q.sell button:not(:disabled){border-color:#f5b82e66;background:linear-gradient(#f5b82e1c,transparent)}
+.bk-q button:disabled{opacity:.35}.bk-q button:active{transform:scale(.97)}
+.bk-all{width:100%;border:0;border-radius:16px;padding:15px;font-size:16px;font-weight:800;color:#3a2705;background:linear-gradient(#f7c948,#d9981a);cursor:pointer}
+.bk-all:disabled{opacity:.35}.bk-all:active{transform:scale(.98)}
+/* сроки вклада */
+.bk-terms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.bk-terms button{border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);border-radius:16px;padding:12px 4px;background:var(--b2);color:var(--tx);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px}
+.bk-terms b{font-size:24px}.bk-terms small{font-size:12px;color:var(--mut);font-weight:700}
+.bk-terms em{font-style:normal;margin-top:6px;font-size:14px;font-weight:800;color:#86efac;background:#22c55e22;border-radius:999px;padding:3px 10px}
+.bk-terms button.a{border-color:#3b82f6;background:linear-gradient(#3b82f633,#3b82f60d);box-shadow:0 0 0 1px #3b82f6}
+.bk-prev{border-radius:14px;padding:12px 14px;margin:2px 0 12px;min-height:44px;display:flex;align-items:center;font-size:14.5px;font-weight:600;background:color-mix(in srgb,var(--tx) 6%,transparent);color:var(--mut)}
+.bk-prev.ok{background:#22c55e1f;color:var(--tx);box-shadow:inset 0 0 0 1px #22c55e55}
+.bk-go{width:100%;background:linear-gradient(#34d27b,#15a24f)!important;color:#fff!important;border:0!important}
+#bkAmt{margin-bottom:10px;font-size:18px}
+/* список вкладов */
+.bk-dep{position:relative;overflow:hidden;border-left:4px solid var(--ac)}
+.bk-dep.usd{border-left-color:var(--g)}
+.bk-dep .bk-top{display:flex;align-items:center;gap:12px}
+.bk-dep .bk-sum{flex:1;min-width:0}.bk-dep .bk-sum small{display:block;font-size:12px;color:var(--mut)}
+.bk-dep .bk-sum b{font-size:17px;font-variant-numeric:tabular-nums}.bk-dep .bk-sum b.pay{color:#86efac}
+.bk-bar{height:8px;border-radius:4px;background:color-mix(in srgb,var(--tx) 10%,transparent);overflow:hidden;margin:12px 0 6px}
+.bk-bar u{display:block;height:100%;background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:4px;transition:width .6s}
+.bk-t{color:var(--mut);font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.bk-dep .btn{margin-top:10px;padding:13px;font-size:16px;width:100%}
+.bk-dep .btn.rdy{background:linear-gradient(#34d27b,#15a24f);color:#fff;animation:bkPulse 1.6s infinite}
+@keyframes bkPulse{50%{box-shadow:0 0 0 6px #22c55e22}}
+/* усиления */
+.bk-meter{display:flex;gap:4px;margin:4px 0 12px}
+.bk-meter i{flex:1;height:10px;border-radius:3px;background:color-mix(in srgb,var(--tx) 10%,transparent)}
+.bk-meter i.f{background:var(--cc)}
+.bk-buy{width:100%;margin-top:2px}
+.bk-chip{display:inline-block;font-size:12px;font-weight:800;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--cc) 22%,transparent);color:var(--cc)}
+/* титулы */
+.bk-ti{position:relative;overflow:hidden;text-align:center;padding:22px 16px 16px;border-color:color-mix(in srgb,var(--cc) 40%,transparent)}
+.bk-ti::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 0,color-mix(in srgb,var(--cc) 30%,transparent),transparent 65%)}
+.bk-ti>*{position:relative}
+.bk-ttl{display:block;font-size:30px;font-weight:900;letter-spacing:.02em;color:var(--cc);text-shadow:0 0 22px color-mix(in srgb,var(--cc) 70%,transparent);margin-bottom:6px}
+.bk-ti .bk-price{font-size:13px;font-weight:800;color:var(--mut);margin-bottom:12px}
+.bk-ti .tl{margin-bottom:12px}
+.bk-res{text-align:center;padding:4px 0}
+.bk-res img{width:100%;max-width:300px;border-radius:14px;margin:6px 0}
+.bk-note{text-align:center;color:var(--mut);font-size:13px;margin:4px 8px 10px}
+
+/* ---------- второй проход: движение и детали ---------- */
+.bk-pane.in{animation:bkIn .32s cubic-bezier(.2,.8,.2,1)}
+@keyframes bkIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.bk-hero::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 35%,#ffffff1f 50%,transparent 65%);transform:translateX(-120%);animation:bkShine 5s 1s infinite}
+@keyframes bkShine{to{transform:translateX(120%)}}
+.bk-fl{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 35% 30%,#fff7c2,#f5b82e 60%,#a8730a);box-shadow:0 2px 6px #0006;animation:bkFloat 5s ease-in-out infinite}
+.bk-fl.a{width:16px;height:16px;right:70px;top:98px}
+.bk-fl.b{width:11px;height:11px;right:30px;top:86px;animation-delay:-1.6s}
+.bk-fl.c{width:9px;height:9px;right:104px;top:116px;animation-delay:-3s}
+@keyframes bkFloat{50%{transform:translateY(-8px) rotate(25deg)}}
+.bk-hero .bk-coin{animation:bkCoin 4s ease-in-out infinite}
+@keyframes bkCoin{50%{transform:rotate(2deg) translateY(-3px)}}
+/* обмен: схема потока */
+.bk-flow{display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0 14px}
+.bk-flow span{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;background:linear-gradient(#5b8cff,#2c58d6);box-shadow:0 4px 12px #0005}
+.bk-flow i{font-style:normal;font-size:24px;color:var(--mut)}
+.bk-flow.buy span:last-of-type{background:linear-gradient(#34d27b,#15a24f)}
+.bk-flow.sell span:first-of-type{background:linear-gradient(#34d27b,#15a24f)}
+.bk-flow.sell span:last-of-type{background:linear-gradient(#5b8cff,#2c58d6)}
+.bk-flow small{width:100%;order:9;text-align:center;font-size:13px;font-weight:700;color:var(--mut);margin-top:-2px;flex-basis:100%}
+.bk-flow{flex-wrap:wrap}
+.bk-q button{transition:transform .12s,box-shadow .2s}
+.bk-q.buy button:not(:disabled):active{box-shadow:0 0 0 3px #22c55e44}
+.bk-q.sell button:not(:disabled):active{box-shadow:0 0 0 3px #f5b82e55}
+/* быстрые суммы вклада */
+.bk-chips{display:flex;gap:6px;margin-bottom:8px}
+.bk-chips button{flex:1;border:1px solid color-mix(in srgb,var(--tx) 12%,transparent);background:var(--b2);color:var(--tx);border-radius:999px;padding:8px 0;font-size:13.5px;font-weight:800;cursor:pointer}
+.bk-chips button:last-child{color:#86efac;border-color:#22c55e55}
+.bk-chips button:active{transform:scale(.95)}
+/* кольцо прогресса */
+.bk-ring{position:relative;flex:none;width:52px;height:52px}
+.bk-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.bk-ring circle{fill:none;stroke-width:4.5;stroke-linecap:round}
+.bk-ring .t{stroke:color-mix(in srgb,var(--tx) 12%,transparent)}
+.bk-ring .v{stroke:var(--cc);stroke-dasharray:119.4;transition:stroke-dashoffset .8s linear;filter:drop-shadow(0 0 3px var(--cc))}
+.bk-ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px}
+/* титул: превью ника */
+.bk-who{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 0 10px;font-size:15px}
+.bk-who b{color:var(--tx)}
+.bk-ti{transition:transform .2s}
+/* открытие кейса */
+.bk-open{text-align:center;padding:26px 10px 14px}
+.bk-open svg{animation:bkShake .22s infinite;filter:drop-shadow(0 0 18px var(--rc))}
+@keyframes bkShake{0%{transform:rotate(-4deg) translateY(0)}50%{transform:rotate(4deg) translateY(-4px)}100%{transform:rotate(-4deg) translateY(0)}}
+.bk-rv{position:relative;overflow:hidden;text-align:center;padding:22px 18px 18px}
+.bk-rv::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--rc) 45%,transparent),transparent 62%);animation:bkGlow 2.4s ease-in-out infinite}
+@keyframes bkGlow{50%{opacity:.55}}
+.bk-rv>*{position:relative}
+.bk-rl{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--rc);margin-bottom:6px}
+.bk-rv img{width:100%;max-width:300px;border-radius:16px;filter:drop-shadow(0 0 22px var(--rc));animation:bkPop .55s cubic-bezier(.2,1.4,.4,1)}
+@keyframes bkPop{from{transform:scale(.6) rotate(-4deg);opacity:0}to{transform:none;opacity:1}}
+.bk-rv h2{margin:10px 0 4px;font-size:26px;color:var(--tx)}
+.bk-rd{color:var(--mut);font-size:15px;margin-bottom:14px}.bk-rd b{color:#86efac;font-size:18px}
+.bk-rv .btn{width:100%}
+@media (prefers-reduced-motion:reduce){.bk-hero::after,.bk-fl,.bk-coin,.bk-open svg,.bk-rv::before{animation:none}}

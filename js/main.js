@@ -13,6 +13,7 @@ import './views/profile.js';
 import './views/top.js';
 import './views/trade.js';
 import './views/market.js';
+import './views/bank.js';
 import './views/gen.js';
 import './views/shop.js';
 import './views/cases.js';

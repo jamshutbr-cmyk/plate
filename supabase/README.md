@@ -47,3 +47,10 @@
 - **Уведомления.** Клиент раз в 20 секунд спрашивает `market_mine`; о проданном номере показывает плашку и вызывает `market_ack_sales`.
 - Схема не запускалась на живой базе: если будут ошибки, пришлите текст.
 
+
+## bank.sql: Банк
+
+Обмен ₽ ↔ $, вклады (1/3/7 дней), буст удачи, слоты рынка, кейсы и эксклюзивные титулы за $.
+Порядок запуска в SQL Editor: `schema.sql`, `seed_regions.sql`, `shop.sql`, `cases.sql`, `market.sql`, `bank.sql`. Все файлы идемпотентны (create or replace), `bank.sql` запускать ПОСЛЕДНИМ и `market.sql` тоже запускать заново, если он старый: лимит лотов теперь `10 + extra_lots`, а `reset_progress` вызывает `bank_reset`.
+Цены, курсы, проценты и лимиты живут только в SQL; зеркало для показа в `js/config.js` (`BANK`), его сверяет `tests/bank.test.mjs`.
+Буст удачи читает Edge Function `generate`, её нужно задеплоить заново: `supabase functions deploy generate`.

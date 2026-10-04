@@ -16,11 +16,17 @@ Deno.serve(async (req) => {
   if (ae || !au.user) return json({ error: 'unauthorized' }, 401);
   const uid = au.user.id;
 
-  const { data: pl } = await admin.from('players').select('country, reg').eq('id', uid).single();
+  const { data: pl } = await admin.from('players').select('country, reg, luck').eq('id', uid).single();
   if (!pl) return json({ error: 'no player' }, 404);
 
   const regs = (await loadRegions(admin))[pl.country];
-  const plate = mk({ country: pl.country, reg: pl.reg }, regs);
+  // Буст удачи из банка: пока luck > 0, делаем 3 попытки и берём самый дорогой номер (BANK.luck.best в js/config.js).
+  const tries = pl.luck > 0 ? 3 : 1;
+  let plate = mk({ country: pl.country, reg: pl.reg }, regs);
+  for (let i = 1; i < tries; i++) {
+    const alt = mk({ country: pl.country, reg: pl.reg }, regs);
+    if (alt.price > plate.price) plate = alt;
+  }
   const fee = regionFee(regs, pl.reg);
   const { data, error } = await admin.rpc('commit_plate_fee', { uid, pl: plate, ft: feats(plate), fee });
   if (error) {
@@ -29,6 +35,7 @@ Deno.serve(async (req) => {
     if (m.includes('not enough rub')) return json({ error: 'money' }, 402);
     return json({ error: 'server' }, 500);
   }
+  if (pl.luck > 0) await admin.rpc('consume_luck', { uid });
   const { data: p2 } = await admin.from('players').select('balance, usd, xp, lvl, stats, seen').eq('id', uid).single();
   return json({
     plate: { ...plate, id: data.id, ts: data.ts },

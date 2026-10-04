@@ -15,10 +15,11 @@ import {$, esc, fmt, parseAsk} from '../util.js';
 let TAB='buy',CLS=null,SORT='new';          // вкладка, фильтр по редкости (null = все), сортировка
 let LOTS=null,MORE=false,MINE=null;          // лента, есть ли ещё страница, мои лоты и продажи
 let AT=0,LOAD=false,ERR=false,LT=0;          // время последней загрузки, идёт ли загрузка, ошибка, токен от устаревших ответов
+let SLOTS=MARKET.lots;                      // лотов у игрока всего (10 + купленные в банке), приходит из market_mine
 let SEL=null;                                // номер, который сейчас выставляем: {id,p,ask}
 
 const SORTS=[['new','Новые'],['cheap','Дешёвые'],['dear','Дорогие']];
-const ERRS={money:'Не хватает денег',full:'Коллекция заполнена: продайте номера или расширьте её',gone:'Лот уже продан или снят',own:'Это ваш лот',price:'Недопустимая цена',lots:'Не больше '+MARKET.lots+' лотов сразу',plate:'Номер недоступен'};
+const ERRS={money:'Не хватает денег',full:'Коллекция заполнена: продайте номера или расширьте её',gone:'Лот уже продан или снят',own:'Это ваш лот',price:'Недопустимая цена',lots:'Лотов сразу не больше, чем слотов: расширить можно в Банке',plate:'Номер недоступен'};
 
 const typeName=t=>TYPES.find(x=>x.k==t).n;
 // Строка с номером. skin '' = без рамки (чужие номера), по умолчанию рамка игрока.
@@ -40,7 +41,7 @@ async function loadLots(more=false){
 let SY=null,FIRST=true;
 async function doSync(){
   const r=await rpc('market_mine');
-  MINE={lots:r.lots||[],sold:[]};
+  MINE={lots:r.lots||[],sold:[]};SLOTS=+r.slots||MARKET.lots;
   const sold=r.sold||[];
   if(sold.length){
     await api.marketAck(Math.max(...sold.map(s=>s.id)));
@@ -79,12 +80,12 @@ export function drawMarket(){
   }else{
     h+=`<button class="big2" style="margin-bottom:14px" data-click="go" data-arg="mnew">Выставить номер</button>`;
     if(!MINE)h+=`<p class="tl" style="text-align:center">${ERR?'Не удалось загрузить лоты':'Загрузка…'}</p>`;
-    else h+=MINE.lots.length?`<h3 class="tsec">На рынке сейчас · ${MINE.lots.length} из ${MARKET.lots}</h3>`+MINE.lots.map(l=>lot(l,true)).join('')+`<p class="tl" style="text-align:center">Нажмите на лот, чтобы снять его с рынка.</p>`
+    else h+=MINE.lots.length?`<h3 class="tsec">На рынке сейчас · ${MINE.lots.length} из ${SLOTS}</h3>`+MINE.lots.map(l=>lot(l,true)).join('')+`<p class="tl" style="text-align:center">Нажмите на лот, чтобы снять его с рынка.</p>`
       :`<p class="tl" style="text-align:center">У вас нет лотов.<br>Рынок удерживает ${MARKET.fee}% с каждой продажи.</p>`}
   $('mkC').innerHTML=h+`<button class="btn" style="width:100%;margin-top:10px" data-click="mRefresh">Обновить</button>`}
 
 export function drawMnew(){
-  const left=MARKET.lots-(MINE?MINE.lots.length:0),sf=new Set(S.safe.map(x=>x.id));
+  const left=SLOTS-(MINE?MINE.lots.length:0),sf=new Set(S.safe.map(x=>x.id));
   const all=[...S.col,...S.safe].sort((a,b)=>b.price-a.price);
   $('mnC').innerHTML=`<p class="tl">Выберите номер для продажи другим игрокам. Пока он на рынке, его нельзя продать, обменять или поместить в сейф: только снять с рынка. Свободных лотов: ${Math.max(left,0)}.</p>`
     +(all.length?all.map(p=>row(p,'mPick',sf.has(p.id)?' · в сейфе':'')).join(''):'<p class="tl" style="text-align:center">У вас нет номеров.</p>')}

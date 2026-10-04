@@ -35,7 +35,7 @@ export const EQUIP_SLOTS=['skin','title','drop','nick','bg'];   // надева�
 export const SHOWCASE_MAX=3;
 // Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
 export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1}};
-export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}return null};
+export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const b=BANK.items.find(x=>x.id==id);return b?{id:b.id,n:b.n,c:b.c,slot:'title'}:null};
 
 // Кейсы с машинами. Шансы, цены и выдачу считает ТОЛЬКО сервер (supabase/cases.sql: open_case); здесь данные для показа.
 // Должны совпадать с cases.sql, это сверяет tests/cases.test.mjs.
@@ -56,3 +56,17 @@ export const MARKET={fee:5,min:1000,max:100000000000,lots:10,page:30};   // fee 
 export const SELL_PCT=95;                                                 // сколько % цены игра платит за проданный номер (зеркало sell_plates / autosell в schema.sql)
 export const sellGain=t=>Math.floor(t*SELL_PCT/100);
 export const marketFee=ask=>Math.floor(ask*MARKET.fee/100);                // сколько удерживает рынок (продавец получает ask минус это)
+
+// Банк. Курсы, проценты, цены и лимиты считает ТОЛЬКО сервер (supabase/bank.sql); здесь данные для показа.
+// Должны совпадать с bank.sql, это сверяет tests/bank.test.mjs. Титулы из items не входят в SHOP (их нельзя купить за рубли), но находятся через itemOf.
+export const BANK={usdBuy:250000,usdSell:150000,exMax:100000,maxDep:3,
+ depRub:{min:100000,max:1e10,pct:{1:2,3:8,7:20}},depUsd:{min:10,max:1000000,pct:{1:4,3:12,7:30}},
+ luck:{cost:15,rolls:10,cap:100,best:3},lots:{cost:40,step:5,max:20},
+ cases:[
+  {id:'vip',n:'VIP',usd:25,w:[0,10,50,40,0],col:'#4ade80',d:'Редкие и эпические машины'},
+  {id:'royal',n:'Королевский',usd:120,w:[0,0,20,60,20],col:'#f5b82e',d:'Эпики почти всегда, 20% на легендарную'}],
+ items:[
+  {id:'banker',n:'Банкир',usd:150,c:'#38bdf8',d:'Титул для тех, кто знает цену деньгам'},
+  {id:'tycoon',n:'Магнат',usd:600,c:'#fb923c',d:'Титул для владельцев крупного капитала'},
+  {id:'whale',n:'Кит',usd:2000,c:'#e879f9',d:'Самый редкий титул в игре'}]};
+export const depPayout=(cur,amt,days)=>{const d=cur=='rub'?BANK.depRub:BANK.depUsd;return amt+Math.floor(amt*d.pct[days]/100)};
