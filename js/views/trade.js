@@ -19,7 +19,7 @@ const msg=e=>{const m=(e&&e.message)||'';
 
 function badge(){const b=$('tb'),n=TR?TR.in.length:0;if(!b)return;b.textContent=n;b.classList.toggle('on',n>0)}
 
-// Синхронизация обменов с сервером. Вызывается при входе, каждые 15 секунд, когда игра открыта, и при возвращении в приложение.
+// Синхронизация обменов с сервером. Вызывается при входе, каждые 15 секунд (5 секунд на экране «Обмены»), когда игра открыта, и при возвращении в приложение.
 // Показывает плашки о новых предложениях и о судьбе наших предложений (принято / отклонено) и обновляет коллекцию после обмена.
 let KNOWN=null;
 const DONE_KEY='trDone';
@@ -43,11 +43,13 @@ async function loadTr(){
  TLOAD=true;TERR=false;
  try{await sync()}catch(e){console.error(e);TERR=true}
  TLOAD=false;TAT=Date.now();render(true)}
-let PT=null;
+let PT=null,TICK=0;
 export function initTrades(){
- const tick=()=>{if(!document.hidden)sync().catch(e=>console.warn('trades',e))};
- tick();clearInterval(PT);PT=setInterval(tick,15000);
- document.addEventListener('visibilitychange',tick)}
+ // Раз в 5 секунд тикаем всегда, но на сервер ходим: каждый тик, если открыт экран «Обмены», иначе каждый третий (15 с)
+ const run=()=>{if(!document.hidden)sync().catch(e=>console.warn('trades',e))};
+ const tick=()=>{TICK++;if($('v-trades').classList.contains('on')||TICK%3==0)run()};
+ run();clearInterval(PT);PT=setInterval(tick,5000);
+ document.addEventListener('visibilitychange',run)}
 
 export function drawTrades(){
  if(!TLOAD&&Date.now()-TAT>10000)loadTr();
