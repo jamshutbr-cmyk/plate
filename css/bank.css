@@ -72,6 +72,13 @@
 .bk-ttl{display:block;font-size:30px;font-weight:900;letter-spacing:.02em;color:var(--cc);text-shadow:0 0 22px color-mix(in srgb,var(--cc) 70%,transparent);margin-bottom:6px}
 .bk-ti .bk-price{font-size:13px;font-weight:800;color:var(--mut);margin-bottom:12px}
 .bk-ti .tl{margin-bottom:12px}
+.bk-lim{margin:0 auto 12px;max-width:240px}
+.bk-lim span{display:block;font-size:12px;font-weight:800;color:var(--cc);margin-bottom:6px;letter-spacing:.03em}
+.bk-lim.low span{color:#f87171;animation:bkLow 1.4s ease-in-out infinite}
+.bk-lim.out span{color:var(--mut)}
+.bk-lim .bk-meter{justify-content:center}
+.bk-ti.sold{opacity:.6;filter:saturate(.35)}
+@keyframes bkLow{50%{opacity:.45}}
 .bk-res{text-align:center;padding:4px 0}
 .bk-res img{width:100%;max-width:300px;border-radius:14px;margin:6px 0}
 .bk-note{text-align:center;color:var(--mut);font-size:13px;margin:4px 8px 10px}

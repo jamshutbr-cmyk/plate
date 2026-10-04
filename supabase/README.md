@@ -52,5 +52,10 @@
 
 Обмен ₽ ↔ $, вклады (1/3/7 дней), буст удачи, слоты рынка, кейсы и эксклюзивные титулы за $.
 Порядок запуска в SQL Editor: `schema.sql`, `seed_regions.sql`, `shop.sql`, `cases.sql`, `market.sql`, `bank.sql`. Все файлы идемпотентны (create or replace), `bank.sql` запускать ПОСЛЕДНИМ и `market.sql` тоже запускать заново, если он старый: лимит лотов теперь `10 + extra_lots`, а `reset_progress` вызывает `bank_reset`.
+Титулы банка — ограниченный тираж: `bank_items.supply` (всего) и `bank_items.sold` (куплено); сменить тираж — поправить `update public.bank_items set supply = ...` в `bank.sql` и `max` в `BANK.items`. Повторный запуск файла `sold` не сбрасывает.
 Цены, курсы, проценты и лимиты живут только в SQL; зеркало для показа в `js/config.js` (`BANK`), его сверяет `tests/bank.test.mjs`.
 Буст удачи читает Edge Function `generate`, её нужно задеплоить заново: `supabase functions deploy generate`.
+
+## leaderboard.sql: Рейтинг
+
+`get_leaderboard(p_kind)`: `'best'` — по самому дорогому выбитому номеру, `'coins'` — по монетам на балансе. Файл запускать заново (старая версия без аргумента удаляется). Клиент: вкладки в `js/views/top.js`.

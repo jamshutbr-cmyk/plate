@@ -18,7 +18,7 @@ let CUR='rub',DAYS=1,TXT='',BUSY=false,XD='buy',FRESH=false;   // FRESH: сле�
 let OFF=0,TM=null;                                // сдвиг часов сервера, таймер отсчёта
 
 const TABS=[['ex','⇄','Обмен'],['dep','📈','Вклады'],['up','⚡','Усиления'],['cs','🎁','Кейсы'],['ti','👑','Титулы']];
-const ERRS={usd:'Не хватает долларов',rub:'Не хватает рублей',limit:'Достигнут максимум',many:'Не больше '+BANK.maxDep+' вкладов сразу',ready:'Вклад ещё не созрел',gone:'Вклад уже забран',amount:'Недопустимая сумма',owned:'Уже куплено'};
+const ERRS={usd:'Не хватает долларов',rub:'Не хватает рублей',limit:'Достигнут максимум',many:'Не больше '+BANK.maxDep+' вкладов сразу',ready:'Вклад ещё не созрел',gone:'Вклад уже забран',amount:'Недопустимая сумма',owned:'Уже куплено',soldout:'Тираж распродан'};
 const fail=r=>{banner('Не получилось',ERRS[r.err]||'Попробуйте ещё раз');haptic('rigid');return load().then(()=>render(true))};
 const pct=x=>(Math.round(x*10)/10).toString().replace('.',',');
 const cur=c=>c=='rub'?'₽':'$';
@@ -106,13 +106,17 @@ function tabCs(){
      <button class="big2${S.usd>=c.usd?'':' alt'}" data-click="bkCase" data-arg="${c.id}">Открыть · ${c.usd} $</button></div>`}).join('')
    +`<p class="bk-note">Если машина уже есть, вы получаете ${CAR_CLS.map((n,r)=>n.toLowerCase()+' — '+fmt(dupRefund(r))+' ₽').join(', ')}.</p>`}
 
+// Остаток тиража титула: сколько осталось и сколько всего. Данные о продажах приходят с сервера (BS.items).
+const stock=it=>{const sold=Math.min(it.max,((BS.items||{})[it.id]||{}).sold||0);return {sold,left:it.max-sold}};
 function tabTi(){
   return BANK.items.map(it=>{
-    const own=S.owned.includes(it.id),eq=S.equip.title==it.id;
+    const own=S.owned.includes(it.id),eq=S.equip.title==it.id,{left}=stock(it),out=left<=0&&!own;
     const btn=own?`<button class="btn" style="width:100%" ${eq?'disabled':''} data-click="bkWear" data-arg="${it.id}">${eq?'Надето':'Надеть'}</button>`
+      :out?`<button class="btn" style="width:100%" disabled>Распродано</button>`
       :`<button class="btn" style="width:100%" ${S.usd<it.usd?'disabled':''} data-click="bkItemDlg" data-arg="${it.id}">Купить · ${fmt(it.usd)} $</button>`;
-    return box(it.c,`<span class="bk-ttl">${it.n}</span><div class="bk-who"><b>${esc(S.nick||'Игрок')}</b>${titleHTML(it.id)}</div><div class="bk-price">${own?'КУПЛЕНО':'ЭКСКЛЮЗИВ · '+fmt(it.usd)+' $'}</div><div class="tl">${it.d}</div>${btn}`,'bk-ti')}).join('')
-   +`<p class="bk-note">Эти титулы нельзя купить за рубли.</p>`}
+    const lim=`<div class="bk-lim${out?' out':left<=Math.ceil(it.max*.1)?' low':''}"><span>${out?'РАСПРОДАНО':'Осталось '+fmt(left)+' из '+fmt(it.max)}</span>${meter(left,it.max,10,out?'#64748b':it.c)}</div>`;
+    return box(it.c,`<span class="bk-ttl">${it.n}</span><div class="bk-who"><b>${esc(S.nick||'Игрок')}</b>${titleHTML(it.id)}</div><div class="bk-price">${own?'КУПЛЕНО':out?'ЛИМИТИРОВАННЫЙ ТИРАЖ':'ЛИМИТ · '+fmt(it.usd)+' $'}</div>${lim}<div class="tl">${it.d}</div>${btn}`,'bk-ti'+(out?' sold':''))}).join('')
+   +`<p class="bk-note">Титулы выходят ограниченным тиражом на весь сервер. Когда тираж кончится, купить их будет нельзя, только забрать у владельца. За рубли они не продаются.</p>`}
 
 export function drawBank(){
   if(!LOAD&&Date.now()-AT>10000)load().then(()=>render(true));
@@ -159,7 +163,7 @@ async function bkWear(a){try{await api.equipItem('title',a);banner('Титул �
 
 function bkItemDlg(a){
   const it=BANK.items.find(x=>x.id==a);if(!it)return;
-  sm(`<div class="dlg"><h3>Купить титул?</h3><div class="bk-res"><span class="bk-ttl" style="--cc:${it.c}">${it.n}</span></div><p class="tl" style="margin:12px 0">${it.d}.<br>Он будет сразу надет.</p><button class="btn" ${S.usd<it.usd?'disabled':''} data-click="bkItemOk" data-arg="${it.id}">Купить · ${fmt(it.usd)} $</button><button class="btn" data-click="cm">Отмена</button></div>`)}
+  sm(`<div class="dlg"><h3>Купить титул?</h3><div class="bk-res"><span class="bk-ttl" style="--cc:${it.c}">${it.n}</span></div><p class="tl" style="margin:12px 0">${it.d}.<br>Тираж: осталось ${stock(it).left} из ${it.max}. Он будет сразу надет.</p><button class="btn" ${S.usd<it.usd?'disabled':''} data-click="bkItemOk" data-arg="${it.id}">Купить · ${fmt(it.usd)} $</button><button class="btn" data-click="cm">Отмена</button></div>`)}
 async function bkItemOk(a){
   cm();
   const it=BANK.items.find(x=>x.id==a);if(!it||BUSY)return;

@@ -1,4 +1,4 @@
--- Банк: обмен ₽ ↔ $, вклады, усиления за $ (буст удачи, слоты рынка), кейсы за $ и эксклюзивные титулы.
+-- Банк: обмен ₽ ↔ $, вклады, усиления за $ (буст удачи, слоты рынка), кейсы за $ и эксклюзивные титулы ограниченным тиражом.
 -- Выполнять в SQL Editor ПОСЛЕДНИМ: после schema.sql, seed_regions.sql, shop.sql, cases.sql и market.sql. Можно запускать повторно.
 -- Все цены, проценты и лимиты живут ТОЛЬКО здесь (константы в функциях); зеркало для показа: BANK в js/config.js,
 -- сверяет tests/bank.test.mjs. Клиент ничего не считает: он вызывает функции и показывает результат.
@@ -45,6 +45,8 @@ create table if not exists public.bank_items (
   id  text primary key,
   usd int not null check (usd > 0)
 );
+alter table public.bank_items add column if not exists supply int check (supply > 0);            -- тираж: сколько всего можно купить (null = без ограничений)
+alter table public.bank_items add column if not exists sold int not null default 0 check (sold >= 0);  -- сколько уже куплено всеми игроками
 alter table public.bank_items enable row level security;
 drop policy if exists bank_items_read on public.bank_items;
 create policy bank_items_read on public.bank_items for select using (true);
@@ -52,6 +54,8 @@ revoke insert, update, delete on public.bank_items from anon, authenticated;
 insert into public.bank_items (id, usd) values ('banker', 150), ('tycoon', 600), ('whale', 2000)
 on conflict (id) do update set usd = excluded.usd;
 delete from public.bank_items where id <> all (array['banker', 'tycoon', 'whale']);
+-- Лимитированный тираж (на весь сервер). sold не трогаем: повторный запуск файла счётчик не сбрасывает.
+update public.bank_items set supply = case id when 'banker' then 500 when 'tycoon' then 100 when 'whale' then 10 end;
 insert into public.shop_items (id, slot, price) values
   ('banker', 'title', 1000000000000000), ('tycoon', 'title', 1000000000000000), ('whale', 'title', 1000000000000000)
 on conflict (id) do nothing;
@@ -67,6 +71,7 @@ begin
   return jsonb_build_object(
     'luck', p.luck, 'extra_lots', p.extra_lots,
     'now', (extract(epoch from now()) * 1000)::bigint,
+    'items', (select coalesce(jsonb_object_agg(i.id, jsonb_build_object('supply', i.supply, 'sold', i.sold)), '{}'::jsonb) from bank_items i),
     'deposits', (select coalesce(jsonb_agg(jsonb_build_object('id', d.id, 'cur', d.cur, 'amount', d.amount, 'payout', d.payout,
                    'start', (extract(epoch from d.created_at) * 1000)::bigint, 'ends', (extract(epoch from d.ends_at) * 1000)::bigint) order by d.ends_at), '[]'::jsonb)
                  from bank_deposits d where d.owner = p.id));
@@ -205,13 +210,16 @@ language plpgsql security definer set search_path = public as $$
 declare p players%rowtype; it bank_items%rowtype;
 begin
   if auth.uid() is null then raise exception 'unauthorized'; end if;
-  select * into it from bank_items where id = p_item;
+  -- Строку титула блокируем первой: покупки одного титула идут по очереди, тираж не превысить даже при одновременных нажатиях.
+  select * into it from bank_items where id = p_item for update;
   if not found then raise exception 'bad item'; end if;
   select * into p from players where id = auth.uid() for update;
   if not found then raise exception 'no player'; end if;
   if p_item = any(p.owned) then raise exception 'already owned'; end if;
+  if it.supply is not null and it.sold >= it.supply then raise exception 'sold out'; end if;
   if p.usd < it.usd then raise exception 'not enough usd'; end if;
   update players set usd = usd - it.usd, owned = owned || p_item where id = p.id;
+  update bank_items set sold = sold + 1 where id = it.id;
 end $$;
 
 -- ---------- Кейс за $ ----------

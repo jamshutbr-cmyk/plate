@@ -15,3 +15,10 @@
 .tnr .ttl{flex:none;margin:0}
 .tnr .ttl{font-size:10px;padding:1px 7px;letter-spacing:.02em}
 .tnr{gap:6px}
+
+/* переключатель вида рейтинга */
+.tt-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.tt-tabs button{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 6px;border-radius:14px;border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);background:var(--card);color:var(--mut);font-size:14px;font-weight:700;cursor:pointer}
+.tt-tabs button i{font-style:normal;font-size:18px;line-height:1}
+.tt-tabs button.a{color:#fff;border-color:transparent;background:linear-gradient(160deg,#3b82f6,#2146b3);box-shadow:0 6px 16px #2146b355}
+.tt-tabs button:active{transform:scale(.97)}

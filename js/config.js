@@ -58,7 +58,7 @@ export const sellGain=t=>Math.floor(t*SELL_PCT/100);
 export const marketFee=ask=>Math.floor(ask*MARKET.fee/100);                // сколько удерживает рынок (продавец получает ask минус это)
 
 // Банк. Курсы, проценты, цены и лимиты считает ТОЛЬКО сервер (supabase/bank.sql); здесь данные для показа.
-// Должны совпадать с bank.sql, это сверяет tests/bank.test.mjs. Титулы из items не входят в SHOP (их нельзя купить за рубли), но находятся через itemOf.
+// Должны совпадать с bank.sql, это сверяет tests/bank.test.mjs. Титулы из items выходят ограниченным тиражом (max — всего штук на сервер, сколько продано отдаёт bank_state) и не входят в SHOP (их нельзя купить за рубли), но находятся через itemOf.
 export const BANK={usdBuy:250000,usdSell:150000,exMax:100000,maxDep:3,
  depRub:{min:100000,max:1e10,pct:{1:2,3:8,7:20}},depUsd:{min:10,max:1000000,pct:{1:4,3:12,7:30}},
  luck:{cost:15,rolls:10,cap:100,best:3},lots:{cost:40,step:5,max:20},
@@ -66,7 +66,7 @@ export const BANK={usdBuy:250000,usdSell:150000,exMax:100000,maxDep:3,
   {id:'vip',n:'VIP',usd:25,w:[0,10,50,40,0],col:'#4ade80',d:'Редкие и эпические машины'},
   {id:'royal',n:'Королевский',usd:120,w:[0,0,20,60,20],col:'#f5b82e',d:'Эпики почти всегда, 20% на легендарную'}],
  items:[
-  {id:'banker',n:'Банкир',usd:150,c:'#38bdf8',d:'Титул для тех, кто знает цену деньгам'},
-  {id:'tycoon',n:'Магнат',usd:600,c:'#fb923c',d:'Титул для владельцев крупного капитала'},
-  {id:'whale',n:'Кит',usd:2000,c:'#e879f9',d:'Самый редкий титул в игре'}]};
+  {id:'banker',n:'Банкир',usd:150,max:500,c:'#38bdf8',d:'Титул для тех, кто знает цену деньгам'},
+  {id:'tycoon',n:'Магнат',usd:600,max:100,c:'#fb923c',d:'Титул для владельцев крупного капитала'},
+  {id:'whale',n:'Кит',usd:2000,max:10,c:'#e879f9',d:'Самый редкий титул в игре'}]};
 export const depPayout=(cur,amt,days)=>{const d=cur=='rub'?BANK.depRub:BANK.depUsd;return amt+Math.floor(amt*d.pct[days]/100)};

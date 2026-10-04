@@ -8,33 +8,36 @@ import {pubShowcase} from './showcase.js';
 import {startTrade} from './trade.js';
 import {$, esc, fmt} from '../util.js';
 
-// Таблица лидеров: рейтинг по самому дорогому номеру. Данные приходят с сервера и кэшируются на 30 секунд.
-let TOP=null,AT=0,LOAD=false,ERR=false;
+// Таблица лидеров, два вида: по самому дорогому выбитому номеру ('best') и по монетам на балансе ('coins').
+// Данные приходят с сервера (get_leaderboard) и кэшируются на 30 секунд отдельно для каждого вида.
+const KINDS=[['best','🏆','Дорогой номер'],['coins','💰','Монеты']];
+let KIND='best',TOPS={},ATS={},LOAD=false,ERR=false;   // вид, ответы сервера и время загрузки по видам
 let STY={};   // титулы и рамки игроков {id:{title,skin}}: отдельный запрос get_styles, чтобы не трогать get_leaderboard
 const titleOf=r=>r.me?S.equip.title:(STY[r.id]||{}).title;
 const nickOf=r=>r.me?S.equip.nick:(STY[r.id]||{}).nick;
 async function loadStyles(ids){ids=ids.filter(Boolean);if(!ids.length)return;try{Object.assign(STY,await rpc('get_styles',{ids})||{})}catch(e){console.warn('styles',e)}}
 const MEDAL=['🥇','🥈','🥉'],MIN=10;   // сколько мест показывать минимум: пустые рисуются заглушками
-const row=(r,me)=>`<div class="tr${me?' me':''}" data-click="openPlayer" data-arg="${r.id}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><div class="tnr"><b class="${nickCls(nickOf(r)).trim()}">${esc(r.nick||'Игрок')}</b>${titleHTML(titleOf(r))}</div><span class="tl">Уровень ${r.lvl} · номеров: ${fmt(r.total)}</span></div><b class="tpr">${fmt(r.best)} ₽</b></div>`;
+const row=(r,me)=>`<div class="tr${me?' me':''}" data-click="openPlayer" data-arg="${r.id}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><div class="tnr"><b class="${nickCls(nickOf(r)).trim()}">${esc(r.nick||'Игрок')}</b>${titleHTML(titleOf(r))}</div><span class="tl">Уровень ${r.lvl} · номеров: ${fmt(r.total)}</span></div><b class="tpr">${fmt(r.val)} ₽</b></div>`;
 const empty=n=>`<div class="tr emp"><span class="rk">${MEDAL[n-1]||n}</span><div class="tn"><b>Свободно</b></div></div>`;
 async function load(){
- LOAD=true;ERR=false;
- try{TOP=await rpc('get_leaderboard');await loadStyles([...TOP.top.map(r=>r.id),TOP.me&&TOP.me.id])}catch(e){console.error(e);ERR=true}
- LOAD=false;AT=Date.now();render(true)}
+ const k=KIND;LOAD=true;ERR=false;
+ try{const d=await rpc('get_leaderboard',{p_kind:k});await loadStyles([...d.top.map(r=>r.id),d.me&&d.me.id]);TOPS[k]=d}catch(e){console.error(e);ERR=true}
+ LOAD=false;ATS[k]=Date.now();render(true)}
 export function drawTop(){
- if(!LOAD&&Date.now()-AT>30000)load();
- let h;
- if(!TOP)h=ERR?`<p class="tl" style="text-align:center">Не удалось загрузить рейтинг</p>`:`<p class="tl" style="text-align:center">Загрузка…</p>`;
+ const TOP=TOPS[KIND];
+ if(!LOAD&&Date.now()-(ATS[KIND]||0)>30000)load();
+ let h=`<div class="tt-tabs">${KINDS.map(([k,i,n])=>`<button class="${KIND==k?'a':''}" data-click="topKind" data-arg="${k}"><i>${i}</i>${n}</button>`).join('')}</div>`;
+ if(!TOP)h+=ERR?`<p class="tl" style="text-align:center">Не удалось загрузить рейтинг</p>`:`<p class="tl" style="text-align:center">Загрузка…</p>`;
  else{
   const me=TOP.me;
-  h=TOP.top.length?'':`<p class="tl" style="text-align:center">Пока никого. Сгенерируйте номер!</p>`;
+  h+=TOP.top.length?'':`<p class="tl" style="text-align:center">Пока никого. Сгенерируйте номер!</p>`;
   h+=TOP.top.map(r=>row(r,r.me)).join('');
   for(let n=TOP.top.length+1;n<=MIN;n++)h+=empty(n);
   if(me&&me.rk>50)h+=`<div class="tsep">· · ·</div>`+row(me,true);
  }
  $('topC').innerHTML=h+`<button class="btn" style="width:100%;margin-top:10px" data-click="topRefresh">Обновить</button>`}
 DRAW.top=drawTop;
-on({topRefresh:()=>{AT=0;render(true)}});
+on({topRefresh:()=>{ATS[KIND]=0;render(true)},topKind:k=>{if(k==KIND)return;KIND=k;render(true)}});
 
 // Профиль другого игрока (только просмотр): имя, уровень, статистика и самый дорогой номер. Баланс не показываем.
 let PUB=null,PERR=false,PID=null,PSC=[];

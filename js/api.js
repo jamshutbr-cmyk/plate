@@ -10,7 +10,7 @@ import {fmt} from './util.js';
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
 // Банковская операция: ошибку сервера превращаем в {err:'код'}, успех — в {ok:1,res}, затем сверяем кэш игрока
-const BANK_ERR=[['not enough usd','usd'],['not enough rub','rub'],['limit','limit'],['too many','many'],['not ready','ready'],['gone','gone'],['bad amount','amount'],['already owned','owned']];
+const BANK_ERR=[['not enough usd','usd'],['not enough rub','rub'],['limit','limit'],['too many','many'],['not ready','ready'],['gone','gone'],['bad amount','amount'],['already owned','owned'],['sold out','soldout']];
 async function bankCall(f){
  let res;
  try{res=await f()}

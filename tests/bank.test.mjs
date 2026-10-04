@@ -61,6 +61,21 @@ test('кейсы и титулы: цены и веса совпадают с ban
   assert.equal(BANK.items.length, (it.match(/\(/g) || []).length);
 });
 
+test('тираж титулов: max в config.js совпадает с supply в bank.sql, покупка проверяет тираж под блокировкой', () => {
+  const upd = sql.match(/update public\.bank_items set supply = case id ([^;]+) end;/);
+  assert.ok(upd, 'нет заливки supply');
+  for (const x of BANK.items) {
+    assert.ok(x.max > 0, `у титула ${x.id} нет тиража`);
+    assert.ok(new RegExp(`when '${x.id}' then ${x.max}\\b`).test(upd[1]), `тираж ${x.id}`);
+  }
+  const fn = sql.slice(sql.indexOf('create or replace function public.bank_buy_item'), sql.indexOf('create or replace function public.open_case_usd'));
+  assert.ok(/from bank_items where id = p_item for update/.test(fn), 'строка титула не блокируется');
+  assert.ok(fn.indexOf('from bank_items where id = p_item for update') < fn.indexOf('from players where id = auth.uid() for update'));
+  assert.ok(/sold >= it\.supply then raise exception 'sold out'/.test(fn));
+  assert.ok(/update bank_items set sold = sold \+ 1/.test(fn));
+  assert.ok(/'items', \(select coalesce\(jsonb_object_agg/.test(sql), 'bank_state не отдаёт тираж');
+});
+
 test('титулы банка находятся через itemOf, но не входят в SHOP (за рубли не купить)', () => {
   for (const x of BANK.items) {
     assert.ok(!SHOP.title.some((t) => t.id === x.id), x.id);
