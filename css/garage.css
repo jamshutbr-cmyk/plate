@@ -1,0 +1,35 @@
+/* Гараж: сцена берёт фон, который надет в магазине (классы scn-* задают --scn) */
+.gst{margin:6px 0 14px;padding:18px 12px 6px;border-radius:20px;overflow:hidden;border:1px solid #ffffff1c;background:var(--scn,linear-gradient(180deg,#00000000 0 66%,#0e0f13 66% 100%),repeating-linear-gradient(90deg,#0000 0 96px,#00000030 96px 98px),linear-gradient(180deg,#30333c,#24262d 66%));position:relative}
+/* пол: линия горизонта и мягкий свет сверху. Рисуется только когда в магазине не надет свой фон */
+.gst:not([class*=scn-])::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 60% at 50% 0,#ffffff14,#0000 70%),linear-gradient(180deg,#0000 65.5%,#ffffff12 66%,#0000 67.5%)}
+.gcar{position:relative;width:min(100%,520px);margin:0 auto}
+.gcar{transition:transform .4s cubic-bezier(.3,.8,.3,1);cursor:zoom-in}
+.gcar.z{transform:scale(1.7);cursor:zoom-out}
+.gcar::before{content:'';position:absolute;left:5%;right:5%;bottom:-1.5%;height:8%;background:radial-gradient(ellipse at center,#000c,#0000 70%);filter:blur(3px)}
+.gcar img{position:relative;display:block;width:100%;height:100%;filter:drop-shadow(0 14px 12px #000a);pointer-events:none}
+.gpl{position:absolute;transform:translate(-50%,-50%)}
+.gpick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding-bottom:20px}
+.gp{padding:8px;border-radius:14px;cursor:pointer;background:var(--card);border:2px solid transparent}
+.gp.a{border-color:var(--ac)}
+#garC .pfit{position:relative}
+#garC .pin{width:520px;transform-origin:0 0}
+#garC .pin .plate{width:520px}
+#garC .gpl .pin .plate{box-shadow:0 2px 6px #000c}
+#garC .gp .pin .plate{box-shadow:none}
+.gp{min-width:0}
+#garC .gp .pfit{overflow:hidden;width:100%}
+#garC .pfit.gpl{position:absolute}
+
+.grow{display:flex;gap:10px}.grow .btn{flex:1}
+/* номер на машине: тень от кронштейна, лёгкое затемнение под свет сцены и блик, чтобы не выглядел наклейкой */
+#garC .gpl::before{content:'';position:absolute;z-index:-1;left:3%;right:3%;bottom:-2px;height:35%;background:#000a;filter:blur(2px);border-radius:50%}
+#garC .gpl .pin{filter:brightness(.93) contrast(1.04)}
+#garC .gpl::after{content:'';position:absolute;inset:0;border-radius:3px;pointer-events:none;background:linear-gradient(104deg,#fff0 34%,#ffffff4d 47%,#fff0 60%),linear-gradient(180deg,#0000 50%,#0000003d)}
+
+.gfl{margin:0 0 10px}.gpr{margin-top:6px;text-align:center;font-size:13px;font-weight:700;color:var(--mut)}
+/* лента машин: прокрутка вбок, затухание по краям, активная всегда по центру */
+.gcs{position:relative;display:flex;gap:8px;overflow-x:auto;margin:8px 0 12px;padding:2px 14px;scrollbar-width:none;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(90deg,#0000,#000 14px,#000 calc(100% - 14px),#0000);mask-image:linear-gradient(90deg,#0000,#000 14px,#000 calc(100% - 14px),#0000)}
+.gcs::-webkit-scrollbar{display:none}
+.gcs button{flex:0 0 96px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 6px 7px;border-radius:16px;background:var(--card);color:var(--tx);border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);font-size:12px;font-weight:700;white-space:nowrap}
+.gcs button img{width:100%;height:40px;object-fit:contain}
+.gcs button.a{border-color:var(--ac);box-shadow:0 0 0 1px var(--ac)}
