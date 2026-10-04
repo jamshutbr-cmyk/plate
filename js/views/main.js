@@ -1,10 +1,10 @@
 import {api} from '../api.js';
 import {CN, RAR, RESCUE_MS, TYPES} from '../config.js';
 import {fake, genCost} from '../engine.js';
-import {haptic} from '../platform.js';
+import {haptic, hapticDrop} from '../platform.js';
 import {painters, render} from '../router.js';
 import {S, flags} from '../state.js';
-import {beep, burst, chime, count, ripple} from '../ui/fx.js';
+import {beep, burst, count, dropSound, riser, ripple} from '../ui/fx.js';
 import {on} from '../ui/actions.js';
 import {banner} from '../ui/modal.js';
 import {dots, plateHTML} from '../ui/plate.js';
@@ -31,16 +31,16 @@ export function reel(p,done){
     if(i>=D.length){done();return}
     const q=i==D.length-1?p:fake();document.documentElement.style.setProperty('--rc',RAR[q.cls].c);
     $('glow').classList.add('on');
-    st.innerHTML=`<div class="tl">Генерация…</div>${plateHTML(q,'blur')}`;beep(260+i*38,.05,'square',.025);
+    st.innerHTML=`<div class="tl">Генерация…</div>${plateHTML(q,'blur')}`;beep(260+i*38,.05,'square',.025);haptic('tick');if(p.cls>=3&&i==D.length-6)riser(1.3);
     setTimeout(step,D[i++])})()}
 export function tilt(e){const pl=$('stage').querySelector('.plate.in');if(!pl)return;const r=$('stage').getBoundingClientRect(),dx=(e.clientX-r.left)/r.width-.5,dy=(e.clientY-r.top)/r.height-.5;pl.style.animation='none';pl.style.transition='transform .12s';pl.style.transform=`perspective(700px) rotateY(${dx*18}deg) rotateX(${-dy*18}deg)`}
 export function show(p,unlock){
   const R=RAR[p.cls];document.documentElement.style.setProperty('--rc',R.c);
   const g=$('glow');g.classList.remove('on');void g.offsetWidth;g.classList.add('on');
   $('stage').innerHTML=`<div class="badge" style="color:${R.c}"><div>${R.n}${dots(p.cls)}</div><b id="pp">0 ₽</b></div>${plateHTML(p,'in')}<div class="tl">${CN[p.country].n} · ${p.reg} · ${p.rn} · ${TYPES.find(t=>t.k==p.type).n}</div>${p.cls>=2?`<div class="tl" style="color:${R.c};font-weight:700">+${[0,0,2,10,100][p.cls]} $</div>`:''}<div class="hint" style="font-size:14px;margin-top:12px">Нажмите ещё раз (−${fmt(genCost())} ₽)</div>`;
-  count($('pp'),p.price);render(true);chime(p.cls);if(p.cls>=3){const b=$('big');b.textContent=R.n.toUpperCase()+'!';b.classList.remove('on');void b.offsetWidth;b.classList.add('on')}
+  count($('pp'),p.price);render(true);dropSound(p.cls);if(p.cls>=3){const b=$('big');b.textContent=R.n.toUpperCase()+'!';b.classList.remove('on');void b.offsetWidth;b.classList.add('on')}
   if(unlock)banner('Открыто новое',unlock);
-  haptic(p.cls>2?'heavy':'light');
+  hapticDrop(p.cls);
   if(p.cls>=2)setTimeout(()=>burst(R.c,p.cls*14),500);
   if(p.cls==4&&S.fx<2){document.body.classList.remove('shake');void document.body.offsetWidth;document.body.classList.add('shake');$('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on')}}
 export function stageMsg(t){$('stage').innerHTML=`<div class="hint">${t}</div>`}
