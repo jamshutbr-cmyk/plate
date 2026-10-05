@@ -1,4 +1,4 @@
--- Магазин: косметика (рамки, титулы, эффекты выпадения), платный регион и свой номер.
+-- Магазин: косметика (рамки, титулы, эффекты выпадения), платный регион.
 -- Выполнять в SQL Editor ПОСЛЕ schema.sql и album.sql. Можно запускать повторно.
 -- Ничего существующего не меняет: commit_plate остаётся как есть, поверх него — commit_plate_fee.
 
@@ -109,31 +109,13 @@ begin
   return res;
 end $$;
 
--- ---------- Свой номер ----------
--- Вызывает ТОЛЬКО Edge Function custom-plate (service_role): номер и цену считает она.
--- Это покупка, а не находка: статистика (выпало, редкости, рекорд цены), опыт и $ не меняются.
-create or replace function public.commit_custom_plate(uid uuid, pl jsonb, cost bigint) returns jsonb
-language plpgsql security definer set search_path = public as $$
-declare p players%rowtype; row_id bigint; ts timestamptz := now();
-begin
-  if cost <= 0 then raise exception 'bad cost'; end if;
-  select * into p from players where id = uid for update;
-  if not found then raise exception 'no player'; end if;
-  if (select count(*) from plates where owner = uid and not in_safe) >= p.cap_c then raise exception 'collection full'; end if;
-  if p.balance < cost then raise exception 'not enough rub'; end if;
-  insert into plates (owner, country, type, main, reg, region_name, cls, mu, price)
-  values (uid, pl->>'country', 'civil', pl->>'main', pl->>'reg', pl->>'rn', (pl->>'cls')::int, pl->'mu', (pl->>'price')::bigint)
-  returning id into row_id;
-  update players set balance = balance - cost where id = uid;
-  return jsonb_build_object('id', row_id, 'ts', (extract(epoch from ts) * 1000)::bigint);
-end $$;
+-- Функции своего номера убраны из игры; на уже развёрнутой базе удаляем остаток.
+drop function if exists public.commit_custom_plate(uuid, jsonb, bigint);
 
 -- ---------- Права ----------
 -- Новые функции по умолчанию доступны всем: закрываем и открываем только нужным.
 revoke execute on function public.commit_plate_fee(uuid, jsonb, int[], bigint) from public, anon, authenticated;
-revoke execute on function public.commit_custom_plate(uuid, jsonb, bigint)     from public, anon, authenticated;
 grant  execute on function public.commit_plate_fee(uuid, jsonb, int[], bigint) to service_role;
-grant  execute on function public.commit_custom_plate(uuid, jsonb, bigint)     to service_role;
 
 revoke execute on function public.buy_item(text), public.equip_item(text, text), public.get_styles(uuid[]) from public, anon;
 grant  execute on function public.buy_item(text), public.equip_item(text, text), public.get_styles(uuid[]) to authenticated;

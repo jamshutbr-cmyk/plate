@@ -2,7 +2,7 @@
 .tr.me{border-color:color-mix(in srgb,var(--tx) 60%,transparent)}
 .rk{width:38px;text-align:center;font-size:22px;font-weight:800;color:var(--mut)}
 .tn{flex:1;min-width:0}.tn b{display:block;font-size:18px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tn .tl{font-size:13px}
-.tpr{font-size:18px;white-space:nowrap}
+.tpr{font-size:clamp(15px,4.4vw,18px);white-space:nowrap}
 .tsep{text-align:center;color:var(--mut);margin:6px 0}
 .tr.emp{opacity:.4}.tr.emp .tn b{color:var(--mut);font-weight:600}
 .tr[data-click]{cursor:pointer}.tr[data-click]:active{opacity:.7}
@@ -14,11 +14,33 @@
 .tnr b{flex:0 1 auto;min-width:0}
 .tnr .ttl{flex:none;margin:0}
 .tnr .ttl{font-size:10px;padding:1px 7px;letter-spacing:.02em}
-.tnr{gap:6px}
+.tnr{gap:6px;flex-wrap:nowrap}
+.tnr b{max-width:100%;min-width:3ch}   /* ник всегда виден хотя бы частично, титул стоит рядом и сжимается быстрее ника */
+.tnr .ttl{flex:none;white-space:nowrap}   /* титул показывается целиком, укорачивается ник */
 
 /* переключатель вида рейтинга */
 .tt-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .tt-tabs button{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 6px;border-radius:14px;border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);background:var(--card);color:var(--mut);font-size:14px;font-weight:700;cursor:pointer}
 .tt-tabs button i{font-style:normal;font-size:18px;line-height:1}
 .tt-tabs button.a{color:#fff;border-color:transparent;background:linear-gradient(160deg,#3b82f6,#2146b3);box-shadow:0 6px 16px #2146b355}
+/* выбор вида рейтинга: выпадающий список */
+.tt-dd{position:relative;margin-bottom:12px;z-index:5}
+.tt-cur{display:flex;align-items:center;gap:10px;width:100%;padding:13px 16px;border-radius:14px;border:1px solid color-mix(in srgb,var(--tx) 14%,transparent);background:var(--card);color:var(--tx);font:inherit;font-size:16px;font-weight:700;cursor:pointer;text-align:left}
+.tt-cur i,.tt-menu i{font-style:normal;font-size:19px;line-height:1}
+.tt-cur span{flex:1}
+.tt-cur em{font-style:normal;color:var(--mut);transition:transform .2s}
+.tt-dd.open .tt-cur em{transform:rotate(180deg)}
+.tt-dd.open .tt-cur{border-color:var(--ac)}
+.tt-menu{position:absolute;left:0;right:0;top:calc(100% + 6px);padding:6px;border-radius:14px;background:var(--sheet,var(--card));border:1px solid color-mix(in srgb,var(--tx) 14%,transparent);box-shadow:0 12px 32px #0007}
+.tt-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:12px;border:0;border-radius:10px;background:none;color:var(--tx);font:inherit;font-size:16px;font-weight:600;cursor:pointer;text-align:left}
+.tt-menu button.a{background:color-mix(in srgb,var(--ac) 18%,transparent);color:var(--ac)}
+.tt-menu button:active{opacity:.7}
 .tt-tabs button:active{transform:scale(.97)}
+
+.tl .rbb{display:inline-block;margin-right:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:800;color:#f5b82e;background:color-mix(in srgb,#f5b82e 14%,transparent)}
+.tn .tnr .ttl{margin:0}
+
+/* строка рейтинга: сверху ник с титулом на всю ширину, ниже уровень слева и сумма справа */
+.tsb{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-top:3px}
+.tsb .tl{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tsb .tpr{flex:none}

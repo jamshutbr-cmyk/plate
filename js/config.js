@@ -54,7 +54,7 @@ export const CASES=[
 // Должны совпадать с market.sql, это сверяет tests/market.test.mjs.
 export const MARKET={fee:5,min:1000,max:100000000000,lots:10,page:30};   // fee — % с продавца, min/max — цена лота, ₽, lots — лотов на игрока, page — размер страницы
 export const SELL_PCT=95;                                                 // сколько % цены игра платит за проданный номер (зеркало sell_plates / autosell в schema.sql)
-export const sellGain=t=>Math.floor(t*SELL_PCT/100);
+export const sellGain=(t,bonus=0)=>Math.floor(t*(SELL_PCT+bonus)/100);   // bonus — уровень перка «Торговец» (prestige.sql: sell_pct)
 export const marketFee=ask=>Math.floor(ask*MARKET.fee/100);                // сколько удерживает рынок (продавец получает ask минус это)
 
 // Банк. Курсы, проценты, цены и лимиты считает ТОЛЬКО сервер (supabase/bank.sql); здесь данные для показа.
@@ -70,3 +70,14 @@ export const BANK={usdBuy:250000,usdSell:150000,exMax:100000,maxDep:3,
   {id:'tycoon',n:'Магнат',usd:600,max:100,c:'#fb923c',d:'Титул для владельцев крупного капитала'},
   {id:'whale',n:'Кит',usd:2000,max:10,c:'#e879f9',d:'Самый редкий титул в игре'}]};
 export const depPayout=(cur,amt,days)=>{const d=cur=='rub'?BANK.depRub:BANK.depUsd;return amt+Math.floor(amt*d.pct[days]/100)};
+
+// Перерождение. Условия, награды и цены считает ТОЛЬКО сервер (supabase/prestige.sql); здесь данные для показа.
+// Должны совпадать с prestige.sql, это сверяет tests/prestige.test.mjs.
+export const PRESTIGE={lvlBase:10,lvlStep:5,starsDiv:5,cashStep:50000,usdStep:5,
+ perks:[
+  {k:'sell',n:'Торговец',max:5,ic:'🤝',d:'+1% к цене при продаже номеров (до 100%)'},
+  {k:'cash',n:'Стартовый капитал',max:10,ic:'💰',d:'+50 000 ₽ к деньгам после перерождения'},
+  {k:'usd',n:'Валютная подушка',max:10,ic:'💵',d:'+5 $ после перерождения'}]};
+export const rebNeed=n=>PRESTIGE.lvlBase+PRESTIGE.lvlStep*n;          // уровень для перерождения при n сделанных
+export const rebStars=lvl=>Math.floor(lvl/PRESTIGE.starsDiv);          // звёзд за перерождение с уровня lvl
+export const perkCost=lv=>lv+1;                                        // цена следующего уровня бонуса, когда сейчас lv

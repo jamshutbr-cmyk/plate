@@ -17,6 +17,7 @@ import './views/bank.js';
 import './views/gen.js';
 import './views/shop.js';
 import './views/cases.js';
+import './views/prestige.js';
 import './ui/scene.js';
 import {login, loadAll} from './server.js';
 import {render} from './router.js';

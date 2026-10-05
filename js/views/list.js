@@ -33,7 +33,7 @@ export function openP(id){
   sm(`<div class="t2 r${p.cls}">${plateHTML(p,'sh')}${dots(p.cls)}<div style="font-size:24px;font-weight:700;color:${R.c}">${R.n}</div></div><div class="bd"><h2>${T.n}</h2><div class="tl">${CN[p.country].n} · ${p.reg} · ${p.rn}</div><div class="ln"><span>Базовая стоимость</span><b>100 ₽</b></div><div class="cells">${[['комбо',p.mu[0]],['цифры',p.mu[1]],['регион',p.mu[2]],['код',p.mu[3]]].map(c=>`<div>${c[0]}<b>${xf(c[1])}</b></div>`).join('')}</div><div class="ln big"><span>Цена номера</span><b>${fmt(p.price)} ₽</b></div><div class="row"><button class="btn" data-click="moveOne" data-arg="${id}">${inCol?'В сейф':'Из сейфа'}</button><button class="btn red" data-click="sellDlg" data-arg="${id}">Продать</button></div></div>`)}
 export function sellDlg(ids){
   const tot=ids.reduce((s,i)=>s+(find(i)?.price||0),0);
-  sm(`<div class="dlg"><h3>Цена — ${fmt(tot)} ₽</h3><button class="btn red" data-click="sell" data-arg="${ids}">Продать (−${100-SELL_PCT}%)<b>${fmt(sellGain(tot))} ₽</b></button></div>`)}
+  sm(`<div class="dlg"><h3>Цена — ${fmt(tot)} ₽</h3><button class="btn red" data-click="sell" data-arg="${ids}">Продать (${S.perks.sell>=100-SELL_PCT?'без комиссии':'−'+(100-SELL_PCT-S.perks.sell)+'%'})<b>${fmt(sellGain(tot,S.perks.sell))} ₽</b></button></div>`)}
 export async function sell(ids){cm();await api.sellPlates(ids);sel.clear();render(true);burst('#f5b82e',12)}
 export function cycleFilter(){LST.ft=(LST.ft+1)%4;sel.clear();drawList()}
 export function moveOne(id){sel.clear();sel.add(id);moveSel();cm()}

@@ -27,3 +27,13 @@ test('клиент: вкладки обоих видов, кэш по видам
   assert.ok(/fmt\(r\.val\)/.test(js));
   assert.ok(/topKind/.test(js));
 });
+
+test('рейтинг перерождений: вид в prestige.sql и в выпадающем списке клиента', () => {
+  const ps = readFileSync(new URL('../supabase/prestige.sql', import.meta.url), 'utf8');
+  assert.ok(/p_kind not in \('best', 'coins', 'rebirths'\) then raise exception/.test(ps));
+  assert.ok(/when 'rebirths' then rebirths::bigint/.test(ps));
+  assert.ok(/p_kind <> 'rebirths' or rebirths > 0/.test(ps), 'без перерождений в этот рейтинг не попадают');
+  assert.ok(/'rb', rb/.test(ps));
+  assert.ok(/revoke execute on function public\.get_leaderboard\(text\) from public, anon;/.test(ps));
+  assert.ok(/\['rebirths'/.test(js) && /topMenu/.test(js) && /tt-dd/.test(js));
+});

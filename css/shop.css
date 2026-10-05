@@ -3,13 +3,6 @@
 .sp .plate{width:min(100%,320px)}
 .fxp i{width:22px;height:22px;border-radius:50%;flex:none}
 .big2.alt{background:color-mix(in srgb,var(--tx) 14%,transparent);color:var(--tx)}
-/* свой номер (не .cf: этот класс занят футером карточки номера в base.css) */
-.cfm{display:flex;flex-direction:column;gap:10px;margin:16px 0 14px}
-.cfm .gq{width:100%;margin:0;font:inherit;font-size:20px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
-.cfm .gq::placeholder{font-size:16px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--mut);opacity:.8}
-#cres .plate{width:100%;margin:6px 0 12px}
-.cerr{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:14px;font-size:15px;line-height:1.35;color:#ffa3a3;background:color-mix(in srgb,#ff5a5a 12%,transparent);border:1px solid color-mix(in srgb,#ff5a5a 35%,transparent)}
-.cretry{flex:none;padding:8px 14px;border-radius:12px;border:0;font:inherit;font-size:14px;font-weight:700;color:var(--tx);background:color-mix(in srgb,var(--tx) 14%,transparent);cursor:pointer}
 
 /* титул игрока */
 .ttl{display:inline-block;margin:2px 0 4px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:800;letter-spacing:.04em;color:var(--tc);background:color-mix(in srgb,var(--tc) 16%,transparent);border:1px solid color-mix(in srgb,var(--tc) 55%,transparent)}

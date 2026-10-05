@@ -1,0 +1,50 @@
+/* Перерождение: золото (цвет легендарных) = звёзды и награды, остальное тихо, как на соседних экранах */
+#prestC{--gd:#f5b82e;--gd2:#d9981a;--gdt:color-mix(in srgb,#f5b82e 14%,transparent);padding-bottom:24px}
+.pr-hero{position:relative;margin:4px 0 14px;padding:22px 16px 18px;border-radius:24px;text-align:center;background:radial-gradient(120% 90% at 50% 0,color-mix(in srgb,var(--gd) 16%,transparent),transparent 62%),var(--card);border:1px solid color-mix(in srgb,var(--gd) 22%,var(--b1))}
+.pr-ring{position:relative;width:176px;height:176px;margin:0 auto}
+.pr-ring svg{width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
+.pr-ring .tr{fill:none;stroke:color-mix(in srgb,var(--tx) 10%,transparent);stroke-width:10}
+.pr-ring .fl{fill:none;stroke:url(#prg);stroke-width:10;stroke-linecap:round;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--gd) 45%,transparent))}
+.pr-ring.ok .fl{filter:drop-shadow(0 0 10px color-mix(in srgb,var(--gd) 70%,transparent))}
+.pr-mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.pr-mid b{font-size:56px;line-height:1;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pr-mid span{margin-top:4px;font-size:14px;color:var(--mut)}
+.pr-sub{margin:14px auto 0;max-width:290px;font-size:15px;line-height:1.4;color:var(--mut)}
+.pr-sub b{color:var(--tx)}
+.pr-cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:16px;padding:15px 18px;border:0;border-radius:16px;font:inherit;font-size:17px;font-weight:800;cursor:pointer;color:#2b1c00;background:linear-gradient(180deg,#ffd45a,var(--gd2));box-shadow:0 6px 18px color-mix(in srgb,var(--gd) 32%,transparent),inset 0 1px 0 #fff6;transition:transform .12s}
+.pr-cta:active{transform:scale(.98)}
+.pr-cta.rdy{animation:prp 2.4s ease-in-out infinite}
+.pr-cta[disabled]{animation:none;cursor:default;color:var(--mut);background:color-mix(in srgb,var(--tx) 8%,transparent);box-shadow:none}
+.pr-cta em{font-style:normal;padding:2px 9px;border-radius:999px;background:#2b1c0022}
+@keyframes prp{50%{box-shadow:0 6px 26px color-mix(in srgb,var(--gd) 55%,transparent),inset 0 1px 0 #fff6}}
+@media (prefers-reduced-motion:reduce){.pr-cta.rdy{animation:none}}
+
+.pr-stat{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.pr-stat div{padding:12px 14px;border-radius:16px;background:var(--card);border:1px solid var(--b1)}
+.pr-stat b{display:block;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.pr-stat span{font-size:13px;color:var(--mut)}
+.pr-stat .st b{color:var(--gd)}
+
+.pr-h{margin:0 4px 10px;font-size:18px;font-weight:800}
+.pr-perk{display:grid;grid-template-columns:48px 1fr auto;gap:4px 12px;align-items:center;margin-bottom:10px;padding:14px;border-radius:18px;background:var(--card);border:1px solid var(--b1)}
+.pr-ic{grid-row:span 2;width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:var(--gd);background:var(--gdt);border:1px solid color-mix(in srgb,var(--gd) 28%,transparent)}
+.pr-nm{font-size:16px;font-weight:700;line-height:1.2}
+.pr-ef{grid-column:2;font-size:13px;line-height:1.35;color:var(--mut)}
+.pr-ef b,.pr-ef i{white-space:nowrap}
+.pr-ef b{color:var(--tx);font-weight:700}
+.pr-ef i{font-style:normal;color:var(--gd);font-weight:700}
+.pr-buy{grid-column:3;grid-row:1/span 2;align-self:center;min-width:76px;padding:10px 12px;border:0;border-radius:12px;font:inherit;font-size:15px;font-weight:800;cursor:pointer;color:#2b1c00;background:linear-gradient(180deg,#ffd45a,var(--gd2))}
+.pr-buy[disabled]{cursor:default;color:var(--mut);background:color-mix(in srgb,var(--tx) 8%,transparent)}
+.pr-buy.mx{background:none;color:var(--gd);border:1px solid color-mix(in srgb,var(--gd) 35%,transparent)}
+.pr-pips{grid-column:1/-1;display:flex;gap:4px;margin-top:8px}
+.pr-pips i{flex:1;height:6px;border-radius:3px;background:color-mix(in srgb,var(--tx) 10%,transparent)}
+.pr-pips i.f{background:linear-gradient(90deg,#ffd45a,var(--gd2))}
+
+.pr-rules{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.pr-rules>div{padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--b1);font-size:13px;line-height:1.5;color:var(--mut)}
+.pr-rules h4{margin:0 0 6px;font-size:14px;color:var(--tx)}
+.pr-rules li{list-style:none;position:relative;padding-left:16px}
+.pr-rules ul{margin:0;padding:0}
+.pr-rules li::before{content:'';position:absolute;left:2px;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--mut)}
+.pr-rules .keep li::before{background:#4ade80}
+.pr-rules .lose li::before{background:#f87171}
