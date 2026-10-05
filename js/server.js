@@ -11,9 +11,8 @@ export async function login(){
   const initData=TG&&TG.initData;
   if(!initData)throw new Error('Откройте игру из Telegram');
   const u=tgUser();
-  const {data:{session}}=await sb.auth.getSession();
-  if(session&&u&&session.user?.user_metadata?.tg_id===u.id)return;
   const res=await fetch(SUPABASE_URL+'/functions/v1/tg-auth',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_ANON_KEY},body:JSON.stringify({initData})});
+  if(res.status===403){const j=await res.json().catch(()=>({}));if(j.error==='not_subscribed')throw Object.assign(new Error('not_subscribed'),{code:'not_subscribed'})}
   if(!res.ok)throw new Error('Не удалось войти ('+res.status+')');
   const s=await res.json();
   const {error}=await sb.auth.setSession({access_token:s.access_token,refresh_token:s.refresh_token});

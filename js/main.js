@@ -30,6 +30,7 @@ import {$} from './util.js';
 import {api} from './api.js';
 import {S} from './state.js';
 import {tgUser} from './platform.js';
+import {showGate} from './gate.js';
 
 bind();
 on({retry:()=>location.reload()});
@@ -38,9 +39,9 @@ window.addEventListener('unhandledrejection',e=>{console.error(e.reason);banner(
 
 async function boot(){
   try{await login();await loadAll()}
-  catch(e){console.error(e);$('boot').innerHTML=`<div class="bootmsg"><b>Не удалось войти</b><span>${(e&&e.message)||'Ошибка'}</span><button class="btn" data-click="retry">Повторить</button></div>`;return}
+  catch(e){if(e&&e.code==='not_subscribed'){showGate(boot);return}console.error(e);$('boot').innerHTML=`<div class="bootmsg"><b>Не удалось войти</b><span>${(e&&e.message)||'Ошибка'}</span><button class="btn" data-click="retry">Повторить</button></div>`;return}
   // Ник по умолчанию — имя из Telegram, чтобы в рейтинге были имена, а не «Игрок»
   if(!S.nick){const u=tgUser(),n=u&&(u.first_name||u.username);if(n)try{await api.setNick(n)}catch(e){console.error(e)}}
-  $('boot').remove();render();daily();initTrades();initMarket();
+  document.getElementById('gate')?.remove();$('boot').remove();render();daily();initTrades();initMarket();
 }
 boot();

@@ -2,3 +2,6 @@
 // доступ защищён RLS и правами на функции. service_role сюда класть НЕЛЬЗЯ.
 export const SUPABASE_URL = 'https://amotfpvwglbmzkytjziy.supabase.co';
 export const SUPABASE_ANON_KEY = 'sb_publishable_3JWo4YhsSAl7ZEIN-JD1iQ_T-kGxt_7';
+
+// Канал, на который нужно подписаться (без @). Бот должен быть администратором этого канала.
+export const TG_CHANNEL = 'plategen_news';
