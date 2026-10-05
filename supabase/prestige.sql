@@ -6,8 +6,8 @@
 -- сверяет tests/prestige.test.mjs. Клиент ничего не считает: он вызывает функции и показывает результат.
 --
 -- Правила:
---  * Перерождение доступно с уровня reb_lvl_base + reb_lvl_step * (уже сделанные перерождения): 10, 15, 20...
---  * Награда: lvl / stars_div звёзд (целая часть). Звёзды тратятся на постоянные бонусы (perks).
+--  * Перерождение доступно с уровня reb_lvl_base + reb_lvl_step * (уже сделанные перерождения): 5, 6, 7...
+--  * Награда: lvl / stars_div звёзд (целая часть): уровень 5 даёт 5 звёзд, 6 даёт 6 и т. д.. Звёзды тратятся на постоянные бонусы (perks).
 --  * Бонус n-го уровня стоит n звёзд. sell: +1% к цене продажи за уровень (до 100%), cash: +50 000 ₽ к стартовым деньгам,
 --    usd: +5 $ к стартовым долларам.
 --  * Сбрасывается: номера (и сейф), деньги, $, опыт, уровень, вместимость, автопродажа, вклады, буст удачи, лоты рынка.
@@ -74,9 +74,9 @@ end $$;
 create or replace function public.rebirth() returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
-  reb_lvl_base constant int := 10;
-  reb_lvl_step constant int := 5;
-  stars_div    constant int := 5;
+  reb_lvl_base constant int := 5;
+  reb_lvl_step constant int := 1;
+  stars_div    constant int := 1;
   cash_step    constant bigint := 50000;
   usd_step     constant int := 5;
   p players%rowtype; need int; gain int;

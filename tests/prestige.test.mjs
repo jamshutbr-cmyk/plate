@@ -28,8 +28,8 @@ test('максимумы бонусов совпадают с buy_perk', () => {
 });
 
 test('порог и награда', () => {
-  assert.equal(rebNeed(0), 10); assert.equal(rebNeed(1), 15); assert.equal(rebNeed(4), 30);
-  assert.equal(rebStars(10), 2); assert.equal(rebStars(14), 2); assert.equal(rebStars(30), 6);
+  assert.equal(rebNeed(0), 5); assert.equal(rebNeed(1), 6); assert.equal(rebNeed(4), 9);
+  assert.equal(rebStars(5), 5); assert.equal(rebStars(6), 6); assert.equal(rebStars(16), 16);
   assert.ok(rebStars(rebNeed(0)) >= 1, 'на пороге награда не нулевая');
 });
 

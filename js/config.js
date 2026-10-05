@@ -77,7 +77,7 @@ export const depPayout=(cur,amt,days)=>{const d=cur=='rub'?BANK.depRub:BANK.depU
 
 // Перерождение. Условия, награды и цены считает ТОЛЬКО сервер (supabase/prestige.sql); здесь данные для показа.
 // Должны совпадать с prestige.sql, это сверяет tests/prestige.test.mjs.
-export const PRESTIGE={lvlBase:10,lvlStep:5,starsDiv:5,cashStep:50000,usdStep:5,
+export const PRESTIGE={lvlBase:5,lvlStep:1,starsDiv:1,cashStep:50000,usdStep:5,
  perks:[
   {k:'sell',n:'Торговец',max:5,ic:'🤝',d:'+1% к цене при продаже номеров (до 100%)'},
   {k:'cash',n:'Стартовый капитал',max:10,ic:'💰',d:'+50 000 ₽ к деньгам после перерождения'},
