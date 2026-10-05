@@ -22,6 +22,8 @@ export function applyPlates(rows){S.col=rows.filter(r=>!r.in_safe).map(plateFrom
 export function replaceState(x){for(const k of Object.keys(S))delete S[k];Object.assign(S,x)}
 // Открытые регионы лежат в S.seen как 'r:RU:77' (пишет серверный триггер track_region_seen)
 export const regKey=(c,code)=>'r:'+c+':'+code;
+// Тип номера открыт, когда хоть раз выпал ('t'+тип в S.seen, пишет commit_plate). Гражданский открыт всегда.
+export const typeSeen=k=>k=='civil'||S.seen.includes('t'+k);
 export const seenRegions=c=>S.seen.filter(k=>k.startsWith('r:'+(c?c+':':''))).length;
 export function all(){return [...S.col,...S.safe]}
 export function find(id){return all().find(p=>p.id==id)}

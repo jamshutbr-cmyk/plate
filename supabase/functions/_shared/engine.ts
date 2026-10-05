@@ -2,10 +2,17 @@
 // Чистые функции без доступа к БД: регионы и настройки игрока передаются снаружи (тестируется в Node).
 
 export const RAR_M = [1, 11.55, 661.2, 9955, 242550];
+// k — тип, p — шанс в % (сумма строго 100), m — множитель цены, c — страны, где тип выпадает.
+// В Беларуси выпадают только civil, taxi, police и transit: для страны шансы берутся только у её типов и пересчитываются на их сумму.
+// Зеркало: TYPES в js/config.js (там ещё названия n), это сверяет tests/types.test.mjs.
 export const TYPES = [
-  { k: 'civil', p: 95, m: 1 },
-  { k: 'taxi', p: 4, m: 24 },
-  { k: 'police', p: 1, m: 50 },
+  { k: 'civil', p: 92.86, m: 1, c: ['RU', 'BY'] },
+  { k: 'taxi', p: 4, m: 24, c: ['RU', 'BY'] },
+  { k: 'police', p: 1, m: 50, c: ['RU', 'BY'] },
+  { k: 'transit', p: 2, m: 0.5, c: ['RU', 'BY'] },
+  { k: 'military', p: 0.07, m: 80, c: ['RU'] },
+  { k: 'diplomat', p: 0.06, m: 120, c: ['RU'] },
+  { k: 'retro', p: 0.01, m: 200, c: ['RU'] },
 ];
 const RU_L = 'АВЕКМНОРСТУХ';
 const BY_L = 'ABEIKMHOPCTX';
@@ -73,19 +80,31 @@ function pickReg(regs: Region[], c: string, reg: string): Region {
 
 export function mk(prefs: Prefs, allRegions: Region[]): Plate {
   const country = prefs.country, regs = allRegions;   // regs уже отфильтрованы по стране вызывающим
-  const tot = TYPES.reduce((a, b) => a + b.p, 0);
-  let x = rf() * tot, t = TYPES[0], acc = 0;
-  for (const T of TYPES) { acc += T.p; if (x < acc) { t = T; break; } }
-  const ru = country == 'RU', taxi = t.k == 'taxi', nd = ru ? 3 : 4, nl = ru ? (taxi ? 2 : 3) : 2;
+  const types = TYPES.filter((T) => T.c.includes(country));   // типы этой страны (в Беларуси только civil/taxi/police/transit)
+  const tot = types.reduce((a, b) => a + b.p, 0);
+  let x = rf() * tot, t = types[0], acc = 0;
+  for (const T of types) { acc += T.p; if (x < acc) { t = T; break; } }
+  const ru = country == 'RU', k = t.k;
+  // Сколько цифр и букв и как они складываются в main. Беларусь: у всех типов один формат «1234 AB-».
+  // military/diplomat/retro есть только в России, у каждого свой формат (и у них нет блока региона на плашке).
+  const nd = !ru ? 4 : k == 'military' || k == 'retro' ? 4 : 3;
+  const nl = !ru ? 2 : k == 'taxi' || k == 'military' ? 2 : k == 'diplomat' ? 0 : 3;
   let d: string;
   do d = Array.from({ length: nd }, () => rnd(10)).join(''); while (/^0+$/.test(d));
   const ls = Array.from({ length: nl }, () => pick(ru ? RU_L : BY_L)).join('');
-  const main = ru ? (taxi ? ls + ' ' + d : ls[0] + d + ls.slice(1)) : d + ' ' + ls + '-';
-  const r = pickReg(regs, country, prefs.reg), { cls, kd } = classify(d, ls);
+  // Диплом: два знака кода страны — случайные цифры. Классифицируем по ним (как по «буквам»), фиксированные «CD» в classify не передаём.
+  const cc = k == 'diplomat' ? String(1 + rnd(99)).padStart(2, '0') : '';
+  const main = !ru ? d + ' ' + ls + '-'
+    : k == 'taxi' ? ls + ' ' + d
+    : k == 'military' ? d + ' ' + ls
+    : k == 'diplomat' ? d + ' CD ' + cc
+    : k == 'retro' ? d.slice(0, 2) + '-' + d.slice(2) + ' ' + ls
+    : ls[0] + d + ls.slice(1);   // civil, police, transit
+  const r = pickReg(regs, country, prefs.reg), { cls, kd } = classify(d, k == 'diplomat' ? cc : ls);
   const combo = RAR_M[cls], f = cls ? 1 + kd / 9 * .6 : 1;
   const rg = regSel(regs, prefs.reg) ? regAvg(regs, country) : r.mult * regNorm(regs, country);
   return {
-    country, type: t.k, main, reg: r.code, rn: r.name, cls,
+    country, type: k, main, reg: r.code, rn: r.name, cls,
     mu: [combo, f, rg, t.m], price: Math.round(100 * combo * f * rg * t.m),
   };
 }
@@ -100,7 +119,7 @@ export function feats(p: Pick<Plate, 'main' | 'reg' | 'type'>): number[] {
   if (p.reg.length > 1 && d.includes(p.reg)) o.push(5);
   if (['777', '888', '999', '555', '007'].includes(d)) o.push(6);
   if (/^0+[1-9]$/.test(d)) o.push(7);
-  o.push(({ civil: 8, taxi: 9, police: 10 } as Record<string, number>)[p.type]);
+  o.push(({ civil: 8, taxi: 9, police: 10, transit: 11, military: 12, diplomat: 13, retro: 14 } as Record<string, number>)[p.type]);
   return o;
 }
 

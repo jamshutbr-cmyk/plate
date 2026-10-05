@@ -12,7 +12,7 @@
 /* === плашки v3: объём, рельеф, редкости === */
 html .plate{border:3px solid #0b0b10;border-radius:15px;--rzc:transparent;
 box-shadow:0 14px 30px #000b,0 3px 0 #0006,inset 0 0 0 2px #ffffffb0,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040,0 0 0 1px #ffffff1c}
-html .plate:not(.t-police):not(.t-taxi){background:
+html .plate:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro){background:
 linear-gradient(180deg,#ffffffd9 0%,#ffffff00 38%,#00000000 62%,#00000030 100%),
 repeating-linear-gradient(90deg,#ffffff00 0 3px,#0000000a 3px 4px),
 linear-gradient(var(--pl1),var(--pl2))}
@@ -36,19 +36,19 @@ html .plate.rz2{box-shadow:0 12px 26px #000a,0 0 22px -3px #5b8cffaa,inset 0 0 0
 html .plate.rz3{box-shadow:0 12px 26px #000a,0 0 30px -2px #a855f7cc,inset 0 0 0 2px #ffffffb0,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040}
 html .plate.rz4{box-shadow:0 12px 26px #000a,0 0 38px 0 #f5b82ee0,inset 0 0 0 2px #fff0b8,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040}
 html .plate.rz2::before{border-color:#1d3f9a}html .plate.rz3::before{border-color:#5a1d9a}html .plate.rz4::before{border-color:#8a5d00;border-width:2.5px}
-html .plate.rz3:not(.t-police):not(.t-taxi){background:linear-gradient(180deg,#ffffffd9 0%,#fff0 38%,#0000 62%,#00000030 100%),linear-gradient(115deg,#f0e6ff,#d9c2ff 30%,#c4f0ff 55%,#ffd6f5 80%,#e6d4ff)}
-html .plate.rz4:not(.t-police):not(.t-taxi){background:linear-gradient(180deg,#fff9 0%,#fff0 38%,#0000 62%,#0003 100%),linear-gradient(115deg,#fff1b8,#f5d160 28%,#ffe9a0 50%,#e0aa30 75%,#fbe28a)}
+html .plate.rz3:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro){background:linear-gradient(180deg,#ffffffd9 0%,#fff0 38%,#0000 62%,#00000030 100%),linear-gradient(115deg,#f0e6ff,#d9c2ff 30%,#c4f0ff 55%,#ffd6f5 80%,#e6d4ff)}
+html .plate.rz4:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro){background:linear-gradient(180deg,#fff9 0%,#fff0 38%,#0000 62%,#0003 100%),linear-gradient(115deg,#fff1b8,#f5d160 28%,#ffe9a0 50%,#e0aa30 75%,#fbe28a)}
 html .plate.rz3::after,html .plate.rz4::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,#ffffffb3 50%,transparent 60%);transform:translateX(-130%);animation:shine 3.4s 1s infinite}
 html .plate.rz4 .pm,html .plate.rz4 .pr{text-shadow:0 1px 0 #fff8,0 -1px 0 #5a3a0099,0 3px 3px #0005}
 html .grow.row2 .plate.rz3::after,html .grow.row2 .plate.rz4::after,html .row2 .plate.rz3::after,html .row2 .plate.rz4::after{animation-duration:4.5s}
 html .plate.blur::after{display:none}
 
 /* === вид номера как на эталоне (финальный блок, перекрывает прежние) === */
-html body .plate{container-type:inline-size;border:0;border-radius:14px;padding:0;
+html body .plate{container-type:inline-size;border:0;border-radius:7px;padding:0;
  font-family:'Barlow Semi Condensed','DIN Alternate','Arial Narrow',Arial,sans-serif;font-weight:700;
  background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%);
  box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a}
-html body .plate::before{content:'';position:absolute;inset:4px;border:2px solid #17171b;border-radius:10px;opacity:1;pointer-events:none;
+html body .plate::before{content:'';position:absolute;inset:4px;border:2px solid #17171b;border-radius:4px;opacity:1;pointer-events:none;
  box-shadow:none;
  background:radial-gradient(circle at max(7px,1.9cqw) 50%,#9a9aa2 0 max(2px,.55cqw),#46464c max(2.3px,.62cqw) max(3px,.78cqw),transparent max(3.3px,.82cqw)),radial-gradient(circle at calc(100% - max(7px,1.9cqw)) 50%,#9a9aa2 0 max(2px,.55cqw),#46464c max(2.3px,.62cqw) max(3px,.78cqw),transparent max(3.3px,.82cqw))}
 html body .plate .pm{margin:6px 0 6px 6px;padding:0 2.5cqw 0 4cqw;border-right:2px solid #17171b;display:flex;align-items:center;justify-content:center;
@@ -59,7 +59,7 @@ html body .plate small{display:flex;align-items:center;justify-content:center;ga
 html body .plate small .flag{width:6.4cqw;height:4.2cqw;border:1px solid #1b1b20;border-radius:1px;box-shadow:none}
 html body .plate:has(.fl-BY) .pm{font-size:12cqw}
 /* такси и полиция */
-html body .plate.plate:not(.t-police):not(.t-taxi){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
+html body .plate.plate:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
 html body .plate.t-taxi{background:linear-gradient(180deg,#ffe55a,#f6c800 60%,#dcaa00)}
 html body .plate.t-police{background:linear-gradient(180deg,#5f93f7,#2858c9 60%,#1a449f);box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a}
 html body .plate.t-police::before{border-color:#fff}
@@ -71,13 +71,68 @@ html body .plate.rz1{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10
 html body .plate.rz2{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 24px -2px #5b8cffcc}
 html body .plate.rz3{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 32px 0 #a855f7dd}
 html body .plate.rz4{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 42px 2px #f5b82eee}
-html body .plate.rz3:not(.t-police):not(.t-taxi),html body .plate.rz4:not(.t-police):not(.t-taxi){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
+html body .plate.rz3:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro),html body .plate.rz4:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
 html body .plate.rz2::before,html body .plate.rz3::before,html body .plate.rz4::before{border-color:#17171b;border-width:2px}
 html body .plate.t-police.rz2::before,html body .plate.t-police.rz3::before,html body .plate.t-police.rz4::before{border-color:#fff}
 /* карточки каталога */
 html body .cf b{font-size:clamp(17px,5vw,26px);white-space:nowrap}html body .cf span{font-size:clamp(12px,3.5vw,19px);white-space:nowrap}html body .cf{gap:6px;padding-left:14px;padding-right:14px}html body .cf>div:first-child{min-width:0;font-size:clamp(15px,4.6vw,19px)}html body .cf .dots i{width:clamp(16px,5vw,24px)}
 /* мелкие номера в списках */
-html body .row2 .plate::before{inset:3px;border-width:1.5px;border-radius:7px;background:none}
+html body .row2 .plate::before{inset:3px;border-width:1.5px;border-radius:3px;background:none}
 html body .row2 .plate .pm{margin:4.5px 0 4.5px 4.5px;padding:0 1cqw;border-right-width:1.5px}
 html body .row2 .plate .pr{margin:4.5px 4.5px 4.5px 0}
 
+
+/* === новые типы: транзит, военный, дипломатический, ретро. Рамки магазина (sk-*) меняют только кромку и свечение, заливка и текст остаются === */
+html body .plate.t-transit{background:linear-gradient(180deg,#f0655a,#d3302a 58%,#a81f1b);box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a}
+html body .plate.t-military{background:linear-gradient(180deg,#9aa764,#6f7e3f 58%,#4f5b2a);box-shadow:0 0 0 1.5px #d8dcb6aa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a}
+html body .plate.t-diplomat{background:linear-gradient(180deg,#3a58a8,#1b3478 58%,#0e1f52);box-shadow:0 0 0 1.5px #e6c56aaa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a}
+html body .plate.t-retro{background:linear-gradient(180deg,#f6edcf,#e5d5a6 58%,#cdb97f);box-shadow:0 0 0 1.5px #8a7a4f,inset 0 0 0 3px #fff8e0,0 10px 24px #000a}
+html body .plate.t-transit::before{border-color:#fff}html body .plate.t-military::before{border-color:#e6e8c8}html body .plate.t-diplomat::before{border-color:#e6c56a}html body .plate.t-retro::before{border-color:#3a3320}
+html body .plate.t-transit .pm,html body .plate.t-transit .pr,html body .plate.t-transit small{color:#fff;text-shadow:0 1px 2px #0007}
+html body .plate.t-military .pm,html body .plate.t-military .pr,html body .plate.t-military small{color:#f6f3d8;text-shadow:0 1px 2px #0008}
+html body .plate.t-diplomat .pm,html body .plate.t-diplomat .pr,html body .plate.t-diplomat small{color:#fff;text-shadow:0 1px 2px #0008}
+html body .plate.t-retro .pm,html body .plate.t-retro .pr,html body .plate.t-retro small{color:#1d1a12;text-shadow:0 1px 0 #fff9}
+html body .plate.t-transit .pm{border-right-color:#fff}html body .plate.t-transit small .flag{border-color:#fff}
+html body .plate.t-military .pm{border-right-color:#e6e8c8}
+/* без блока региона: номер на всю плашку */
+html body .plate.nr .pm{border-right:0;margin:6px;padding:0 3cqw}
+html body .plate.t-military .pm{font-size:15cqw;letter-spacing:.06em}
+html body .plate.t-diplomat .pm{font-size:13.5cqw;letter-spacing:.04em}
+/* ретро: квадратные буквы старого образца */
+html body .plate.t-retro .pm{font-family:'Courier New',Courier,'Liberation Mono',monospace;font-weight:900;font-size:13.5cqw;letter-spacing:.02em}
+html body .row2 .plate.nr .pm{font-size:clamp(18px,6.4vw,34px);padding:6px 0}
+
+/* === правка: углы как у настоящего номера, пропорции типов без региона не длиннее обычных === */
+html body .plate.nr{aspect-ratio:5/1}
+html body .row2 .plate.nr{aspect-ratio:auto}
+html body .plate.t-retro .pm{font-size:14.5cqw}
+html body .plate.t-military .pm{font-size:16cqw}
+html body .plate.t-diplomat .pm{font-size:14.5cqw}
+
+/* свечение редкости у типов с собственным цветом плашки (раньше перекрывалось их box-shadow) */
+html body .plate.t-transit.rz1{box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a,0 0 16px -2px #4ade80aa}
+html body .plate.t-transit.rz2{box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a,0 0 24px -2px #5b8cffcc}
+html body .plate.t-transit.rz3{box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a,0 0 32px 0 #a855f7dd}
+html body .plate.t-transit.rz4{box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a,0 0 42px 2px #f5b82eee}
+html body .plate.t-military.rz1{box-shadow:0 0 0 1.5px #d8dcb6aa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a,0 0 16px -2px #4ade80aa}
+html body .plate.t-military.rz2{box-shadow:0 0 0 1.5px #d8dcb6aa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a,0 0 24px -2px #5b8cffcc}
+html body .plate.t-military.rz3{box-shadow:0 0 0 1.5px #d8dcb6aa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a,0 0 32px 0 #a855f7dd}
+html body .plate.t-military.rz4{box-shadow:0 0 0 1.5px #d8dcb6aa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a,0 0 42px 2px #f5b82eee}
+html body .plate.t-diplomat.rz1{box-shadow:0 0 0 1.5px #e6c56aaa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a,0 0 16px -2px #4ade80aa}
+html body .plate.t-diplomat.rz2{box-shadow:0 0 0 1.5px #e6c56aaa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a,0 0 24px -2px #5b8cffcc}
+html body .plate.t-diplomat.rz3{box-shadow:0 0 0 1.5px #e6c56aaa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a,0 0 32px 0 #a855f7dd}
+html body .plate.t-diplomat.rz4{box-shadow:0 0 0 1.5px #e6c56aaa,inset 0 0 0 3px #ffffff30,0 10px 24px #000a,0 0 42px 2px #f5b82eee}
+html body .plate.t-retro.rz1{box-shadow:0 0 0 1.5px #8a7a4f,inset 0 0 0 3px #fff8e0,0 10px 24px #000a,0 0 16px -2px #4ade80aa}
+html body .plate.t-retro.rz2{box-shadow:0 0 0 1.5px #8a7a4f,inset 0 0 0 3px #fff8e0,0 10px 24px #000a,0 0 24px -2px #5b8cffcc}
+html body .plate.t-retro.rz3{box-shadow:0 0 0 1.5px #8a7a4f,inset 0 0 0 3px #fff8e0,0 10px 24px #000a,0 0 32px 0 #a855f7dd}
+html body .plate.t-retro.rz4{box-shadow:0 0 0 1.5px #8a7a4f,inset 0 0 0 3px #fff8e0,0 10px 24px #000a,0 0 42px 2px #f5b82eee}
+
+/* === правка: текст не должен упираться в рамку и винты в списке шансов и в каталоге/альбоме (запасные шрифты шире Barlow) === */
+html body .grow.row2 .plate:not(.nr) .pm{font-size:13.5cqw;padding:0 1.5cqw}
+html body .at .plate:not(.nr) .pm{font-size:12.5cqw;padding:0 1.5cqw}
+html body .at .plate.t-retro .pm{font-size:12cqw}
+html body .plate:not(.nr) .pm{font-size:14.5cqw}
+html body .plate:has(.fl-BY) .pm{font-size:12cqw}
+html body .grow.row2 .plate:not(.nr) .pm,html body .at .plate:not(.nr) .pm{padding:0 1.5cqw 0 3.2cqw}
+html body .grow.row2 .plate:has(.fl-BY) .pm{font-size:11.5cqw}
+html body .at .plate:has(.fl-BY) .pm{font-size:10.5cqw}

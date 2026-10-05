@@ -1,7 +1,7 @@
 // Преобразование строк БД в кэш клиента (state.js): поля, значения по умолчанию, настройки.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {playerToState, plateFromRow, applyPlates, S} from '../js/state.js';
+import {playerToState, plateFromRow, applyPlates, typeSeen, S} from '../js/state.js';
 
 test('playerToState: поля игрока и настройки', () => {
   const s = playerToState({created_at: '2026-10-01T10:00:00Z', nick: 'Аня', balance: 12345, usd: 7, xp: 40, lvl: 3, cap_c: 150, cap_s: 10,
@@ -20,4 +20,15 @@ test('plateFromRow и applyPlates: коллекция и сейф разделя
   applyPlates([row(1, false), row(2, true), row(3, false)]);
   assert.deepEqual(S.col.map((p) => p.id), [1, 3]);
   assert.deepEqual(S.safe.map((p) => p.id), [2]);
+});
+
+test('новые типы номеров: строка БД и открытие типа через seen', () => {
+  const row = {id: 9, country: 'RU', type: 'military', main: '1357 АВ', reg: '77', region_name: 'Москва', cls: 0, mu: [1, 1, 1, 80], price: '8000', in_safe: false, created_at: '2026-10-03T10:00:00Z'};
+  const p = plateFromRow(row);
+  assert.equal(p.type, 'military'); assert.equal(p.main, '1357 АВ'); assert.equal(p.price, 8000);
+  S.seen = ['c0', 'tcivil', 'ttransit'];
+  assert.equal(typeSeen('civil'), true);      // гражданский открыт всегда
+  assert.equal(typeSeen('transit'), true);
+  assert.equal(typeSeen('retro'), false);     // ещё не выпадал
+  assert.equal(typeSeen('military'), false);
 });

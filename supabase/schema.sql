@@ -28,7 +28,7 @@ create table public.plates (
   id           bigint generated always as identity primary key,
   owner        uuid not null references public.players(id) on delete cascade,
   country      text not null check (country in ('RU','BY')),
-  type         text not null check (type in ('civil','taxi','police')),
+  type         text not null check (type in ('civil','taxi','police','transit','military','diplomat','retro')),
   main         text not null,
   reg          text not null,
   region_name  text not null,

@@ -15,52 +15,52 @@
    Свечение редкости (box-shadow) не трогаем: неон и золото светятся через filter. */
 html .plate.sk-gold{border-color:#6b4d05;filter:drop-shadow(0 0 6px #f5c84a77)}
 html .plate.sk-gold::before{border-color:#c99a1e;box-shadow:inset 0 0 0 1px #fff0a8,0 0 0 1px #6b4d05}
-html .plate.sk-gold:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#00000033 100%),repeating-linear-gradient(90deg,#fff0 0 3px,#0000000a 3px 4px),linear-gradient(115deg,#fff3c4,#f2cf63 35%,#fff0a8 55%,#d9a62b)}
+html .plate.sk-gold:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#00000033 100%),repeating-linear-gradient(90deg,#fff0 0 3px,#0000000a 3px 4px),linear-gradient(115deg,#fff3c4,#f2cf63 35%,#fff0a8 55%,#d9a62b)}
 
 
 html .plate.sk-carbon{border-color:#050507}
 html .plate.sk-carbon::before{border-color:#8d939e;box-shadow:inset 0 0 0 1px #000a}
-html .plate.sk-carbon:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff1c 0%,#fff0 40%,#0000004d 100%),repeating-linear-gradient(45deg,#1b1c21 0 4px,#2a2c33 4px 8px),#1b1c21}
-html .plate.sk-carbon:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4) .pm,
-html .plate.sk-carbon:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4) .pr{color:#f4f5f7;text-shadow:0 2px 3px #000b;border-color:#8d939e}
+html .plate.sk-carbon:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff1c 0%,#fff0 40%,#0000004d 100%),repeating-linear-gradient(45deg,#1b1c21 0 4px,#2a2c33 4px 8px),#1b1c21}
+html .plate.sk-carbon:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pm,
+html .plate.sk-carbon:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pr{color:#f4f5f7;text-shadow:0 2px 3px #000b;border-color:#8d939e}
 
 /* === рамки v2: общий шаблон; тёмные (neon, midnight, aurora) перекрашивают текст. Свечение через filter: у .plate overflow:hidden, внешний box-shadow обрезался бы === */
 html .plate.sk-silver{border-color:#4a4f58;filter:drop-shadow(0 0 5px #cfd8e6aa)}
 html .plate.sk-silver::before{border-color:#aeb6c2;box-shadow:inset 0 0 0 1px #ffffffb0}
-html .plate.sk-silver:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#f4f6f9,#cfd5de 40%,#f8fafc 55%,#aab2bf)}
+html .plate.sk-silver:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#f4f6f9,#cfd5de 40%,#f8fafc 55%,#aab2bf)}
 html .plate.sk-bronze{border-color:#3d2410;filter:drop-shadow(0 0 5px #cf9558aa)}
 html .plate.sk-bronze::before{border-color:#b0732f;box-shadow:inset 0 0 0 1px #ffffffb0}
-html .plate.sk-bronze:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#f3d7b0,#cf9558 40%,#efc590 55%,#a8672a)}
+html .plate.sk-bronze:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#f3d7b0,#cf9558 40%,#efc590 55%,#a8672a)}
 html .plate.sk-rose{border-color:#5a2d33;filter:drop-shadow(0 0 6px #f2a0a8aa)}
 html .plate.sk-rose::before{border-color:#d98a93;box-shadow:inset 0 0 0 1px #ffffffb0}
-html .plate.sk-rose:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#ffe6e4,#f2b3b0 40%,#ffd9d2 55%,#d98b8f)}
+html .plate.sk-rose:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#ffe6e4,#f2b3b0 40%,#ffd9d2 55%,#d98b8f)}
 html .plate.sk-emerald{border-color:#04281c;filter:drop-shadow(0 0 6px #19c37d99)}
 html .plate.sk-emerald::before{border-color:#19c37d;box-shadow:inset 0 0 0 1px #ffffffb0}
-html .plate.sk-emerald:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#e3fff1,#8fe6bd 40%,#d2ffe9 55%,#3fbf8a)}
+html .plate.sk-emerald:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#e3fff1,#8fe6bd 40%,#d2ffe9 55%,#3fbf8a)}
 html .plate.sk-ruby{border-color:#3a0610;filter:drop-shadow(0 0 6px #ff3355aa)}
 html .plate.sk-ruby::before{border-color:#ff3355;box-shadow:inset 0 0 0 1px #ffffffb0}
-html .plate.sk-ruby:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#ffe3e8,#ff8da0 40%,#ffd0d9 55%,#d6243f)}
+html .plate.sk-ruby:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#ffe3e8,#ff8da0 40%,#ffd0d9 55%,#d6243f)}
 html .plate.sk-sapphire{border-color:#07173f;filter:drop-shadow(0 0 6px #3d7bffaa)}
 html .plate.sk-sapphire::before{border-color:#3d7bff;box-shadow:inset 0 0 0 1px #ffffffb0}
-html .plate.sk-sapphire:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#e4edff,#8fb2ff 40%,#d3e1ff 55%,#2f63e0)}
+html .plate.sk-sapphire:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#e4edff,#8fb2ff 40%,#d3e1ff 55%,#2f63e0)}
 html .plate.sk-sunset{border-color:#2a0f2e;filter:drop-shadow(0 0 5px #ff7a8a99) drop-shadow(0 0 10px #a35bd655)}
 html .plate.sk-sunset::before{border-color:#ff7a8a;box-shadow:inset 0 0 0 1px #ffffffb0}
-html .plate.sk-sunset:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#fff0c9,#ffb36b 35%,#ff7a8a 68%,#a35bd6)}
+html .plate.sk-sunset:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#fff0c9,#ffb36b 35%,#ff7a8a 68%,#a35bd6)}
 html .plate.sk-neon{border-color:#050814;filter:drop-shadow(0 0 4px #12e6ffcc) drop-shadow(0 0 10px #ff2bd655)}
 html .plate.sk-neon::before{border-color:#12e6ff;box-shadow:inset 0 0 8px #12e6ff66,0 0 0 1px #12e6ff55}
-html .plate.sk-neon:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff22 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(180deg,#171e3b,#070a18)}
-html .plate.sk-neon:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4) .pm,html .plate.sk-neon:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4) .pr{color:#eaffff;text-shadow:0 0 6px #12e6ff,0 0 14px #12e6ff88;border-color:#12e6ff}
+html .plate.sk-neon:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff22 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(180deg,#171e3b,#070a18)}
+html .plate.sk-neon:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pm,html .plate.sk-neon:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pr{color:#eaffff;text-shadow:0 0 6px #12e6ff,0 0 14px #12e6ff88;border-color:#12e6ff}
 html .plate.sk-midnight{border-color:#05060b;filter:drop-shadow(0 0 6px #d9b24a55)}
 html .plate.sk-midnight::before{border-color:#d9b24a;box-shadow:inset 0 0 8px #ffffff40}
-html .plate.sk-midnight:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff22 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(180deg,#1d2033,#0a0c16)}
-html .plate.sk-midnight:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4) .pm,html .plate.sk-midnight:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4) .pr{color:#f6e6b0;text-shadow:0 2px 3px #000b;border-color:#d9b24a}
+html .plate.sk-midnight:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff22 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(180deg,#1d2033,#0a0c16)}
+html .plate.sk-midnight:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pm,html .plate.sk-midnight:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pr{color:#f6e6b0;text-shadow:0 2px 3px #000b;border-color:#d9b24a}
 html .plate.sk-aurora{border-color:#04141a;filter:drop-shadow(0 0 5px #5cffc688) drop-shadow(0 0 11px #8a5cff66)}
 html .plate.sk-aurora::before{border-color:#5cffc6;box-shadow:inset 0 0 8px #ffffff40}
-html .plate.sk-aurora:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff22 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#0b2a2a,#14305a 40%,#3a1f5e 75%,#0b2a2a)}
-html .plate.sk-aurora:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4) .pm,html .plate.sk-aurora:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4) .pr{color:#eafff8;text-shadow:0 0 6px #5cffc699;border-color:#5cffc6}
+html .plate.sk-aurora:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff22 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#0b2a2a,#14305a 40%,#3a1f5e 75%,#0b2a2a)}
+html .plate.sk-aurora:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pm,html .plate.sk-aurora:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pr{color:#eafff8;text-shadow:0 0 6px #5cffc699;border-color:#5cffc6}
 html .plate.sk-hologram{border-color:#2a2147;filter:drop-shadow(0 0 6px #b58cffaa)}
 html .plate.sk-hologram::before{border-color:#b58cff;box-shadow:inset 0 0 0 1px #ffffffb0}
-html .plate.sk-hologram:not(.t-police):not(.t-taxi):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#ffd6f5,#d6e8ff 30%,#d6ffee 55%,#fff3c4 80%,#ffd6f5)}
+html .plate.sk-hologram:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:linear-gradient(180deg,#ffffff99 0%,#fff0 38%,#0000 62%,#0000002e 100%),linear-gradient(115deg,#ffd6f5,#d6e8ff 30%,#d6ffee 55%,#fff3c4 80%,#ffd6f5)}
 html .plate.sk-hologram{animation:skholo 7s linear infinite}
 @keyframes skholo{to{filter:drop-shadow(0 0 6px #b58cffaa) hue-rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){html .plate.sk-hologram{animation:none}}

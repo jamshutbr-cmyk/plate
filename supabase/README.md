@@ -58,3 +58,9 @@
 ## leaderboard.sql: Рейтинг
 
 `get_leaderboard(p_kind)`: `'best'` — по самому дорогому выбитому номеру, `'coins'` — по монетам на балансе. Файл запускать заново (старая версия без аргумента удаляется). Клиент: вкладки в `js/views/top.js`.
+
+
+## types_v2.sql: новые типы номеров
+
+Типы `transit`, `military`, `diplomat`, `retro` (к прежним `civil`, `taxi`, `police`). На живой базе выполните `types_v2.sql` (меняет check по `type` в `plates` и `market_listings`, безопасно повторять) **до** деплоя новой версии `generate`, иначе вставка редкого типа упадёт. Функции (`commit_plate`, `autosell`, `sell_plates`, рынок) типов не перечисляют: «спецномер» для автопродажи это всё, что не `civil`. `prestige.sql` заново запускать не нужно. Деплой: `supabase functions deploy generate`.
+В Беларуси выпадают только `civil`, `taxi`, `police`, `transit`; шансы для страны пересчитываются на сумму её типов (поле `c` в `TYPES`). Шансы, множители и форматы живут в `_shared/engine.ts` и зеркалятся в `js/config.js` (сверяет `tests/types.test.mjs`). Баланс: `node --experimental-strip-types --no-warnings tests/balance-sim.mjs` (миллион прокрутов плюс точное ожидание цены).

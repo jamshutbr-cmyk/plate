@@ -22,7 +22,8 @@ test('mk: номер валидный, цена положительная', () 
     const p = mk({country: c, reg: ''}, REG[c]);
     assert.ok(p.price > 0);
     assert.ok(p.cls >= 0 && p.cls <= 4);
-    assert.ok(['civil', 'taxi', 'police'].includes(p.type));
+    assert.ok(['civil', 'taxi', 'police', 'transit', 'military', 'diplomat', 'retro'].includes(p.type));
+    if (c == 'BY') assert.ok(['civil', 'taxi', 'police', 'transit'].includes(p.type), p.type);
   }
 });
 test('распределение редкостей: обычных и необычных большинство', () => {

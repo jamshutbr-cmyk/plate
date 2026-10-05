@@ -1,6 +1,8 @@
 // Мелкие помощники без зависимостей.
 export const $=id=>document.getElementById(id),rnd=n=>Math.floor(Math.random()*n),pick=a=>a[rnd(a.length)];
 export const fmt=n=>Math.round(n).toLocaleString('ru-RU').replace(/\u00a0/g,' ');
+// Шанс в %: до двух знаков, запятая, минимум один знак после неё (92,86 / 4,0 / 0,07)
+export const pct=x=>{let s=(+x.toFixed(2)).toString();if(!s.includes('.'))s+='.0';return s.replace('.',',')};
 export const xf=n=>'×'+(n>=100?fmt(n):n.toFixed(2));
 export const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // Цена лота из ввода игрока: «1500000», «1 500 000», «1.5м», «250к», «2млрд». 0, если не разобрать.

@@ -35,7 +35,7 @@ export function sellDlg(ids){
   const tot=ids.reduce((s,i)=>s+(find(i)?.price||0),0);
   sm(`<div class="dlg"><h3>Цена — ${fmt(tot)} ₽</h3><button class="btn red" data-click="sell" data-arg="${ids}">Продать (${S.perks.sell>=100-SELL_PCT?'без комиссии':'−'+(100-SELL_PCT-S.perks.sell)+'%'})<b>${fmt(sellGain(tot,S.perks.sell))} ₽</b></button></div>`)}
 export async function sell(ids){cm();await api.sellPlates(ids);sel.clear();render(true);burst('#f5b82e',12)}
-export function cycleFilter(){LST.ft=(LST.ft+1)%4;sel.clear();drawList()}
+export function cycleFilter(){LST.ft=(LST.ft+1)%(TYPES.length+1);sel.clear();drawList()}
 export function moveOne(id){sel.clear();sel.add(id);moveSel();cm()}
 DRAW.list=drawList;
 on({lp:a=>lp(+a),lpc,noMenu:()=>false,tapRow:a=>tapRow(+a),sortBy:a=>sortBy(a),selAll,moveSel,moveOne:a=>moveOne(+a),sellDlg:a=>sellDlg(ids(a)),sell:a=>sell(ids(a)),cycleFilter});
