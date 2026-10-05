@@ -36,7 +36,8 @@ Deno.serve(async (req) => {
     return json({ error: 'server' }, 500);
   }
   if (pl.luck > 0) await admin.rpc('consume_luck', { uid });
-  const { data: p2 } = await admin.from('players').select('balance, usd, xp, lvl, stats, seen').eq('id', uid).single();
+  // commit_plate_fee уже вернул данные игрока; запасной select нужен, пока в базе старая версия функции
+  const p2 = data.player ?? (await admin.from('players').select('balance, usd, xp, lvl, stats, seen').eq('id', uid).single()).data;
   return json({
     plate: { ...plate, id: data.id, ts: data.ts },
     unlock: data.unlock, lvup: data.lvup, player: p2,
