@@ -1,6 +1,6 @@
 // Edge Function tg-auth: вход через Telegram.
 // Вход: { initData: string } → выход: { access_token, refresh_token, expires_at } (обычная сессия Supabase).
-// Секреты (supabase secrets set): BOT_TOKEN, PASSWORD_PEPPER. SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY задаёт сама платформа.
+// Секреты (supabase secrets set): BOT_TOKEN, PASSWORD_PEPPER, CHANNEL (например @plategen_news; пусто — подписка не требуется; бот должен быть админом канала). SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY задаёт сама платформа.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { cors, json } from '../_shared/cors.ts';
 import { playerPassword, verifyInitData } from '../_shared/tg.ts';
@@ -14,6 +14,17 @@ Deno.serve(async (req) => {
 
   const user = await verifyInitData(initData, Deno.env.get('BOT_TOKEN')!);
   if (!user) return json({ error: 'bad signature' }, 401);
+
+  // Обязательная подписка на канал
+  const channel = Deno.env.get('CHANNEL');
+  if (channel) {
+    const r = await fetch(`https://api.telegram.org/bot${Deno.env.get('BOT_TOKEN')}/getChatMember?chat_id=${encodeURIComponent(channel)}&user_id=${user.id}`)
+      .then((x) => x.json()).catch(() => null);
+    const st = r?.ok ? r.result?.status : null;
+    if (!['creator', 'administrator', 'member', 'restricted'].includes(st) || (st === 'restricted' && !r.result.is_member)) {
+      return json({ error: 'not_subscribed' }, 403);
+    }
+  }
 
   const url = Deno.env.get('SUPABASE_URL')!;
   const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
