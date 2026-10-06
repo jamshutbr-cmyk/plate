@@ -203,6 +203,3 @@ body.fx1 .hint,body.fx2 .hint{animation:none}
 body.fx1 .plate.rz3::after,body.fx1 .plate.rz4::after,body.fx2 .plate.rz3::after,body.fx2 .plate.rz4::after{animation:none;display:none}
 body.fx2 .plate.in,body.fx2 .plate.in::after,body.fx2 .plate.sh::after,body.fx2 .row2,body.fx2 .tile,body.fx2 .cc,body.fx2 .sheet,body.fx2 #big.on{animation:none}
 body.fx2 .cf{backdrop-filter:none}
-
-/* подпись под выпавшим номером: серия и признаки */
-.pn{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;max-width:min(94vw,520px);margin-top:2px;color:var(--mut);font-size:16px;line-height:1.35}.pn b{color:var(--tx);font-weight:600}
