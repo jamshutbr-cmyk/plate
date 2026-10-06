@@ -59,7 +59,10 @@ insert into public.car_defs (id, r) values
   ('camry', 2),
   ('bmw', 2),
   ('gelik', 3),
-  ('rs6', 3)
+  ('rs6', 3),
+  ('m5', 3),
+  ('rrsvr', 3),
+  ('huracan', 4)
 on conflict (id) do update set r = excluded.r;
 
 -- Новый кейс или правка шансов: строка здесь И в CASES (js/config.js). Кейсы, которых нет в списке, удаляются.

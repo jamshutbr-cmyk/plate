@@ -9,7 +9,10 @@ export const CARS=[
  {id:'camry',n:'Камри',img:'img/cars/camry.webp',ar:1.328,x:50.13,y:69.35,w:21.4,sy:1.5,r:2},
  {id:'bmw',n:'БМВ E39',img:'img/cars/bmw.webp',ar:1.3521,x:50.13,y:68.92,w:32.65,r:2},
  {id:'gelik',n:'Гелик',img:'img/cars/gelik.webp',ar:1.1385,x:50.04,y:66.47,w:27.02,r:3},
- {id:'rs6',n:'Ауди RS6',img:'img/cars/rs6.webp',ar:1.394,x:50.12,y:66.21,w:28.1,r:3}];
+ {id:'rs6',n:'Ауди RS6',img:'img/cars/rs6.webp',ar:1.394,x:50.12,y:66.21,w:28.1,r:3},
+ {id:'m5',n:'БМВ M5',img:'img/cars/m5.webp',ar:1.3827,x:50.04,y:68.35,w:29.14,r:3},
+ {id:'rrsvr',n:'Рендж Ровер SVR',img:'img/cars/rrsvr.webp',ar:1.2357,x:50,y:60.17,w:26.48,r:3},
+ {id:'huracan',n:'Ламборгини Хуракан',img:'img/cars/huracan.webp',ar:1.6676,x:50.29,y:77.93,w:25.64,r:4}];
 
 // Новая машина: строка в CARS (id, картинка в img/cars/, r, ar, x, y, w) + такая же строка (id, r) в supabase/cases.sql, car_defs.
 // Дальше она сама попадает в кейсы, где у её класса r есть шанс. Класс без машин не выпадает, его шанс уходит остальным.
