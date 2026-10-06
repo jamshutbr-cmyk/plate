@@ -3,7 +3,7 @@ export const COST=3000,START=50000;
 export const RAR=[{n:'Обычный',en:'Common',p:53.81,c:'#9a9aab',m:1},{n:'Необычный',en:'Uncommon',p:37.96,c:'#4ade80',m:11.55},{n:'Редкий',en:'Rare',p:7.98,c:'#5b8cff',m:661.2},{n:'Эпический',en:'Epic',p:.24,c:'#a855f7',m:9955},{n:'Легендарный',en:'Legendary',p:.01,c:'#f5b82e',m:242550}];
 // Типы номеров. k — тип, p — шанс в % (сумма 100), m — множитель цены, c — страны, где тип выпадает (в Беларуси только civil/taxi/police/transit).
 // Должны совпадать с TYPES в supabase/functions/_shared/engine.ts и check в SQL, это сверяет tests/types.test.mjs.
-export const TYPES=[{k:'civil',p:92.86,m:1,n:'Гражданский',c:['RU','BY']},{k:'taxi',p:4,m:24,n:'Такси',c:['RU','BY']},{k:'police',p:1,m:50,n:'Полиция',c:['RU','BY']},{k:'transit',p:2,m:.5,n:'Транзит',c:['RU','BY']},{k:'military',p:.07,m:80,n:'Военный',c:['RU']},{k:'diplomat',p:.06,m:120,n:'Дипломат',c:['RU']},{k:'retro',p:.01,m:200,n:'Ретро',c:['RU']}];
+export const TYPES=[{k:'civil',p:91.4,m:1,n:'Гражданский',c:['RU','BY']},{k:'taxi',p:4,m:24,n:'Такси',c:['RU','BY']},{k:'police',p:2,m:20,n:'Полиция',c:['RU','BY']},{k:'transit',p:2,m:.5,n:'Транзит',c:['RU','BY']},{k:'military',p:.3,m:25,n:'Военный',c:['RU']},{k:'diplomat',p:.25,m:40,n:'Дипломат',c:['RU']},{k:'retro',p:.05,m:80,n:'Ретро',c:['RU']}];
 export const NOREG=['military','diplomat','retro'];   // у этих плашек нет блока региона (только отрисовка)
 export const CN={RU:{n:'Россия',cc:'RUS'},BY:{n:'Беларусь',cc:'BY'}};
 export const RU_L='АВЕКМНОРСТУХ',BY_L='ABEIKMHOPCTX';
