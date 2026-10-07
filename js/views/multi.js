@@ -57,7 +57,7 @@ export async function multiGen(){
   const st=$('stage'),iv=setInterval(()=>{st.innerHTML=`<div class="tl">Генерация ×${n}…</div>`+Array.from({length:n},()=>plateHTML(fake(),'blur mini')).join('')},90);
   const r=await api.multiRoll(n).finally(()=>clearInterval(iv));
   st.innerHTML='';
-  if(r.err){banner(({money:'Не хватает денег',pass:'Пасс закончился','no pass':'Пасс закончился',pending:'Есть нерешённый пакет'})[r.err]||'Ошибка',r.err=='pending'?'Сначала решите по номерам':'Попробуйте ещё раз');render();return}
+  if(r.err){const t=({money:'Не хватает денег',pass:'Пасс закончился','no pass':'Пасс закончился',pending:'Есть нерешённый пакет'})[r.err];banner(t||'Ошибка',t?(r.err=='pending'?'Сначала решите по номерам':'Попробуйте ещё раз'):String(r.err).slice(0,80));render();return}
   for(const k in D)delete D[k];go('multi')}
 
 function drawMulti(){
@@ -82,7 +82,7 @@ on({
   mBuy:async()=>{
     if(S.usd<TRIPLE.usd){banner('Не хватает $','Нужно '+TRIPLE.usd+' $');return}
     const r=await api.buyPass();
-    if(r.err){banner(({window:'Окно продаж закрыто',active:'Пасс уже активен',usd:'Не хватает $'})[r.err]||'Ошибка','Попробуйте ещё раз');return}
+    if(r.err){const t=({window:'Окно продаж закрыто',active:'Пасс уже активен',usd:'Не хватает $'})[r.err];banner(t||'Ошибка',t?'Попробуйте ещё раз':String(r.err).slice(0,80));return}
     S.mul=3;banner('Пасс куплен','Тройная прокрутка на '+TRIPLE.hours+' ч');render(true)},
   mOk:async()=>{
     const ds=S.pend.map(p=>({id:p.id,act:dec(p)})),r=await api.resolveRolls(ds);

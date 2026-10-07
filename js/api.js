@@ -8,7 +8,7 @@ import {fmt} from './util.js';
 // после ответа обновляется кэш S. Сетевые и серверные ошибки бросаются как исключения: их ловит main.js.
 // Бизнес-отказы (не хватает денег и т.п.) возвращаются значением, как раньше.
 const REB_ERR=[['level too low','level'],['has listings','listings'],['has deposits','deposits'],['not enough stars','stars'],['max','max']];
-async function errCode(er){try{return (await er.context.json()).error||'server'}catch(_){return 'server'}}
+async function errCode(er){try{const j=await er.context.json();return j.error||j.code||j.message||'server'}catch(_){return (er&&er.message)||'network'}}
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
 // Банковская операция: ошибку сервера превращаем в {err:'код'}, успех — в {ok:1,res}, затем сверяем кэш игрока
