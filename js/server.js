@@ -1,7 +1,7 @@
 import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
 import {SUPABASE_ANON_KEY, SUPABASE_URL} from './env.js';
 import {TG, tgUser} from './platform.js';
-import {S, applyPlates, applyPlayer} from './state.js';
+import {S, applyPlates, applyPlayer, applyTriple} from './state.js';
 
 // Связь с Supabase: вход через Telegram и загрузка данных в кэш S. Единственное место, где создаётся клиент.
 export const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
@@ -20,5 +20,12 @@ export async function login(){
 }
 export async function loadPlayer(){const {data,error}=await sb.from('players').select('*').single();if(error)throw error;applyPlayer(data)}
 export async function loadPlates(){const {data,error}=await sb.from('plates').select('*').order('id');if(error)throw error;applyPlates(data)}
-export const loadAll=()=>Promise.all([loadPlayer(),loadPlates()]);
+// Пасс, окно продажи и пакет. Если миграция triple_roll.sql ещё не применена, функция тихо выключена.
+export async function loadTriple(){
+  try{
+    const [a,b,c]=await Promise.all([sb.from('passes').select('*').maybeSingle(),sb.rpc('triple_window'),sb.from('pending_rolls').select('*').order('id')]);
+    if(a.error||b.error||c.error)throw a.error||b.error||c.error;
+    applyTriple(a.data,b.data,c.data)}
+  catch(e){applyTriple(null,null,[])}}
+export const loadAll=()=>Promise.all([loadPlayer(),loadPlates(),loadTriple()]);
 export async function rpc(name,args){const {data,error}=await sb.rpc(name,args);if(error)throw error;return data}

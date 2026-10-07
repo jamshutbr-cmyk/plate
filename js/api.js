@@ -8,6 +8,7 @@ import {fmt} from './util.js';
 // после ответа обновляется кэш S. Сетевые и серверные ошибки бросаются как исключения: их ловит main.js.
 // Бизнес-отказы (не хватает денег и т.п.) возвращаются значением, как раньше.
 const REB_ERR=[['level too low','level'],['has listings','listings'],['has deposits','deposits'],['not enough stars','stars'],['max','max']];
+async function errCode(er){try{return (await er.context.json()).error||'server'}catch(_){return 'server'}}
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
 // Банковская операция: ошибку сервера превращаем в {err:'код'}, успех — в {ok:1,res}, затем сверяем кэш игрока
@@ -19,6 +20,11 @@ async function bankCall(f){
  await loadPlayer();return {ok:1,res}}
 
 export const api={
+ // Тройная прокрутка (supabase/triple_roll.sql): покупка пасса, бросок пакета, решение по номерам
+ async buyPass(){const {error}=await sb.functions.invoke('buy-pass');if(error)return {err:await errCode(error)};await loadAll();return {ok:1}},
+ async multiRoll(n){const {error}=await sb.functions.invoke('multi-roll',{body:{n}});if(error)return {err:await errCode(error)};await loadAll();return {ok:1}},
+ async resolveRolls(decisions){const {data,error}=await sb.functions.invoke('resolve-rolls',{body:{decisions}});if(error)return {err:await errCode(error)};await loadAll();return data},
+ async autoResolve(){const {data,error}=await sb.functions.invoke('resolve-rolls',{body:{auto:true}});if(error)return null;await loadAll();return data&&data.auto?data:null},
  async generatePlate(){
   if(S.col.length>=S.capC||S.bal<genCost())return null;
   const {data,error}=await sb.functions.invoke('generate');

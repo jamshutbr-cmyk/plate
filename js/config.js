@@ -85,3 +85,5 @@ export const PRESTIGE={lvlBase:5,lvlStep:1,starsDiv:1,cashStep:50000,usdStep:5,
 export const rebNeed=n=>PRESTIGE.lvlBase+PRESTIGE.lvlStep*n;          // уровень для перерождения при n сделанных
 export const rebStars=lvl=>Math.floor(lvl/PRESTIGE.starsDiv);          // звёзд за перерождение с уровня lvl
 export const perkCost=lv=>lv+1;                                        // цена следующего уровня бонуса, когда сейчас lv
+// Тройная прокрутка: пасс на время, продаётся окнами (таблица offers). Зеркало supabase/triple_roll.sql
+export const TRIPLE={usd:30,hours:24,max:3};

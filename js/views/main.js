@@ -9,13 +9,16 @@ import {on} from '../ui/actions.js';
 import {banner} from '../ui/modal.js';
 import {dots, plateHTML} from '../ui/plate.js';
 import {$, fmt} from '../util.js';
+import {multiGen} from './multi.js';
 
 // Главный экран: тап = генерация номера.
+const mulLbl=()=>{const m=S.mul>1&&S.pass>Date.now()?S.mul:1;return (m>1?'Генерация ×'+m:'Генерация')+' · '+fmt(genCost()+COST*(m-1))+' ₽'};
 let busy=false;
 async function runAuto(){const r=await api.autosell();if(r)banner('Автопродажа','Продано '+r.n+' · '+fmt(r.gain)+' ₽')}
 export async function gen(e){
   if(busy)return;ripple(e);busy=true;
   try{
+    if(S.mul>1&&S.pass>Date.now()){await multiGen();return}
     if(S.as.lvl&&(S.col.length>=S.capC||(S.as.lvl>=9&&S.as.low&&S.bal<genCost())))await runAuto();
     if(S.col.length>=S.capC){stageMsg('Коллекция заполнена ('+S.capC+'). Продайте номера или уберите в сейф.');return}
     if(S.bal<genCost()){stageMsg(brokeMsg());return}
@@ -58,9 +61,9 @@ function mainPaint(keepStage){
   maybeBailout();
   document.querySelectorAll('.bal').forEach(e=>e.textContent=fmt(S.bal)+' ₽   '+fmt(S.usd)+' $');
   $('chip').innerHTML=`<i class="flag fl-${S.country}"></i> ${CN[S.country].n}`;
-  const ph=document.querySelector('#stage .ph span');if(ph)ph.textContent='Генерация · '+fmt(genCost())+' ₽';
+  const ph=document.querySelector('#stage .ph span');if(ph)ph.textContent=mulLbl();
   const ST=S.stats;$('st').textContent=`Выпало: ${ST.n} · Лучший: ${fmt(ST.best)} ₽`;
-  if(!keepStage&&!$('stage').innerHTML.trim())$('stage').innerHTML=`<div class="ph"><b>Нажмите в любом месте</b><span>Генерация · ${fmt(genCost())} ₽</span></div>`;
+  if(!keepStage&&!$('stage').innerHTML.trim())$('stage').innerHTML=`<div class="ph"><b>Нажмите в любом месте</b><span>${mulLbl()}</span></div>`;
 }
 painters.push(mainPaint);
 export async function daily(){const r=await api.claimDaily();if(!r)return;render(true);setTimeout(()=>banner('Ежедневный бонус · день '+r.ds,r.text),500)}

@@ -8,6 +8,7 @@ import {burst} from '../ui/fx.js';
 import {banner} from '../ui/modal.js';
 import {nickCls, plateHTML, titleHTML} from '../ui/plate.js';
 import {$, esc, fmt} from '../util.js';
+import {tripleBanner, tripleCard} from './multi.js';
 
 // Магазин: рамки, титулы и эффекты выпадения за рубли. Цены и права проверяет сервер (buy_item / equip_item).
 let TAB='skin';
@@ -27,9 +28,9 @@ const card=(slot,it)=>{
    :`<button class="big2" data-click="shopBuy" data-arg="${it.id}">Купить · ${fmt(it.p)} ₽</button>`;
   return `<div class="card"><h3>${it.n}<span class="tl">${eq?'Надето':own?'Куплено':''}</span></h3>${it.d?`<div class="tl" style="margin-bottom:10px">${it.d}</div>`:''}${preview(slot,it)}${btn}</div>`};
 export function drawShop(){
-  $('shopC').innerHTML=`<div class="sub" style="margin:0 6px 4px"><span>Баланс</span><b style="color:var(--tx)">${fmt(S.bal)} ₽</b></div>
+  $('shopC').innerHTML=`<div class="sub" style="margin:0 6px 4px"><span>Баланс</span><b style="color:var(--tx)">${fmt(S.bal)} ₽ · ${fmt(S.usd)} $</b></div>${tripleBanner(TAB=='triple')}
    <div class="chips">${TABS.map(([k,n])=>`<button class="${TAB==k?'a':''}" data-click="shopTab" data-arg="${k}">${n}</button>`).join('')}</div>`
-   +SHOP[TAB].map(it=>card(TAB,it)).join('')}
+   +(TAB=='triple'?tripleCard():SHOP[TAB].map(it=>card(TAB,it)).join(''))}
 export async function shopBuy(id){
   const it=itemOf(id);if(!it)return;
   const r=await api.buyItem(id);

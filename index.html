@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="css/market.css">
 <link rel="stylesheet" href="css/bank.css">
 <link rel="stylesheet" href="css/prestige.css">
+<link rel="stylesheet" href="css/multi.css">
 <link rel="stylesheet" href="css/gate.css">
 </head>
 <body>
@@ -29,8 +30,9 @@
   <div id="banner"><i>🔓</i><div><b id="bt">Открыто новое</b><span id="bn"></span></div></div>
   <div class="stage" id="stage" data-click="gen" data-pointermove="tilt"></div>
   <div class="tl" id="st" style="text-align:center;position:relative;z-index:2;margin-bottom:8px"></div>
-  <button class="chip" id="chip" data-click="go" data-arg="gen"></button>
+  <div class="mrow"><button class="chip" id="chip" data-click="go" data-arg="gen"></button><button class="chip mxb" id="mx" style="display:none"></button></div>
 </div>
+<div id="v-multi" class="view"><div class="head"><button class="burger" data-click="go" data-arg="main">←</button>Пакет номеров</div><div id="multiC"></div></div>
 <div id="v-menu" class="view">
   <div class="head"><button class="burger" data-click="go" data-arg="main">←</button>Меню</div>
   <div class="menu">

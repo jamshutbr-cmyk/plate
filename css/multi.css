@@ -1,0 +1,33 @@
+/* Тройная прокрутка: переключатель на главной и экран пакета */
+/* ряд внизу главного экрана: чип страны + кнопка множителя */
+.mrow{display:flex;justify-content:center;align-items:center;gap:10px;position:relative;z-index:2}
+.chip.mxb{padding:14px 20px;min-width:68px;justify-content:center;font-weight:800}
+.chip.mxb.a{background:var(--ac);color:#fff;border-color:transparent}
+.mr .mrt{display:flex;justify-content:space-between;align-items:baseline;font-size:17px;margin-bottom:12px}
+.mr .plate{width:100%;margin:0 auto 14px;box-shadow:0 6px 18px #0008}
+.mr .plate .pm{font-size:clamp(32px,10vw,64px)}
+.mr .plate .pr{font-size:clamp(26px,8vw,50px)}
+.mr.best{box-shadow:0 0 0 1.5px #f5b82e,0 0 24px -8px #f5b82e}
+.mr .chips{margin:0}
+.chips.seg button.a.keep{background:#1f9d5c}
+.chips.seg button.a.safe{background:var(--ac)}
+.chips.seg button.a.sell{background:#d6453d}
+.mnote p{font-size:15px}
+.msum .sub{margin-bottom:8px}
+.mwarn{color:#ff9b9b;font-size:15px;margin:6px 0 0}
+.stage .plate.mini{width:min(60vw,280px);margin:6px auto}
+
+/* магазин: плашка и страница тройной прокрутки */
+.tban{display:flex;justify-content:space-between;align-items:center;gap:12px;background:linear-gradient(100deg,color-mix(in srgb,var(--ac) 26%,var(--card)),var(--card));border:1px solid color-mix(in srgb,var(--ac) 45%,transparent);border-radius:18px;padding:14px 16px;margin:6px 0 12px;cursor:pointer}
+.tban b{display:block;font-size:17px;white-space:nowrap}
+.tban span{display:block;font-size:13px;color:var(--mut);margin-top:2px}
+.tban em{font-style:normal;font-size:13px;font-weight:800;padding:6px 11px;border-radius:999px;background:color-mix(in srgb,var(--tx) 12%,transparent);white-space:nowrap;flex:none}
+.tban.hot em{background:#f5b82e;color:#111}
+.tban.a{box-shadow:0 0 0 2px var(--ac)}
+.tcard .tfan{position:relative;height:165px;margin:6px 0 10px;overflow:hidden}
+.tcard .tfan .plate{position:absolute;left:50%;top:50%;margin:0;box-shadow:0 8px 20px #000a}
+.tcard .tfan .plate:nth-child(1){transform:translate(-50%,-50%) translate(-82px,-30px) rotate(-7deg) scale(.46)}
+.tcard .tfan .plate:nth-child(2){transform:translate(-50%,-50%) translate(82px,-30px) rotate(7deg) scale(.46)}
+.tcard .tfan .plate:nth-child(3){transform:translate(-50%,-50%) translate(0,26px) scale(.54);z-index:2}
+.tcard p{margin:4px 0 16px}
+.tcard .sub{margin-bottom:8px}
