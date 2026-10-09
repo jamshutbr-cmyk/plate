@@ -27,3 +27,10 @@ test('частота опросов: обмены 10 с / 40 с, рынок 45 �
   const a = rd('js/views/auction.js');
   assert.ok(/\+\+BG%3==0/.test(a) && /,15000\)/.test(a));
 });
+
+test('таймер аукциона не трогает чужие таймеры: свой атрибут data-aend, банк остаётся на data-end', () => {
+  const a = rd('js/views/auction.js'), b = rd('js/views/bank.js');
+  assert.ok(!/data-end/.test(a) && !/\[data-end\]/.test(a), 'аукцион не должен обновлять [data-end] (так ломались вклады в банке)');
+  assert.ok(/querySelectorAll\('\[data-aend\]'\)/.test(a));
+  assert.ok(/data-end/.test(b) && !/data-aend/.test(b));
+});

@@ -29,7 +29,7 @@ function left(ends){
   let s=Math.max(0,Math.ceil(ends-now()/1000));
   const h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60,p=n=>String(n).padStart(2,'0');
   return h?`${h}:${p(m)}:${p(c)}`:`${m}:${p(c)}`}
-const timer=ends=>`<span class="atm${ends-now()/1000<AUCTION.snipe?' hot':''}" data-end="${ends}">${left(ends)}</span>`;
+const timer=ends=>`<span class="atm${ends-now()/1000<AUCTION.snipe?' hot':''}" data-aend="${ends}">${left(ends)}</span>`;
 
 const lot=(l,kind)=>{   // kind: 'buy' | 'mine' | 'bid'
   const click=kind=='mine'?'aMineDlg':'aBidDlg',sub=kind=='mine'?'Ваш лот':kind=='bid'?'Ваша ставка':esc(l.nick||'Игрок');
@@ -87,8 +87,8 @@ export function initAuction(){
   // Раз в секунду обновляем таймеры; когда лот истёк, один раз просим сервер закрыть его и обновляем список
   clearInterval(TT);
   TT=setInterval(()=>{
-    document.querySelectorAll('[data-end]').forEach(el=>{
-      const e=+el.dataset.end;el.textContent=left(e);el.classList.toggle('hot',e-now()/1000<AUCTION.snipe);
+    document.querySelectorAll('[data-aend]').forEach(el=>{
+      const e=+el.dataset.aend;el.textContent=left(e);el.classList.toggle('hot',e-now()/1000<AUCTION.snipe);
       if(e<=now()/1000&&Date.now()-EXP>4000&&$('v-auction').classList.contains('on')){EXP=Date.now();AT=0;refresh()}})},1000)}
 
 // ---------- экраны ----------

@@ -16,7 +16,7 @@ export function parseAsk(s){
 // тогда список не трогаем вовсе (пересборка посреди инерционной прокрутки на телефоне сбрасывает её вверх).
 // Если данные изменились, на время замены держим прежнюю высоту блока и возвращаем scrollY.
 const LAST=new WeakMap();
-const sig=html=>html.replace(/(data-end="[^"]*">)[^<]*/g,'$1').replace(/ hot"/g,'"');   // без бегущих секунд таймера
+const sig=html=>html.replace(/(data-aend="[^"]*">)[^<]*/g,'$1').replace(/ hot"/g,'"');   // без бегущих секунд таймера
 export function setHTML(el,html){
   const k=sig(html);
   if(LAST.get(el)===k&&el.firstChild)return;
