@@ -138,3 +138,8 @@
 .bk-rd{color:var(--mut);font-size:15px;margin-bottom:14px}.bk-rd b{color:#86efac;font-size:18px}
 .bk-rv .btn{width:100%}
 @media (prefers-reduced-motion:reduce){.bk-hero::after,.bk-fl,.bk-coin,.bk-open svg,.bk-rv::before{animation:none}}
+
+/* досрочное закрытие вклада: вторичная кнопка под «Забрать» */
+.bk-cancel{display:block;width:100%;margin-top:8px;padding:10px;border-radius:14px;border:1px solid color-mix(in srgb,var(--tx) 14%,transparent);background:none;color:var(--mut);font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.bk-cancel[hidden]{display:none}
+.bk-cancel:active{transform:scale(.98)}

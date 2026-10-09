@@ -64,11 +64,14 @@ export const sellGain=(t,bonus=0)=>Math.floor(t*(SELL_PCT+bonus)/100);   // bonu
 export const AUCTION={fee:5,min:1000,max:100000000000,lots:5,hours:[1,6,12,24],stepPct:5,step:100,snipe:120,extMax:7200,page:30};
 export const auctionFee=ask=>Math.floor(ask*AUCTION.fee/100);
 export const auctionNext=(cur,hasBid)=>hasBid?cur+Math.max(Math.ceil(cur*AUCTION.stepPct/100),AUCTION.step):cur;   // минимальная следующая ставка
+// Штраф за досрочное закрытие вклада (для показа; считает сервер): первые graceMin минут нет, потом pct% от вложенного, вниз
+export const cancelFee=(amount,startMs,nowMs)=>nowMs-startMs>=BANK.cancel.graceMin*60000?Math.floor(amount*BANK.cancel.pct/100):0;
 export const marketFee=ask=>Math.floor(ask*MARKET.fee/100);                // сколько удерживает рынок (продавец получает ask минус это)
 
 // Банк. Курсы, проценты, цены и лимиты считает ТОЛЬКО сервер (supabase/bank.sql); здесь данные для показа.
 // Должны совпадать с bank.sql, это сверяет tests/bank.test.mjs. Титулы из items выходят ограниченным тиражом (max — всего штук на сервер, сколько продано отдаёт bank_state) и не входят в SHOP (их нельзя купить за рубли), но находятся через itemOf.
 export const BANK={usdBuy:250000,usdSell:150000,exMax:100000,maxDep:3,
+ cancel:{pct:10,graceMin:5},   // досрочное закрытие вклада: штраф % от вложенного, первые graceMin минут без штрафа (зеркало bank_deposit_cancel)
  depRub:{min:100000,max:1e10,pct:{1:2,3:8,7:20}},depUsd:{min:10,max:1000000,pct:{1:4,3:12,7:30}},
  luck:{cost:15,rolls:10,cap:100,best:3},lots:{cost:40,step:5,max:20},
  cases:[

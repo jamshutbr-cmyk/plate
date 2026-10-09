@@ -1,5 +1,5 @@
 import {api} from '../api.js';
-import {BANK, CAR_CLS, RAR, depPayout, dupRefund} from '../config.js';
+import {BANK, CAR_CLS, RAR, cancelFee, depPayout, dupRefund} from '../config.js';
 import {carById, caseOdds} from '../data/cars.js';
 import {haptic} from '../platform.js';
 import {beep, burst, chime, dropSound, riser} from '../ui/fx.js';
@@ -18,7 +18,7 @@ let CUR='rub',DAYS=1,TXT='',BUSY=false,XD='buy',FRESH=false;   // FRESH: сле�
 let OFF=0,TM=null;                                // сдвиг часов сервера, таймер отсчёта
 
 const TABS=[['ex','⇄','Обмен'],['dep','📈','Вклады'],['up','⚡','Усиления'],['cs','🎁','Кейсы'],['ti','👑','Титулы']];
-const ERRS={usd:'Не хватает долларов',rub:'Не хватает рублей',limit:'Достигнут максимум',many:'Не больше '+BANK.maxDep+' вкладов сразу',ready:'Вклад ещё не созрел',gone:'Вклад уже забран',amount:'Недопустимая сумма',owned:'Уже куплено',soldout:'Тираж распродан'};
+const ERRS={usd:'Не хватает долларов',rub:'Не хватает рублей',limit:'Достигнут максимум',many:'Не больше '+BANK.maxDep+' вкладов сразу',ready:'Вклад ещё не созрел',gone:'Вклад уже закрыт',finished:'Срок вклада уже вышел: нажмите «Забрать»',amount:'Недопустимая сумма',owned:'Уже куплено',soldout:'Тираж распродан'};
 const fail=r=>{banner('Не получилось',ERRS[r.err]||'Попробуйте ещё раз');haptic('rigid');return load().then(()=>render(true))};
 const pct=x=>(Math.round(x*10)/10).toString().replace('.',',');
 const cur=c=>c=='rub'?'₽':'$';
@@ -44,6 +44,7 @@ function tick(){
   if(!$('v-bank').classList.contains('on')){clearInterval(TM);TM=null;return}
   document.querySelectorAll('#bankC .bk-t').forEach(e=>{const l=left(+e.dataset.end);e.textContent=l?'Осталось '+fmtLeft(l):'Готов к получению'});
   document.querySelectorAll('#bankC .bk-claim').forEach(e=>{const r=left(+e.dataset.end)==0;e.disabled=!r;e.classList.toggle('rdy',r)});
+  document.querySelectorAll('#bankC .bk-cancel').forEach(e=>{e.hidden=left(+e.dataset.end)==0});
   document.querySelectorAll('#bankC .bk-ring .v').forEach(e=>{const d=BS.deposits.find(x=>x.id==e.dataset.id);if(d)e.style.strokeDashoffset=119.4*(1-done(d)/100)})}
 
 // ---------- вкладки ----------
@@ -85,9 +86,10 @@ function tabDep(){
     return `<div class="bk-card bk-dep ${d.cur}"><div class="bk-top"><div class="bk-ring" style="--cc:${d.cur=='rub'?'#3b82f6':'#22c55e'}"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="19" class="t"/><circle cx="22" cy="22" r="19" class="v" data-id="${d.id}" style="stroke-dashoffset:${119.4*(1-done(d)/100)}"/></svg><b>${cur(d.cur)}</b></div>
      <div class="bk-sum"><small>Вложено</small><b>${fmt(d.amount)} ${cur(d.cur)}</b></div><div class="bk-sum" style="text-align:right"><small>Получите</small><b class="pay">${fmt(d.payout)} ${cur(d.cur)}</b></div></div>
      <div class="bk-t" data-end="${d.ends}">${l?'Осталось '+fmtLeft(l):'Готов к получению'}</div>
-     <button class="btn bk-claim${l?'':' rdy'}" data-end="${d.ends}" ${l?'disabled':''} data-click="bkClaim" data-arg="${d.id}">Забрать</button></div>`}).join('');
+     <button class="btn bk-claim${l?'':' rdy'}" data-end="${d.ends}" ${l?'disabled':''} data-click="bkClaim" data-arg="${d.id}">Забрать</button>
+     <button class="bk-cancel" data-end="${d.ends}" ${l?'':'hidden'} data-click="bkCancelDlg" data-arg="${d.id}">Закрыть досрочно</button></div>`}).join('');
   return depForm()+`<h3 class="tsec">Ваши вклады · ${BS.deposits.length} из ${BANK.maxDep}</h3>`+(list||`<p class="bk-note">Вкладов пока нет.</p>`)
-    +`<p class="bk-note">Забрать вклад можно только после окончания срока.</p>`}
+    +`<p class="bk-note">С процентами вклад выдаётся после окончания срока. Закрыть раньше можно в любой момент: проценты сгорают, первые ${BANK.cancel.graceMin} минут без штрафа, потом штраф ${BANK.cancel.pct}% от вложенного.</p>`}
 
 function tabUp(){
   const L=BANK.luck,M=BANK.lots,lf=BS.luck+L.rolls>L.cap,mx=BS.extra_lots+M.step>M.max;
@@ -157,6 +159,14 @@ const bkOpen=()=>{
   if(!depOk(d,n))return;
   op(()=>api.bankDepositOpen(CUR,n,DAYS),()=>{TXT='';banner('Вклад открыт',fmt(n)+' '+cur(CUR)+' на '+dn(DAYS))})};
 const bkClaim=a=>op(()=>api.bankDepositClaim(+a),r=>{win('#f5b82e');banner('Вклад получен','+'+fmt(r.res.payout)+' '+cur(r.res.cur))});
+function bkCancelDlg(a){
+  const d=BS.deposits.find(x=>x.id==a);if(!d)return;
+  const fee=cancelFee(d.amount,d.start,Date.now()+OFF),back=d.amount-fee,lost=d.payout-d.amount;
+  sm(`<div class="dlg adlg"><h3>Закрыть вклад досрочно?</h3>
+    <div class="kv"><div><small>Вернётся</small><b>${fmt(back)} ${cur(d.cur)}</b></div><div><small>Штраф</small><b>${fee?'−'+fmt(fee)+' '+cur(d.cur):'нет'}</b></div><div><small>Сгорят проценты</small><b>${fmt(lost)} ${cur(d.cur)}</b></div><div><small>До конца срока</small><b>${fmtLeft(left(d.ends))}</b></div></div>
+    <div class="note ${fee?'bad':'ok'}">${fee?`Вклад открыт больше ${BANK.cancel.graceMin} минут назад: удерживается штраф ${BANK.cancel.pct}% от вложенного, проценты не начисляются.`:`Первые ${BANK.cancel.graceMin} минут штрафа нет: вернётся вся вложенная сумма, но без процентов.`}</div>
+    <button class="btn red" data-click="bkCancelOk" data-arg="${d.id}">Закрыть вклад</button><button class="btn ghost" data-click="cm">Оставить</button></div>`)}
+const bkCancelOk=a=>{cm();op(()=>api.bankDepositCancel(+a),r=>{banner('Вклад закрыт','Возвращено '+fmt(r.res.refund)+' '+cur(r.res.cur)+(r.res.fee?', штраф '+fmt(r.res.fee):''));haptic('medium')})};
 const bkLuck=()=>op(()=>api.bankBuyLuck(),r=>{win('#f5b82e');banner('Буст удачи','Прокрутов с бустом: '+r.res)});
 const bkLots=()=>op(()=>api.bankBuyLots(),r=>{win('#4ade80');banner('Слоты рынка','Дополнительно +'+r.res+' лотов')});
 async function bkWear(a){try{await api.equipItem('title',a);banner('Титул надет',BANK.items.find(x=>x.id==a).n);render(true)}catch(e){console.error(e);banner('Не получилось','Попробуйте ещё раз')}}
@@ -204,4 +214,4 @@ async function bkCase(a){
   finally{BUSY=false}}
 
 DRAW.bank=drawBank;
-on({bkTab,bkXd,bkChip,bkCur,bkDays,bkAmtIn,bkEx,bkOpen,bkClaim,bkLuck,bkLots,bkWear,bkItemDlg,bkItemOk,bkCase});
+on({bkTab,bkXd,bkChip,bkCur,bkDays,bkAmtIn,bkEx,bkOpen,bkClaim,bkCancelDlg,bkCancelOk,bkLuck,bkLots,bkWear,bkItemDlg,bkItemOk,bkCase});

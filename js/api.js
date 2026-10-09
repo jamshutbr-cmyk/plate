@@ -12,7 +12,7 @@ async function errCode(er){try{const j=await er.context.json();return j.error||j
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
 // Банковская операция: ошибку сервера превращаем в {err:'код'}, успех — в {ok:1,res}, затем сверяем кэш игрока
-const BANK_ERR=[['not enough usd','usd'],['not enough rub','rub'],['limit','limit'],['too many','many'],['not ready','ready'],['gone','gone'],['bad amount','amount'],['already owned','owned'],['sold out','soldout']];
+const BANK_ERR=[['not enough usd','usd'],['not enough rub','rub'],['limit','limit'],['too many','many'],['not ready','ready'],['finished','finished'],['gone','gone'],['bad amount','amount'],['already owned','owned'],['sold out','soldout']];
 async function bankCall(f){
  let res;
  try{res=await f()}
@@ -87,6 +87,7 @@ export const api={
  async bankExchange(dir,n){return await bankCall(()=>rpc('bank_exchange',{p_dir:dir,p_amount:n}))},
  async bankDepositOpen(cur,amount,days){return await bankCall(()=>rpc('bank_deposit_open',{p_cur:cur,p_amount:amount,p_days:days}))},
  async bankDepositClaim(id){return await bankCall(()=>rpc('bank_deposit_claim',{p_id:id}))},
+ async bankDepositCancel(id){return await bankCall(()=>rpc('bank_deposit_cancel',{p_id:id}))},
  async bankBuyLuck(){return await bankCall(()=>rpc('bank_buy_luck'))},
  async bankBuyLots(){return await bankCall(()=>rpc('bank_buy_lots'))},
  async bankBuyItem(id){return await bankCall(()=>rpc('bank_buy_item',{p_item:id}))},
