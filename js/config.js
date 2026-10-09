@@ -59,6 +59,11 @@ export const CASES=[
 export const MARKET={fee:5,min:1000,max:100000000000,lots:10,page:30};   // fee — % с продавца, min/max — цена лота, ₽, lots — лотов на игрока, page — размер страницы
 export const SELL_PCT=95;                                                 // сколько % цены игра платит за проданный номер (зеркало sell_plates / autosell в schema.sql)
 export const sellGain=(t,bonus=0)=>Math.floor(t*(SELL_PCT+bonus)/100);   // bonus — уровень перка «Торговец» (prestige.sql: sell_pct)
+// Аукцион (зеркало констант auction.sql, сверяет tests/auction.test.mjs): fee — % с продавца, lots — лотов на игрока, hours — сроки,
+// stepPct/step — минимальный шаг ставки, snipe — секунд до конца, при ставке в которые конец переносится, extMax — потолок переноса, с
+export const AUCTION={fee:5,min:1000,max:100000000000,lots:5,hours:[1,6,12,24],stepPct:5,step:100,snipe:120,extMax:7200,page:30};
+export const auctionFee=ask=>Math.floor(ask*AUCTION.fee/100);
+export const auctionNext=(cur,hasBid)=>hasBid?cur+Math.max(Math.ceil(cur*AUCTION.stepPct/100),AUCTION.step):cur;   // минимальная следующая ставка
 export const marketFee=ask=>Math.floor(ask*MARKET.fee/100);                // сколько удерживает рынок (продавец получает ask минус это)
 
 // Банк. Курсы, проценты, цены и лимиты считает ТОЛЬКО сервер (supabase/bank.sql); здесь данные для показа.

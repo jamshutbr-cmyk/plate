@@ -33,3 +33,53 @@
 #mkC,#mnC{min-width:0;width:100%}
 #mkC .chips:not(.seg){flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;touch-action:pan-x;margin-right:-16px;padding-right:16px}
 #mkC .chips:not(.seg) button{flex:0 0 auto;padding:10px 16px}
+
+/* --- аукцион --- */
+.atm{font-variant-numeric:tabular-nums;font-weight:700}
+.atm.hot{color:#ff5a4d}
+.atop{font-size:12px;font-weight:700;color:var(--ac)}
+#auC,#anC{min-width:0;width:100%}
+#auC .chips:not(.seg){flex-wrap:nowrap;overflow-x:auto;overscroll-behavior-x:contain;touch-action:pan-x;margin-right:-16px;padding-right:16px;margin-bottom:10px}
+#auC .chips:not(.seg) button{flex:0 0 auto;padding:10px 16px}
+#auC>.chips.seg{margin-bottom:10px}
+#anC .tl{margin-bottom:10px}
+.dlg .chips.seg{margin-bottom:10px}
+.lot .lp b{white-space:nowrap}
+.lot .lp .est{white-space:nowrap}
+
+/* --- аукцион: карточки и окна --- */
+.lot .ac-top{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lot .ac-top>span{font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:999px;background:color-mix(in srgb,var(--tx) 9%,transparent);color:var(--tx)}
+.lot .chip-t .atm{font-size:13px}
+.lot .chip-n{color:var(--mut)!important;font-weight:600!important}
+.lot .chip-me{background:color-mix(in srgb,#34d399 22%,transparent)!important;color:#34d399!important}
+.lot .ac-bot{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.lot .ac-who{display:flex;flex-direction:column;gap:5px;min-width:0}
+.lot .ac-who b{font-size:16px;color:var(--tx);max-width:42vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lot .ac-who span{font-size:13px;color:var(--mut)}
+.lot .ac-pr{display:flex;flex-direction:column;align-items:flex-end;gap:1px}
+.lot .ac-pr small{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+.lot .ac-pr b{font-size:25px;line-height:1.15;color:var(--tx);white-space:nowrap}
+.lot .ac-pr em{font-style:normal;font-size:12px;color:var(--mut);white-space:nowrap}
+
+.adlg h3{margin:0 0 12px}
+.adlg .kv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.adlg .kv.one{grid-template-columns:1fr}
+.adlg .kv>div{background:color-mix(in srgb,var(--tx) 6%,transparent);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.adlg .kv small{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
+.adlg .kv b{font-size:17px;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adlg .qb{display:flex;gap:8px;margin-bottom:10px}
+.adlg .qb button{flex:1;display:flex;flex-direction:column;gap:2px;padding:9px 6px;border-radius:14px;border:1px solid color-mix(in srgb,var(--tx) 14%,transparent);background:none;color:var(--tx);font-weight:700;font-size:14px}
+.adlg .qb button small{font-size:11px;font-weight:500;color:var(--mut)}
+.adlg .inp{position:relative;margin-bottom:6px}
+.adlg .inp .gq{margin:0;padding-right:38px}
+.adlg .inp i{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-style:normal;font-size:18px;color:var(--mut)}
+.adlg .calc{font-size:13px;color:var(--mut);min-height:18px;margin:0 2px 12px}
+.adlg .note{font-size:14px;line-height:1.4;padding:11px 13px;border-radius:14px;margin:0 0 12px;background:color-mix(in srgb,var(--tx) 6%,transparent);color:var(--tx)}
+.adlg .note.ok{background:color-mix(in srgb,#34d399 16%,transparent);color:#34d399}
+.adlg .note.bad{background:color-mix(in srgb,#ff5a4d 16%,transparent);color:#ff6b5e}
+.adlg .lbl2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:4px 2px 7px}
+.adlg .hints{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:5px}
+.adlg .hints li{font-size:13px;color:var(--mut);padding-left:16px;position:relative}
+.adlg .hints li:before{content:'';position:absolute;left:3px;top:.55em;width:5px;height:5px;border-radius:50%;background:var(--ac)}
+.adlg .btn.ghost{background:none}

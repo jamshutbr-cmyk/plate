@@ -86,6 +86,9 @@ begin
   need := reb_lvl_base + reb_lvl_step * p.rebirths;
   if p.lvl < need then raise exception 'level too low'; end if;
   if exists (select 1 from market_listings where seller = p.id) then raise exception 'has listings'; end if;
+  if to_regclass('public.auctions') is not null then
+    if (select count(*) from auctions where seller = p.id or bidder = p.id) > 0 then raise exception 'has listings'; end if;
+  end if;
   if exists (select 1 from bank_deposits where owner = p.id) then raise exception 'has deposits'; end if;
   gain := p.lvl / stars_div;
 
@@ -126,6 +129,7 @@ begin
   delete from plates where owner = auth.uid();
   delete from market_listings where seller = auth.uid();
   delete from market_sales where seller = auth.uid();
+  if to_regprocedure('public.auction_reset(uuid)') is not null then execute 'select public.auction_reset($1)' using auth.uid(); end if;
   if to_regprocedure('public.bank_reset(uuid)') is not null then execute 'select public.bank_reset($1)' using auth.uid(); end if;
   update players set balance = 50000, usd = 0, xp = 0, lvl = 1, cap_c = 100, cap_s = 5,
     daily_last = null, daily_streak = 0, rescue_last = null, seen = '{}', cars = '{}',

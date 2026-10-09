@@ -7,7 +7,7 @@ import {S, find} from '../state.js';
 import {on} from '../ui/actions.js';
 import {banner, cm, sm} from '../ui/modal.js';
 import {dots, plateHTML} from '../ui/plate.js';
-import {$, esc, fmt, parseAsk} from '../util.js';
+import {$, esc, fmt, parseAsk, setHTML} from '../util.js';
 
 // Рынок игроков: покупка чужих номеров, свои лоты, выставление номера на продажу.
 // Всё решает сервер (market.sql: market_list_plate / market_buy / market_cancel / market_browse / market_mine):
@@ -82,13 +82,13 @@ export function drawMarket(){
     if(!MINE)h+=`<p class="tl" style="text-align:center">${ERR?'Не удалось загрузить лоты':'Загрузка…'}</p>`;
     else h+=MINE.lots.length?`<h3 class="tsec">На рынке сейчас · ${MINE.lots.length} из ${SLOTS}</h3>`+MINE.lots.map(l=>lot(l,true)).join('')+`<p class="tl" style="text-align:center">Нажмите на лот, чтобы снять его с рынка.</p>`
       :`<p class="tl" style="text-align:center">У вас нет лотов.<br>Рынок удерживает ${MARKET.fee}% с каждой продажи.</p>`}
-  $('mkC').innerHTML=h+`<button class="btn" style="width:100%;margin-top:10px" data-click="mRefresh">Обновить</button>`}
+  setHTML($('mkC'),h+`<button class="btn" style="width:100%;margin-top:10px" data-click="mRefresh">Обновить</button>`)}
 
 export function drawMnew(){
   const left=SLOTS-(MINE?MINE.lots.length:0),sf=new Set(S.safe.map(x=>x.id));
   const all=[...S.col,...S.safe].sort((a,b)=>b.price-a.price);
-  $('mnC').innerHTML=`<p class="tl">Выберите номер для продажи другим игрокам. Пока он на рынке, его нельзя продать, обменять или поместить в сейф: только снять с рынка. Свободных лотов: ${Math.max(left,0)}.</p>`
-    +(all.length?all.map(p=>row(p,'mPick',sf.has(p.id)?' · в сейфе':'')).join(''):'<p class="tl" style="text-align:center">У вас нет номеров.</p>')}
+  setHTML($('mnC'),`<p class="tl">Выберите номер для продажи другим игрокам. Пока он на рынке, его нельзя продать, обменять или поместить в сейф: только снять с рынка. Свободных лотов: ${Math.max(left,0)}.</p>`
+    +(all.length?all.map(p=>row(p,'mPick',sf.has(p.id)?' · в сейфе':'')).join(''):'<p class="tl" style="text-align:center">У вас нет номеров.</p>'))}
 
 // ---------- действия ----------
 const mTab=a=>{TAB=a;render(true)};

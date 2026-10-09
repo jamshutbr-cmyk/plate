@@ -11,3 +11,19 @@ export function parseAsk(s){
   if(!m)return 0;
   const k={'':1,'к':1e3,k:1e3,'тыс':1e3,'м':1e6,m:1e6,'млн':1e6,'млрд':1e9,b:1e9,'б':1e9}[m[2]||''];
   return Math.round(parseFloat(m[1].replace(',','.'))*k)}
+
+// Подмена содержимого списка без прыжка прокрутки. Фоновое обновление (опрос рынка, таймеры) часто приносит те же данные:
+// тогда список не трогаем вовсе (пересборка посреди инерционной прокрутки на телефоне сбрасывает её вверх).
+// Если данные изменились, на время замены держим прежнюю высоту блока и возвращаем scrollY.
+const LAST=new WeakMap();
+const sig=html=>html.replace(/(data-end="[^"]*">)[^<]*/g,'$1').replace(/ hot"/g,'"');   // без бегущих секунд таймера
+export function setHTML(el,html){
+  const k=sig(html);
+  if(LAST.get(el)===k&&el.firstChild)return;
+  LAST.set(el,k);
+  const y=window.scrollY;
+  el.style.minHeight=el.offsetHeight+'px';
+  el.innerHTML=html;
+  if(window.scrollY!==y)window.scrollTo(0,y);
+  requestAnimationFrame(()=>{el.style.minHeight=''});
+}

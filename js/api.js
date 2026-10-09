@@ -121,6 +121,39 @@ export const api={
    throw e}
   await loadAll();return {ok:1,main:r.main,ask:+r.ask}},
  async marketAck(upto){await rpc('market_ack_sales',{p_upto:upto})},
+ // Аукцион (auction.sql): ставка замораживается на балансе, расчёт и возврат делает сервер. Отказы возвращаются как {err:'код'}
+ async auctionCreate(plateId,start,hours){
+  try{await rpc('auction_create',{p_plate:plateId,p_start:start,p_hours:hours})}
+  catch(e){const m=(e&&e.message)||'';
+   if(/bad price/.test(m))return {err:'price'};
+   if(/bad duration/.test(m))return {err:'duration'};
+   if(/too many/.test(m))return {err:'lots'};
+   if(/bad plate/.test(m)){await loadPlates();return {err:'plate'}}
+   throw e}
+  await loadPlates();return {ok:1}},
+ async auctionCancel(id){
+  try{await rpc('auction_cancel',{p_id:id})}
+  catch(e){const m=(e&&e.message)||'';
+   if(/has bids/.test(m))return {err:'bids'};
+   if(/gone/.test(m))return {err:'gone'};
+   throw e}
+  await loadPlates();return {ok:1}},
+ async auctionBid(id,amount){
+  let r;
+  try{r=await rpc('auction_bid',{p_id:id,p_amount:amount})}
+  catch(e){const m=(e&&e.message)||'';
+   if(/not enough/i.test(m)){await loadPlayer();return {err:'money'}}
+   if(/collection full/.test(m))return {err:'full'};
+   if(/too low/.test(m))return {err:'low'};
+   if(/already top/.test(m))return {err:'top'};
+   if(/own lot/.test(m))return {err:'own'};
+   if(/gone/.test(m))return {err:'gone'};
+   if(/bad price/.test(m))return {err:'price'};
+   throw e}
+  await loadAll();
+  if(r.ended)return {err:'ended'};
+  return {ok:1,bid:+r.bid,ends:+r.ends_at,extended:!!r.extended}},
+ async auctionAck(upto){await rpc('auction_ack',{p_upto:upto})},
  // Страна и регион генерации: set_gen_prefs (schema.sql). Сервер сам сбросит регион, если его нет в стране.
  async setGenPrefs(c,r){await rpc('set_gen_prefs',{c,r:r||''});await loadPlayer()},
  async syncPlayer(){await loadPlayer()},   // сверить кэш с сервером (например, после обрыва связи во время открытия)

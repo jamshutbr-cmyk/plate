@@ -13,6 +13,7 @@ import './views/profile.js';
 import './views/top.js';
 import './views/trade.js';
 import './views/market.js';
+import './views/auction.js';
 import './views/bank.js';
 import './views/gen.js';
 import './views/shop.js';
@@ -27,6 +28,7 @@ import {banner} from './ui/modal.js';
 import {daily} from './views/main.js';
 import {initTrades} from './views/trade.js';
 import {initMarket} from './views/market.js';
+import {initAuction} from './views/auction.js';
 import {$} from './util.js';
 import {api} from './api.js';
 import {S} from './state.js';
@@ -44,6 +46,6 @@ async function boot(){
   catch(e){if(e&&e.code==='not_subscribed'){showGate(boot);return}console.error(e);$('boot').innerHTML=`<div class="bootmsg"><b>Не удалось войти</b><span>${(e&&e.message)||'Ошибка'}</span><button class="btn" data-click="retry">Повторить</button></div>`;return}
   // Ник по умолчанию — имя из Telegram, чтобы в рейтинге были имена, а не «Игрок»
   if(!S.nick){const u=tgUser(),n=u&&(u.first_name||u.username);if(n)try{await api.setNick(n)}catch(e){console.error(e)}}
-  document.getElementById('gate')?.remove();$('boot').remove();render();daily();initTrades();initMarket();checkPending();
+  document.getElementById('gate')?.remove();$('boot').remove();render();daily();initTrades();initMarket();initAuction();checkPending();
 }
 boot();

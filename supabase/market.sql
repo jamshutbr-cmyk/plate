@@ -184,6 +184,7 @@ begin
   delete from market_listings where seller = auth.uid();
   delete from market_sales where seller = auth.uid();
   -- Банк (bank.sql): вклады и буст удачи сбрасываются; купленные слоты и предметы остаются, как и купленное в магазине
+  if to_regprocedure('public.auction_reset(uuid)') is not null then execute 'select public.auction_reset($1)' using auth.uid(); end if;
   if to_regprocedure('public.bank_reset(uuid)') is not null then execute 'select public.bank_reset($1)' using auth.uid(); end if;
   update players set balance = 50000, usd = 0, xp = 0, lvl = 1, cap_c = 100, cap_s = 5,
     daily_last = null, daily_streak = 0, rescue_last = null, seen = '{}', cars = '{}',
