@@ -79,10 +79,10 @@ async function refresh(){
   try{await Promise.all([loadLots(),syncMine().catch(e=>{console.error(e);ERR=true})])}
   finally{LOAD=false;AT=Date.now();render(true)}}
 
-let MT=null,TT=null,EXP=0;
+let MT=null,TT=null,EXP=0,BG=0;     // опрос: на экране аукциона каждые 15 с, в фоне каждые 45 с
 export function initAuction(){
   const run=()=>{if(!document.hidden)syncMine().catch(e=>console.warn('auction',e))};
-  run();clearInterval(MT);MT=setInterval(run,20000);
+  run();clearInterval(MT);MT=setInterval(()=>{if(!document.hidden&&($('v-auction').classList.contains('on')||++BG%3==0))run()},15000);
   document.addEventListener('visibilitychange',run);
   // Раз в секунду обновляем таймеры; когда лот истёк, один раз просим сервер закрыть его и обновляем список
   clearInterval(TT);
@@ -93,7 +93,7 @@ export function initAuction(){
 
 // ---------- экраны ----------
 export function drawAuction(){
-  if(!LOAD&&Date.now()-AT>10000)refresh();
+  if(!LOAD&&Date.now()-AT>15000)refresh();
   const nb=MINE?MINE.bids.length:0,nl=MINE?MINE.lots.length:0;
   let h=`<div class="chips seg"><button class="${TAB=='buy'?'a':''}" data-click="aTab" data-arg="buy">Торги</button><button class="${TAB=='mine'?'a':''}" data-click="aTab" data-arg="mine">Мои${nl+nb?' · '+(nl+nb):''}</button></div>`;
   if(TAB=='buy'){

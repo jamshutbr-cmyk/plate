@@ -1,6 +1,6 @@
 import {AL, CASES, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
 import {genCost, trackSession} from './engine.js';
-import {loadAll, loadPlates, loadPlayer, rpc, sb} from './server.js';
+import {loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
 import {S, SESS, applyPlayer, flags} from './state.js';
 import {fmt} from './util.js';
 
@@ -66,7 +66,7 @@ export const api={
  async autosell(){
   if(!S.as.lvl||!S.as.on)return null;
   const r=await rpc('autosell');if(!r)return null;
-  await loadAll();return {n:r.n,gain:+r.gain}},
+  await loadState();return {n:r.n,gain:+r.gain}},
   // Магазин: цены и права проверяет сервер (buy_item / equip_item в shop.sql)
  async buyItem(id){
   const it=itemOf(id);if(!it)return {err:1,need:0};
@@ -119,7 +119,7 @@ export const api={
    if(/gone/.test(m))return {err:'gone'};
    if(/own lot/.test(m))return {err:'own'};
    throw e}
-  await loadAll();return {ok:1,main:r.main,ask:+r.ask}},
+  await loadState();return {ok:1,main:r.main,ask:+r.ask}},
  async marketAck(upto){await rpc('market_ack_sales',{p_upto:upto})},
  // Аукцион (auction.sql): ставка замораживается на балансе, расчёт и возврат делает сервер. Отказы возвращаются как {err:'код'}
  async auctionCreate(plateId,start,hours){
@@ -150,7 +150,7 @@ export const api={
    if(/gone/.test(m))return {err:'gone'};
    if(/bad price/.test(m))return {err:'price'};
    throw e}
-  await loadAll();
+  await loadPlayer();                 // ставка меняет только баланс (номера не трогает)
   if(r.ended)return {err:'ended'};
   return {ok:1,bid:+r.bid,ends:+r.ends_at,extended:!!r.extended}},
  async auctionAck(upto){await rpc('auction_ack',{p_upto:upto})},

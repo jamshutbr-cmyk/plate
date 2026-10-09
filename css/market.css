@@ -83,3 +83,6 @@
 .adlg .hints li{font-size:13px;color:var(--mut);padding-left:16px;position:relative}
 .adlg .hints li:before{content:'';position:absolute;left:3px;top:.55em;width:5px;height:5px;border-radius:50%;background:var(--ac)}
 .adlg .btn.ghost{background:none}
+
+/* ряд редкостей листается вбок: правый край плавно гаснет, чтобы было видно продолжение */
+#auC .chips:not(.seg),#mkC .chips:not(.seg){-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent)}

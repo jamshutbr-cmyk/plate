@@ -1,7 +1,7 @@
 import {CN, TYPES} from '../config.js';
 import {DRAW, go, render} from '../router.js';
 import {haptic} from '../platform.js';
-import {loadAll, rpc, sb} from '../server.js';
+import {loadState, rpc, sb} from '../server.js';
 import {S} from '../state.js';
 import {on} from '../ui/actions.js';
 import {banner, cm, sm} from '../ui/modal.js';
@@ -19,7 +19,7 @@ const msg=e=>{const m=(e&&e.message)||'';
 
 function badge(){const b=$('tb'),n=TR?TR.in.length:0;if(!b)return;b.textContent=n;b.classList.toggle('on',n>0)}
 
-// Синхронизация обменов с сервером. Вызывается при входе, каждые 15 секунд (5 секунд на экране «Обмены»), когда игра открыта, и при возвращении в приложение.
+// Синхронизация обменов с сервером. Вызывается при входе, каждые 40 секунд (10 секунд на экране «Обмены»), когда игра открыта, и при возвращении в приложение.
 // Показывает плашки о новых предложениях и о судьбе наших предложений (принято / отклонено) и обновляет коллекцию после обмена.
 let KNOWN=null;
 const DONE_KEY='trDone';
@@ -32,7 +32,7 @@ async function sync(){
  TR=r;TAT=Date.now();badge();
  const seen=doneSeen(),nd=(r.done||[]).filter(d=>!seen.has(d.id));
  if(nd.length){nd.forEach(d=>seen.add(d.id));saveDone(seen)}
- if(nd.some(d=>d.status=='accepted'))await loadAll();    // номера поменялись: обновляем свою коллекцию
+ if(nd.some(d=>d.status=='accepted'))await loadState();    // номера поменялись: обновляем свою коллекцию
  const q=[];
  if(fresh.length)q.push(['Обмены',fresh.length==1?(fresh[0].nick||'Игрок')+' предлагает обмен':'Новых предложений обмена: '+fresh.length]);
  for(const d of nd)q.push([d.status=='accepted'?'Обмен принят':'Обмен отклонён',d.nick||'Игрок']);
@@ -45,10 +45,10 @@ async function loadTr(){
  TLOAD=false;TAT=Date.now();render(true)}
 let PT=null,TICK=0;
 export function initTrades(){
- // Раз в 5 секунд тикаем всегда, но на сервер ходим: каждый тик, если открыт экран «Обмены», иначе каждый третий (15 с)
+ // Раз в 10 секунд тикаем всегда, но на сервер ходим: каждый тик, если открыт экран «Обмены», иначе каждый четвёртый (40 с)
  const run=()=>{if(!document.hidden)sync().catch(e=>console.warn('trades',e))};
- const tick=()=>{TICK++;if($('v-trades').classList.contains('on')||TICK%3==0)run()};
- run();clearInterval(PT);PT=setInterval(tick,5000);
+ const tick=()=>{TICK++;if($('v-trades').classList.contains('on')||TICK%4==0)run()};
+ run();clearInterval(PT);PT=setInterval(tick,10000);
  document.addEventListener('visibilitychange',run)}
 
 export function drawTrades(){
@@ -69,7 +69,7 @@ async function trYes(id){
   const r=await rpc('respond_trade',{p_id:+id,p_accept:true});
   if(r=='accepted')banner('Обмен состоялся','Номера поменялись местами');
   else banner('Обмен недоступен','Номера изменились или предложение устарело');
-  await loadAll()}
+  await loadState()}
  catch(e){console.error(e);banner('Ошибка',msg(e))}
  TAT=0;render(true)}
 async function trNo(id){

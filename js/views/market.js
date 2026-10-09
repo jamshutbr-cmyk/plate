@@ -59,15 +59,15 @@ async function refresh(){
   finally{LOAD=false;AT=Date.now();render(true)}}
 
 let MT=null;
-// Раз в 20 секунд (пока игра видна) узнаём, купили ли наши номера
+// Раз в 45 секунд (пока игра видна) узнаём, купили ли наши номера
 export function initMarket(){
   const run=()=>{if(!document.hidden)syncMine().catch(e=>console.warn('market',e))};
-  run();clearInterval(MT);MT=setInterval(run,20000);
+  run();clearInterval(MT);MT=setInterval(run,45000);
   document.addEventListener('visibilitychange',run)}
 
 // ---------- экраны ----------
 export function drawMarket(){
-  if(!LOAD&&Date.now()-AT>10000)refresh();
+  if(!LOAD&&Date.now()-AT>20000)refresh();
   const tabs=`<div class="chips seg"><button class="${TAB=='buy'?'a':''}" data-click="mTab" data-arg="buy">Рынок</button><button class="${TAB=='mine'?'a':''}" data-click="mTab" data-arg="mine">Мои лоты${MINE&&MINE.lots.length?' · '+MINE.lots.length:''}</button></div>`;
   let h=tabs;
   if(TAB=='buy'){

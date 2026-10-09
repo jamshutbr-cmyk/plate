@@ -19,7 +19,9 @@ export async function login(){
   if(error)throw error;
 }
 export async function loadPlayer(){const {data,error}=await sb.from('players').select('*').single();if(error)throw error;applyPlayer(data)}
-export async function loadPlates(){const {data,error}=await sb.from('plates').select('*').order('id');if(error)throw error;applyPlates(data)}
+// Только нужные колонки (без owner): список номеров скачивается часто, каждый байт идёт в egress
+const PLATE_COLS='id,country,type,main,reg,region_name,cls,mu,price,in_safe,created_at';
+export async function loadPlates(){const {data,error}=await sb.from('plates').select(PLATE_COLS).order('id');if(error)throw error;applyPlates(data)}
 // Пасс, окно продажи и пакет. Если миграция triple_roll.sql ещё не применена, функция тихо выключена.
 export async function loadTriple(){
   try{
@@ -27,5 +29,7 @@ export async function loadTriple(){
     if(a.error||b.error||c.error)throw a.error||b.error||c.error;
     applyTriple(a.data,b.data,c.data)}
   catch(e){applyTriple(null,null,[])}}
+// Игрок и номера без пасса/окна продажи (три лишних запроса): для действий, где они не меняются (продажа, рынок, обмен)
+export const loadState=()=>Promise.all([loadPlayer(),loadPlates()]);
 export const loadAll=()=>Promise.all([loadPlayer(),loadPlates(),loadTriple()]);
 export async function rpc(name,args){const {data,error}=await sb.rpc(name,args);if(error)throw error;return data}
