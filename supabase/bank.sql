@@ -106,7 +106,8 @@ begin
 end $$;
 
 -- ---------- Вклады ----------
--- Срок 1 / 3 / 7 дней. Проценты: ₽ 2 / 8 / 20, $ 4 / 12 / 30 (дробная часть отбрасывается). Раньше срока забрать нельзя.
+-- Срок 1 / 3 / 7 дней. Проценты: ₽ 2 / 8 / 20, $ 4 / 12 / 30 (дробная часть отбрасывается). Забрать с процентами можно только после срока;
+-- закрыть досрочно можно в любой момент (bank_deposit_cancel): проценты сгорают, первые grace_min минут без штрафа, потом штраф cancel_pct% от вложенного.
 create or replace function public.bank_deposit_open(p_cur text, p_amount bigint, p_days int) returns bigint
 language plpgsql security definer set search_path = public as $$
 declare
@@ -159,6 +160,34 @@ begin
   end if;
   delete from bank_deposits where id = d.id;
   return jsonb_build_object('cur', d.cur, 'payout', d.payout);
+end $$;
+
+-- Досрочное закрытие: возвращается вложенная сумма без процентов. Первые grace_min минут после открытия штрафа нет (на случай ошибки),
+-- потом штраф cancel_pct% от вложенного (дробная часть вниз), он исчезает из игры. Вклад, срок которого вышел, закрывается через bank_deposit_claim.
+-- Возвращает {cur, refund, fee}. Ошибки: gone (вклад уже закрыт), finished (срок вышел, нужно «Забрать»).
+create or replace function public.bank_deposit_cancel(p_id bigint) returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare
+  d bank_deposits%rowtype; fee bigint := 0; refund bigint;
+  cancel_pct constant int := 10;
+  grace_min  constant int := 5;
+begin
+  if auth.uid() is null then raise exception 'unauthorized'; end if;
+  perform 1 from players where id = auth.uid() for update;
+  select * into d from bank_deposits where id = p_id and owner = auth.uid() for update;
+  if not found then raise exception 'gone'; end if;
+  if d.ends_at <= now() then raise exception 'finished'; end if;
+  if now() - d.created_at >= make_interval(mins => grace_min) then
+    fee := floor(d.amount::numeric * cancel_pct / 100)::bigint;
+  end if;
+  refund := d.amount - fee;
+  if d.cur = 'rub' then
+    update players set balance = balance + refund where id = d.owner;
+  else
+    update players set usd = usd + refund::int where id = d.owner;
+  end if;
+  delete from bank_deposits where id = d.id;
+  return jsonb_build_object('cur', d.cur, 'refund', refund, 'fee', fee);
 end $$;
 
 -- ---------- Усиления за $ ----------
@@ -280,11 +309,11 @@ $$;
 
 -- ---------- Права ----------
 revoke execute on function
-  public.bank_state(), public.bank_exchange(text, int), public.bank_deposit_open(text, bigint, int), public.bank_deposit_claim(bigint),
+  public.bank_state(), public.bank_exchange(text, int), public.bank_deposit_open(text, bigint, int), public.bank_deposit_claim(bigint), public.bank_deposit_cancel(bigint),
   public.bank_buy_luck(), public.bank_buy_lots(), public.bank_buy_item(text), public.open_case_usd(text)
 from public, anon;
 grant execute on function
-  public.bank_state(), public.bank_exchange(text, int), public.bank_deposit_open(text, bigint, int), public.bank_deposit_claim(bigint),
+  public.bank_state(), public.bank_exchange(text, int), public.bank_deposit_open(text, bigint, int), public.bank_deposit_claim(bigint), public.bank_deposit_cancel(bigint),
   public.bank_buy_luck(), public.bank_buy_lots(), public.bank_buy_item(text), public.open_case_usd(text)
 to authenticated;
 revoke execute on function public.consume_luck(uuid), public.bank_reset(uuid) from public, anon, authenticated;
