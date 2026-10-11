@@ -39,7 +39,7 @@ export const EQUIP_SLOTS=['skin','title','drop','nick','bg'];   // надева�
 export const SHOWCASE_MAX=3;
 // Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
 export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1}};
-export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const b=BANK.items.find(x=>x.id==id);return b?{id:b.id,n:b.n,c:b.c,slot:'title'}:null};
+export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);return b?{id:b.id,n:b.n,c:b.c,slot:'title'}:null};
 
 // Кейсы с машинами. Шансы, цены и выдачу считает ТОЛЬКО сервер (supabase/cases.sql: open_case); здесь данные для показа.
 // Должны совпадать с cases.sql, это сверяет tests/cases.test.mjs.
@@ -89,7 +89,21 @@ export const depPayout=(cur,amt,days)=>{const d=cur=='rub'?BANK.depRub:BANK.depU
 // upkeep × уровень² — содержание раз в upkeepDays дней; pt — сколько ₽ взноса дают одно очко сезона.
 export const CLAN={createLvl:10,joinLvl:3,createRub:50000000,createUsd:50,donateMin:1000000,maxDeputies:3,maxLvl:5,
   up:{2:100000000,3:250000000,4:600000000,5:1500000000},upkeep:5000000,upkeepDays:7,idleDays:14,capStep:10,capMax:50,
-  joinCdH:24,createCdH:72,maxReq:3,reqDays:7,name:[3,20],tag:[2,4],page:30,pt:1000000};
+  joinCdH:1,createCdH:72,maxReq:3,reqDays:7,name:[3,20],tag:[2,4],page:30,pt:1000000};
+// Захват регионов и клановый магазин (clan_regions.sql). Сверяет tests/clans.test.mjs. boost: во сколько раз растёт вес региона при выпадении (REGION_BOOST в _shared/engine.ts).
+export const CLAN_REG={bidMin:10000000,def:125,boost:3};
+// frame/fx: вид тега клана (классы cf-*, cx-* в css/clans.css); title: титулы для участников (ct_*). lvl: с какого уровня клана
+export const CLAN_SHOP=[
+ {id:'cf_carbon',slot:'frame',n:'Карбон',p:60000000,lvl:1,d:'Тёмная карбоновая плашка'},
+ {id:'cf_gold',slot:'frame',n:'Золото',p:150000000,lvl:2,d:'Золотая плашка с тёмной рамкой'},
+ {id:'cf_neon',slot:'frame',n:'Неон',p:250000000,lvl:3,d:'Светящаяся бирюзовая обводка'},
+ {id:'cf_holo',slot:'frame',n:'Голограмма',p:400000000,lvl:4,d:'Переливающаяся плашка'},
+ {id:'cx_glint',slot:'fx',n:'Блик',p:120000000,lvl:2,d:'Свет пробегает по тегу'},
+ {id:'cx_pulse',slot:'fx',n:'Пульс',p:250000000,lvl:3,d:'Тег мягко светится'},
+ {id:'cx_fire',slot:'fx',n:'Огонь',p:500000000,lvl:4,d:'Тёплое пламя вокруг тега'},
+ {id:'ct_racer',slot:'title',n:'Гонщик клана',p:80000000,lvl:1,c:'#ff7a2f',d:'Титул рядом с ником'},
+ {id:'ct_vet',slot:'title',n:'Ветеран клана',p:200000000,lvl:2,c:'#f5b82e',d:'Титул рядом с ником'},
+ {id:'ct_legend',slot:'title',n:'Легенда клана',p:600000000,lvl:4,c:'#e879f9',d:'Титул рядом с ником'}];
 export const clanUpkeep=l=>CLAN.upkeep*l*l;
 export const clanCap=l=>Math.min(CLAN.capMax,CLAN.capStep*l);
 export const PRESTIGE={lvlBase:5,lvlStep:1,starsDiv:1,cashStep:50000,usdStep:5,
