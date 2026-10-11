@@ -3,7 +3,7 @@ export const COST=3000,START=50000;
 export const RAR=[{n:'Обычный',en:'Common',p:53.81,c:'#9a9aab',m:1},{n:'Необычный',en:'Uncommon',p:37.96,c:'#4ade80',m:11.55},{n:'Редкий',en:'Rare',p:7.98,c:'#5b8cff',m:661.2},{n:'Эпический',en:'Epic',p:.24,c:'#a855f7',m:9955},{n:'Легендарный',en:'Legendary',p:.01,c:'#f5b82e',m:242550}];
 // Типы номеров. k — тип, p — шанс в % (сумма 100), m — множитель цены, c — страны, где тип выпадает (в Беларуси только civil/taxi/police/transit).
 // Должны совпадать с TYPES в supabase/functions/_shared/engine.ts и check в SQL, это сверяет tests/types.test.mjs.
-export const TYPES=[{k:'civil',p:91.4,m:1,n:'Гражданский',c:['RU','BY']},{k:'taxi',p:4,m:24,n:'Такси',c:['RU','BY']},{k:'police',p:2,m:20,n:'Полиция',c:['RU','BY']},{k:'transit',p:2,m:2,n:'Транзит',c:['RU','BY']},{k:'military',p:.3,m:25,n:'Военный',c:['RU']},{k:'diplomat',p:.25,m:40,n:'Дипломат',c:['RU']},{k:'retro',p:.05,m:80,n:'Ретро',c:['RU']}];
+export const TYPES=[{k:'civil',p:92.86,m:1,n:'Гражданский',c:['RU','BY']},{k:'taxi',p:4,m:24,n:'Такси',c:['RU','BY']},{k:'police',p:1,m:50,n:'Полиция',c:['RU','BY']},{k:'transit',p:2,m:.5,n:'Транзит',c:['RU','BY']},{k:'military',p:.07,m:80,n:'Военный',c:['RU']},{k:'diplomat',p:.06,m:120,n:'Дипломат',c:['RU']},{k:'retro',p:.01,m:200,n:'Ретро',c:['RU']}];
 export const NOREG=['military','diplomat','retro'];   // у этих плашек нет блока региона (только отрисовка)
 export const CN={RU:{n:'Россия',cc:'RUS'},BY:{n:'Беларусь',cc:'BY'}};
 export const RU_L='АВЕКМНОРСТУХ',BY_L='ABEIKMHOPCTX';
@@ -15,8 +15,10 @@ pink:{n:'Розовая',v:{bg:'#fbeff5',card:'#ffffff',tx:'#3a1c2e',mut:'#94677
 silver:{n:'Серебро',v:{bg:'#1c1f26',card:'#2a2e38',tx:'#eef1f6',mut:'#9ba3b4',b1:'#353a47',b2:'#2a2e38',sheet:'#2a2e38',m1:'#5d6a85',m2:'#2f3646',ac:'#9fb4de',off:'#444a58',pl1:'#eef0f4',pl2:'#a6adba'}}};
 export const XPV=[5,8,20,100,500];
 export const FL=['Одинаковые цифры','Одинаковые буквы','Зеркальные цифры','Палиндром букв','Круглый номер','Цифры совпадают с регионом','Блатной номер','Малый номер','Гражданский','Такси','Полиция','Транзит','Военный','Дипломат','Ретро'];
-export const AL=[['Автопродажа',25],['Режим «Старый»',50],['Потолок цены',100],['Тир «Необычные»',150],['Спецномера',200],['«Каждая генерация»',250],['Режим «Дешёвый»',300],['Тир «Редкие»',400],['«Когда не хватает денег»',500]];
-export const ACT=['on','old','ceil','t1','sp','every','cheap','t2','low'],CEIL=[0,500,5000,50000,500000];
+// Автопродажа (supabase/autosell_v2.sql): один режим. cost — цена открытия ($), ceil — варианты потолка цены (0 = без лимита), cls — до какой редкости продаём.
+// autoMatch — то же правило, что в SQL autosell(): клиент им только считает «сколько продастся сейчас».
+export const AUTO={cost:25,ceil:[0,500,5000,50000,500000],cls:['Обычные','До необычных','До редких']};
+export const autoMatch=(p,a)=>p.cls<=Math.min(2,Math.max(0,a.cls|0))&&(p.type=='civil'||!!a.sp)&&(!a.ceil||p.price<=a.ceil);
 export const CST=[100,150,200,300,500],CCO=[5e5,2e6,8e6,25e6],SST=[5,10,20,35,50],SCO=[25,75,150,300];
 export const SAMP={RU:{civil:['К013АВ','К013АА','К012КК','К111КК','А777АА'],taxi:['КВ 013','КК 013','КВ 111','КК 111'],transit:['К013АВ','К013АА','К012КК','К111КК','А777АА'],police:['К013АВ','К013АА','К012КК','К111КК','А777АА'],
   military:['1357 АВ','1357 АА','1157 АА','1111 АВ','1111 АА'],diplomat:['139 CD 46','139 CD 44','119 CD 44','777 CD 44'],retro:['13-57 МОК','13-57 ММК','11-57 ММК','11-11 МОК','11-11 МММ']},BY:['3841 AB-','3841 AA-','7773 AB-','7773 AA-','7777 AA-']};
@@ -39,7 +41,7 @@ export const EQUIP_SLOTS=['skin','title','drop','nick','bg'];   // надева�
 export const SHOWCASE_MAX=3;
 // Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
 export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1}};
-export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
+export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);return b?{id:b.id,n:b.n,c:b.c,slot:'title'}:null};
 
 // Кейсы с машинами. Шансы, цены и выдачу считает ТОЛЬКО сервер (supabase/cases.sql: open_case); здесь данные для показа.
 // Должны совпадать с cases.sql, это сверяет tests/cases.test.mjs.
@@ -89,7 +91,7 @@ export const depPayout=(cur,amt,days)=>{const d=cur=='rub'?BANK.depRub:BANK.depU
 // upkeep × уровень² — содержание раз в upkeepDays дней; pt — сколько ₽ взноса дают одно очко сезона.
 export const CLAN={createLvl:10,joinLvl:3,createRub:50000000,createUsd:50,donateMin:1000000,maxDeputies:3,maxLvl:5,
   up:{2:100000000,3:250000000,4:600000000,5:1500000000},upkeep:5000000,upkeepDays:7,idleDays:14,capStep:10,capMax:50,
-  joinCdH:1,createCdH:72,maxReq:3,reqDays:7,name:[3,20],tag:[2,4],page:30,pt:1000000};
+  joinCdH:24,createCdH:72,maxReq:3,reqDays:7,name:[3,20],tag:[2,4],page:30,pt:1000000,descrMax:200,motdMax:160,logDays:30};
 // Захват регионов и клановый магазин (clan_regions.sql). Сверяет tests/clans.test.mjs. boost: во сколько раз растёт вес региона при выпадении (REGION_BOOST в _shared/engine.ts).
 export const CLAN_REG={bidMin:10000000,def:125,boost:3};
 // frame/fx: вид тега клана (классы cf-*, cx-* в css/clans.css); title: титулы для участников (ct_*). lvl: с какого уровня клана
@@ -116,11 +118,3 @@ export const rebStars=lvl=>Math.floor(lvl/PRESTIGE.starsDiv);          // звё
 export const perkCost=lv=>lv+1;                                        // цена следующего уровня бонуса, когда сейчас lv
 // Тройная прокрутка: пасс на время, продаётся окнами (таблица offers). Зеркало supabase/triple_roll.sql
 export const TRIPLE={usd:30,hours:24,max:3};
-// Лаборатория тестировщиков (supabase/testers.sql). Титулы и рамка не продаются: их выдаёт сервер за принятые баги.
-// Пороги рангов и бонусы должны совпадать с bug_rank и bug_reward_apply в testers.sql, это сверяет tests/lab.test.mjs.
-export const LAB={
- ranks:[{n:'Новичок',at:1},{n:'Охотник',at:3},{n:'Профи',at:7},{n:'Легенда',at:15}],
- bonus:[{rub:0,usd:0},{rub:3000000,usd:20},{rub:10000000,usd:50},{rub:30000000,usd:150}],
- titles:[{id:'tester',n:'Тестировщик',c:'#22d3ee'},{id:'bh2',n:'Охотник за багами',c:'#4ade80'},{id:'bh3',n:'Профи багов',c:'#f5b82e'},{id:'bh4',n:'Легенда багов',c:'#f43f5e'}],
- skin:{id:'matrix',n:'Матрица'},
- cats:[['gen','Генерация и номера'],['shop','Магазин, кейсы, банк'],['market','Рынок, аукцион, обмены'],['ui','Интерфейс и прокрутка'],['other','Другое']]};

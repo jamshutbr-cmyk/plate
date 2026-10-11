@@ -79,10 +79,10 @@ async function refresh(){
   try{await Promise.all([loadLots(),syncMine().catch(e=>{console.error(e);ERR=true})])}
   finally{LOAD=false;AT=Date.now();render(true)}}
 
-let MT=null,TT=null,EXP=0,BG=0;     // опрос: на экране аукциона каждые 30 с, в фоне каждые 3 мин
+let MT=null,TT=null,EXP=0,BG=0;     // опрос: на экране аукциона каждые 15 с, в фоне каждые 45 с
 export function initAuction(){
-  let last=0;const run=()=>{if(document.hidden||Date.now()-last<25000)return;last=Date.now();syncMine().catch(e=>console.warn('auction',e))};
-  run();clearInterval(MT);MT=setInterval(()=>{if(!document.hidden&&($('v-auction').classList.contains('on')||++BG%6==0))run()},30000);
+  const run=()=>{if(!document.hidden)syncMine().catch(e=>console.warn('auction',e))};
+  run();clearInterval(MT);MT=setInterval(()=>{if(!document.hidden&&($('v-auction').classList.contains('on')||++BG%3==0))run()},15000);
   document.addEventListener('visibilitychange',run);
   // Раз в секунду обновляем таймеры; когда лот истёк, один раз просим сервер закрыть его и обновляем список
   clearInterval(TT);

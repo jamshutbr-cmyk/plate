@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "python3 -m http.server 5173",
-    "test": "node --experimental-strip-types --no-warnings --test \"tests/*.test.mjs\""
+    "test": "node --experimental-strip-types --no-warnings --test \"tests/*.test.mjs\"",
+    "test:sql": "bash tests/sql/run.sh"
   }
 }

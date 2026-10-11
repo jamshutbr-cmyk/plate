@@ -1,5 +1,5 @@
 import {api} from '../api.js';
-import {CN, COST, FXE, RAR, RESCUE_MS, TYPES} from '../config.js';
+import {CN, COST, FXE, RAR, RESCUE_MS, TYPES, autoMatch} from '../config.js';
 import {fake, genCost} from '../engine.js';
 import {haptic, hapticDrop} from '../platform.js';
 import {painters, render} from '../router.js';
@@ -14,19 +14,21 @@ import {multiGen} from './multi.js';
 // Главный экран: тап = генерация номера.
 const mulLbl=()=>{const m=S.mul>1&&S.pass>Date.now()?S.mul:1;return (m>1?'Генерация ×'+m:'Генерация')+' · '+fmt(genCost()+COST*(m-1))+' ₽'};
 let busy=false;
-async function runAuto(){const r=await api.autosell();if(r)banner('Автопродажа','Продано '+r.n+' · '+fmt(r.gain)+' ₽')}
+// Когда звать сервер: автопродажа включена, есть повод (коллекция заполнена или не хватает денег) И в кэше есть номер, который подойдёт под правило.
+// Без последней проверки при полной коллекции каждый тап слал бы запрос, на который сервер отвечает null.
+const autoDue=()=>S.as.lvl&&S.as.on&&(S.col.length>=S.capC||(S.as.low&&S.bal<genCost()))&&S.col.some(p=>autoMatch(p,S.as));
+async function runAuto(){const r=await api.autosell();if(r){banner('Автопродажа','Продано '+r.n+' · '+fmt(r.gain)+' ₽');render(true)}}
 export async function gen(e){
   if(busy)return;ripple(e);busy=true;
   try{
     if(S.mul>1&&S.pass>Date.now()){await multiGen();return}
-    if(S.as.lvl&&(S.col.length>=S.capC||(S.as.lvl>=9&&S.as.low&&S.bal<genCost())))await runAuto();
-    if(S.col.length>=S.capC){stageMsg('Коллекция заполнена ('+S.capC+'). Продайте номера или уберите в сейф.');return}
+    if(autoDue())await runAuto();
+    if(S.col.length>=S.capC){stageMsg('Коллекция заполнена ('+S.capC+'). '+(S.as.lvl&&S.as.on?'Автопродажа ничего не нашла по вашим правилам: измените их, продайте номера вручную или уберите в сейф.':'Продайте номера или уберите в сейф.'));return}
     if(S.bal<genCost()){stageMsg(brokeMsg());return}
     const r=await api.generatePlate();if(!r)return;const {p,un}=r;
     if(S.reel!==false)await new Promise(done=>reel(p,done));
     show(p,un);
     if(flags.lvup){flags.lvup=0;setTimeout(()=>banner('Новый уровень','Уровень '+S.lvl+' · +'+10*S.lvl+' $'),un?2900:300)}
-    if(S.as.every&&S.as.lvl>=6){await runAuto();render(true)}
   }finally{busy=false}}
 export function reel(p,done){
   const D=[...Array(9).fill(55),80,110,160,230,330,450],st=$('stage');let i=0;

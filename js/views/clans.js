@@ -16,8 +16,6 @@ let EX=null;                                          // clan_ext: регион�
 let CS=null,OFF=0,AT=0,LOAD=false,ERR=false;          // ответ clan_state, сдвиг часов сервера, время загрузки, идёт ли загрузка, ошибка
 let TAB='main',NOTAB='find',BUSY=false,TM=null,FRESH=true;   // FRESH: плашка-номер «ставится» анимацией только при открытии экрана        // вкладки, защита от двойного нажатия, таймер отсчёта
 let SQ='',SR=null,SMORE=false,SLOAD=false;             // поиск: запрос, результаты, есть ли ещё, идёт ли загрузка
-let BROWSE=false;                                     // участник клана открыл общий список кланов
-let RK='season',LB=null,LBLOAD=false,LBERR=false;       // рейтинг кланов: вид, ответ сервера, загрузка, ошибка
 let F={name:'',tag:'',mode:'open',min:'1'},DT='';      // форма создания и текст взноса
 let ST={mode:'open',min:'1',tg:''};                    // черновик настроек клана
 
@@ -62,41 +60,6 @@ const pts=n=>Math.floor((+n||0)/CLAN.pt);
 const ini=n=>([...(n||'И')][0]||'И').toUpperCase();
 const pv=()=>`${plate(F.tag.trim()||'ТЕГ',1,'cl-xl')}<h2>${esc(F.name.trim()||'Название клана')}</h2>`;
 
-// ---------- рейтинг и просмотр чужих кланов ----------
-const RKS=[['season','За сезон'],['level','По уровню'],['new','Новые']];
-const dfull=ts=>new Date(+ts).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'2-digit'});
-function rkRow(c,kind){
-  const num=kind=='new'?(c.srk?'#'+c.srk:''):c.rk,top=kind!='new'&&c.rk<=3?MED[c.rk-1]:num;
-  const meta=kind=='new'?`создан ${dfull(c.created)} · ${c.srk} место в сезоне`:kind=='level'?`${c.lvl} ур. · ${c.n}/${c.cap}`:`${fmt(c.pts)} очк. · ${c.lvl} ур. · ${c.n}/${c.cap}`;
-  return `<div class="cl-rk${c.mine?' me':''}" data-click="clView" data-arg="${c.id}"><span class="cl-n">${top}</span>${plate(c.tag,c.lvl,'cl-md-p')}\
-<div class="cl-fi"><b>${esc(c.name)}${c.medal?` <span class="cl-mdl">${MED[c.medal-1]}</span>`:''}${c.mine?' (ваш)':''}</b><div class="cl-fm">${meta}</div></div><i class="cl-ch">›</i></div>`}
-function tabRating(){
-  const body=LBERR?`<p class="cl-empty">Не удалось загрузить рейтинг</p><button class="cl-ghost wide" data-click="clRkRetry">Повторить</button>`
-    :LB==null||LB.kind!=RK?`<p class="cl-empty">Загружаю рейтинг…</p>`
-    :LB.top.length?LB.top.map(c=>rkRow(c,RK)).join('')+(LB.me&&!LB.top.some(c=>c.mine)?`<p class="cl-fine cl-gap">Ваш клан</p>${rkRow(LB.me,RK)}`:'')
-    :`<p class="cl-empty">${RK=='season'?'На этой неделе ещё никто не вносил в казну.':'Кланов пока нет.'}</p>`;
-  return sec(`<h3>Рейтинг кланов</h3>${seg(RKS,RK,'clRk')}`
-    +(RK=='season'?`<p class="cl-fine cl-gap">Очки дают только взносы. Сезон закончится через ${LB&&LB.kind==RK?cd(LB.season_end):'…'}</p>`:RK=='new'?`<p class="cl-fine cl-gap">Последние созданные кланы. Нажмите на клан, чтобы посмотреть состав.</p>`:'')
-    +`<div class="cl-rks">${body}</div>`)}
-async function loadRating(){
-  if(LBLOAD)return;LBLOAD=true;const k=RK;
-  try{LB=await api.clanLeaderboard(k);LBERR=false}catch(e){console.error(e);LBERR=true}
-  LBLOAD=false;render(true)}
-function clanCard(v){
-  const can=!CS.clan&&v.mode!='closed',req=(CS.reqs||[]).includes(v.id),full=v.members.length>=v.cap,now=Date.now()+OFF,jw=CS.cd&&CS.cd.join&&+CS.cd.join>now;
-  const btn=v.mine?'':CS.clan?'':req?`<button class="btn" data-click="clCancelReq" data-arg="${v.id}">Отозвать заявку</button>`
-    :!can?`<button class="btn" disabled>${v.mode=='closed'?'Набор закрыт':'Вступить нельзя'}</button>`
-    :`<button class="btn" ${full||jw||S.lvl<CLAN.joinLvl||S.lvl<v.min_lvl?'disabled ':''}data-click="clJoin" data-arg="${v.id}">${full?'Мест нет':v.mode=='open'?'Вступить':'Подать заявку'}</button>`;
-  return `<div class="dlg cl-card"><div class="cl-pw">${plate(v.tag,v.lvl,'cl-xl')}${v.medal?`<span class="cl-md">${MED[v.medal-1]}</span>`:''}</div><h3>${esc(v.name)}</h3>
-    <p class="tl">${v.srk} место в сезоне · ${fmt(v.pts)} очк. · ${v.lvl} ур. · ${MODE[v.mode]}${v.min_lvl>1?', от '+v.min_lvl+' ур.':''}<br>Создан ${dfull(v.created)} · ${v.members.length}/${v.cap} участников</p>
-    <div class="cl-cm">${v.members.map(m=>`<div class="cl-cmr"><span>${RIC[m.role]||''} ${esc(m.nick||'Игрок')}</span><em>${m.lvl} ур.</em><b>${fmt(m.donated)} ₽</b></div>`).join('')}</div>
-    ${btn}<button class="btn" data-click="cm">Закрыть</button></div>`}
-async function viewClan(id){
-  if(BUSY)return;BUSY=true;
-  try{const v=await api.clanView(+id);sm(clanCard(v))}
-  catch(e){console.error(e);banner('Не получилось','Клан не найден или нет связи')}
-  finally{BUSY=false}}
-
 // ---------- клана нет ----------
 const nameOk=s=>{s=s.trim().replace(/\s+/g,' ');return s.length>=CLAN.name[0]&&s.length<=CLAN.name[1]&&/^[A-Za-zА-Яа-яЁё0-9][A-Za-zА-Яа-яЁё0-9 _-]*$/.test(s)};
 const tagOk=s=>/^[A-Za-zА-Яа-яЁё0-9]{2,4}$/.test(s.trim());
@@ -104,17 +67,16 @@ const canCreate=()=>S.lvl>=CLAN.createLvl&&S.bal>=CLAN.createRub&&S.usd>=CLAN.cr
 
 function clanRow(c,jw){
   const req=(CS.reqs||[]).includes(c.id),full=c.n>=c.cap;
-  const btn=CS.clan?''
-    :req?`<button class="cl-ghost sm" data-click="clCancelReq" data-arg="${c.id}">Отозвать</button>`
+  const btn=req?`<button class="cl-ghost sm" data-click="clCancelReq" data-arg="${c.id}">Отозвать</button>`
     :c.mode=='closed'?`<button class="cl-ghost sm" disabled>Закрыт</button>`
     :full?`<button class="cl-ghost sm" disabled>Мест нет</button>`
     :`<button class="cl-go sm" ${S.lvl<CLAN.joinLvl||S.lvl<c.min_lvl||jw?'disabled ':''}data-click="clJoin" data-arg="${c.id}">${c.mode=='open'?'Вступить':'Заявка'}</button>`;
   return `<div class="cl-find"><div class="cl-fh">${plate(c.tag,c.lvl,'cl-md-p')}<div class="cl-fi"><b>${esc(c.name)}${c.medal?` <span class="cl-mdl">${MED[c.medal-1]}</span>`:''}</b>
-    <div class="cl-fm">${c.n}/${c.cap} · ${MODE[c.mode]}${c.min_lvl>1?` · ${c.min_lvl}+ ур.`:''}</div></div></div>${btn}<button class="cl-ghost sm" data-click="clView" data-arg="${c.id}">Посмотреть состав</button></div>`}
+    <div class="cl-fm">${c.n}/${c.cap} · ${MODE[c.mode]}${c.min_lvl>1?` · ${c.min_lvl}+ ур.`:''}</div></div></div>${btn}</div>`}
 
 function findForm(jw){
   return `<div class="cl-search"><input class="gq" id="clQ" placeholder="Название или тег" maxlength="20" autocomplete="off" value="${esc(SQ)}" data-input="clQ" data-change="clFind"><button class="cl-go" data-click="clFind">Найти</button></div>`
-    +(!CS.clan&&S.lvl<CLAN.joinLvl?`<p class="cl-warn">Вступать можно с ${CLAN.joinLvl} уровня, у вас ${S.lvl}.</p>`:'')
+    +(S.lvl<CLAN.joinLvl?`<p class="cl-warn">Вступать можно с ${CLAN.joinLvl} уровня, у вас ${S.lvl}.</p>`:'')
     +(SR==null?`<p class="cl-empty">Загружаю список…</p>`
       :SR.clans.length?SR.clans.map(c=>clanRow(c,jw)).join('')+(SMORE?`<button class="cl-ghost wide" data-click="clMore">Показать ещё</button>`:'')
       :`<p class="cl-empty">Ничего не нашлось. Создайте свой клан.</p>`)}
@@ -135,17 +97,8 @@ function noClan(){
   const now=Date.now()+OFF,c=CS.cd||{},jw=c.join&&+c.join>now,cw=c.create&&+c.create>now;
   return `<section class="cl-intro"><h2>Кланы</h2><p>Общая казна, ваш тег рядом с ником и медали лучшим кланам недели.</p></section>`
     +(jw?`<p class="cl-warn">Вступить снова можно через ${cd(c.join)}.</p>`:'')
-    +`<div class="cl-tabs">${[['find','Найти клан'],['top','Рейтинг'],['new','Создать свой']].map(([k,n])=>`<button class="${NOTAB==k?'a':''}" data-click="clNo" data-arg="${k}">${n}</button>`).join('')}</div>`
-    +(NOTAB=='new'?createForm(cw,c):NOTAB=='top'?tabRating():findForm(jw))}
-
-// Общий список кланов для тех, кто уже в клане: поиск и рейтинг без создания и вступления
-function browse(){
-  if(NOTAB=='new')NOTAB='find';
-  const c=CS.clan;
-  return `<button class="cl-ghost wide" data-click="clBack">← К моему клану ${esc(c.tag)}</button>
-    <section class="cl-intro"><h2>Все кланы</h2><p>Смотрите рейтинг, состав и уровень других кланов. Вступить можно после выхода из своего.</p></section>
-    <div class="cl-tabs">${[['find','Список'],['top','Рейтинг']].map(([k,n])=>`<button class="${NOTAB==k?'a':''}" data-click="clNo" data-arg="${k}">${n}</button>`).join('')}</div>`
-    +(NOTAB=='top'?tabRating():findForm(false))}
+    +`<div class="cl-tabs">${[['find','Найти клан'],['new','Создать свой']].map(([k,n])=>`<button class="${NOTAB==k?'a':''}" data-click="clNo" data-arg="${k}">${n}</button>`).join('')}</div>`
+    +(NOTAB=='new'?createForm(cw,c):findForm(jw))}
 
 // ---------- свой клан ----------
 const logLine=l=>{
@@ -195,7 +148,7 @@ function tabSet(c){
       <button class="cl-go wide" data-click="clSave">Сохранить настройки</button>`)
       :sec(`<h3>О клане</h3><p class="cl-fine">Набор: ${MODE[c.mode]}${c.min_lvl>1?', от '+c.min_lvl+' ур.':''}</p>`))
     +sec(lead?`<h3>Власть</h3><p class="cl-fine">Чтобы выйти, передайте власть участнику: нажмите на него в списке.</p><button class="cl-danger wide" data-click="clDisbandAsk">Распустить клан</button>`
-      :`<p class="cl-fine">Выйти из клана можно кнопкой внизу страницы.</p>`,'last')}
+      :`<button class="cl-danger wide" data-click="clLeaveAsk">Выйти из клана</button><p class="cl-fine">После выхода ${CLAN.joinCdH} ч нельзя вступать в кланы.</p>`,'last')}
 
 function inClan(){
   const c=CS.clan,mgr=c.role!='member',weeks=Math.floor(c.treasury/c.upkeep);
@@ -209,9 +162,7 @@ function inClan(){
     +(c.lapsed?`<div class="cl-alert"><b>Содержание просрочено</b><span>Нужно ${fmt(c.upkeep)} ₽: ${drop}.</span></div>`
       :`<p class="cl-fine cl-up">Содержание ${fmt(c.upkeep)} ₽ через ${cd(c.due)} · хватит на ${weeks} нед.</p>`)
     +`<div class="cl-tabs">${tabs.map(([k,n])=>`<button class="${TAB==k?'a':''}" data-click="clTab" data-arg="${k}">${n}</button>`).join('')}</div>`
-    +(TAB=='mem'?tabMembers(c):TAB=='req'?tabReqs():TAB=='reg'?tabRegions(c,mgr):TAB=='shop'?tabShop(c,mgr):TAB=='set'?tabSet(c):tabMain(c,mgr))
-    +`<button class="cl-ghost wide" style="margin-top:18px" data-click="clBrowse">Все кланы и рейтинг</button>`
-    +(c.role=='leader'?'':`<button class="cl-danger wide" data-click="clLeaveAsk">Выйти из клана</button><p class="cl-fine">После выхода ${CLAN.joinCdH} ч нельзя вступать в кланы.</p>`)}
+    +(TAB=='mem'?tabMembers(c):TAB=='req'?tabReqs():TAB=='reg'?tabRegions(c,mgr):TAB=='shop'?tabShop(c,mgr):TAB=='set'?tabSet(c):tabMain(c,mgr))}
 
 // ---------- отрисовка ----------
 export function drawClans(){
@@ -221,10 +172,8 @@ export function drawClans(){
     if(!LOAD)load().then(()=>render(true));
     el.innerHTML=`<p class="tl" style="text-align:center">Загрузка…</p>`;return}
   if(!LOAD&&!typing&&Date.now()-AT>30000)load().then(()=>render(true));
-  const br=!CS.clan||BROWSE;
-  if(br&&NOTAB=='find'&&SR==null&&!SLOAD)search(0);
-  if(br&&NOTAB=='top'&&!LBLOAD&&!LBERR&&(!LB||LB.kind!=RK))loadRating();
-  el.innerHTML=CS.clan?(BROWSE?browse():inClan()):noClan();
+  if(!CS.clan&&NOTAB=='find'&&SR==null&&!SLOAD)search(0);
+  el.innerHTML=CS.clan?inClan():noClan();
   FRESH=false;donPrev();if(CS.clan)bidPrev(CS.clan);
   if(!TM)TM=setInterval(tick,1000)}
 
@@ -262,12 +211,7 @@ const run=(f,ok,pre)=>act(async()=>{cm();const r=await f();if(r.err)return fail(
 on({
   cm,
   clRetry:()=>{ERR=false;CS=null;render(true)},
-  clNo:k=>{NOTAB=k;if(k=='top')LB=null;render(true)},
-  clRk:k=>{RK=k;LB=null;LBERR=false;render(true)},
-  clRkRetry:()=>{LBERR=false;LB=null;render(true)},
-  clView:viewClan,
-  clBrowse:()=>{BROWSE=true;NOTAB='find';SR=null;LB=null;render(true)},
-  clBack:()=>{BROWSE=false;render(true)},
+  clNo:k=>{NOTAB=k;render(true)},
   clTab:k=>{TAB=k;render(true)},
   clF:(k,el)=>{F[k]=el.value;const b=$('clGo');if(b)b.disabled=!canCreate();const v=$('clPv');if(v)v.innerHTML=pv()},
   clMode:k=>{F.mode=k;render(true)},
@@ -277,9 +221,9 @@ on({
   clJoin:id=>act(async()=>{
     const r=await api.clanJoin(+id);
     if(r.err)return fail(r);
-    cm();win();banner(r.res=='joined'?'Вы в клане':'Заявка отправлена',r.res=='joined'?'Добро пожаловать!':'Ждите решения главы');
-    SR=null;LB=null;await reload()}),
-  clCancelReq:id=>act(async()=>{const r=await api.clanCancelRequest(+id);if(r.err)return fail(r);cm();await reload()}),
+    win();banner(r.res=='joined'?'Вы в клане':'Заявка отправлена',r.res=='joined'?'Добро пожаловать!':'Ждите решения главы');
+    SR=null;await reload()}),
+  clCancelReq:id=>act(async()=>{const r=await api.clanCancelRequest(+id);if(r.err)return fail(r);await reload()}),
   clCreate:()=>act(async()=>{
     if(!canCreate())return;
     const r=await api.clanCreate(F.name.trim().replace(/\s+/g,' '),F.tag.trim(),F.mode,Math.max(1,Math.min(99,parseInt(F.min)||1)));
@@ -296,7 +240,7 @@ on({
   clUpgrade:()=>run(()=>api.clanUpgrade(),['Клан улучшен','Новых мест больше']),
   clMember:openMember,
   clRole:a=>{const [id,role]=a.split(':');return run(()=>api.clanSetRole(id,role),[role=='deputy'?'Назначен заместитель':'Разжалован',''])},
-  clKickAsk:id=>{const m=memberById(id);dlg('Исключить '+esc((m&&m.nick)||'игрока')+'?','Он не сможет вступить в клан '+CLAN.joinCdH+' ч. Внесённые им деньги останутся в казне.','clKick',id,'Исключить')},
+  clKickAsk:id=>{const m=memberById(id);dlg('Исключить '+esc((m&&m.nick)||'игрока')+'?','Он не сможет вступить в клан '+CLAN.joinCdH+' часа. Внесённые им деньги останутся в казне.','clKick',id,'Исключить')},
   clKick:id=>run(()=>api.clanKick(id),['Участник исключён','']),
   clTransferAsk:id=>{const m=memberById(id);dlg('Передать власть?','Новым главой станет '+esc((m&&m.nick)||'игрок')+'. Вы станете заместителем (если места нет, участником).','clTransfer',id,'Передать')},
   clTransfer:id=>run(()=>api.clanTransfer(id),['Власть передана','']),
@@ -309,10 +253,10 @@ on({
     if(r.err)return fail(r);
     banner('Сохранено','');haptic('success');await reload()}),
   clTg:()=>{const u=CS&&CS.clan&&CS.clan.tg;if(!u)return;try{TG&&TG.openTelegramLink?TG.openTelegramLink(u):window.open(u,'_blank')}catch(e){window.open(u,'_blank')}},
-  clLeaveAsk:()=>dlg('Выйти из клана?','Внесённые деньги останутся в казне. Вступить в другой клан можно будет через '+CLAN.joinCdH+' ч.','clLeave',null,'Выйти'),
-  clLeave:()=>run(()=>api.clanLeave(),['Вы вышли из клана',''],()=>{SR=null;NOTAB='find';BROWSE=false}),
+  clLeaveAsk:()=>dlg('Выйти из клана?','Внесённые деньги останутся в казне. Вступить в другой клан можно будет через '+CLAN.joinCdH+' часа.','clLeave',null,'Выйти'),
+  clLeave:()=>run(()=>api.clanLeave(),['Вы вышли из клана',''],()=>{SR=null;NOTAB='find'}),
   clDisbandAsk:()=>dlg('Распустить клан?','Казна пропадёт без возврата, все участники выйдут. Создать новый клан можно будет через '+CLAN.createCdH+' часа.','clDisband',null,'Распустить'),
-  clDisband:()=>run(()=>api.clanDisband(),['Клан распущен',''],()=>{SR=null;NOTAB='find';BROWSE=false})
+  clDisband:()=>run(()=>api.clanDisband(),['Клан распущен',''],()=>{SR=null;NOTAB='find'})
 });
 mount({ex:()=>EX||{},clan:()=>CS&&CS.clan,seasonEnd:()=>CS&&CS.season_end,myTitle:()=>S.equip&&S.equip.title,sec,plate,cd,cm,act,fail,win,reload,dlg,render:()=>render(true)});
 DRAW.clans=drawClans;

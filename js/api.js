@@ -1,4 +1,4 @@
-import {AL, CASES, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
+import {AUTO, CASES, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
 import {genCost, trackSession} from './engine.js';
 import {loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
 import {S, SESS, applyPlayer, flags} from './state.js';
@@ -22,7 +22,7 @@ async function bankCall(f){
 // Кланы (clans.sql): сервер бросает исключения с короткими кодами, здесь они превращаются в {err:'код'}. Порядок важен: 'not in clan' раньше 'in clan'.
 const CLAN_ERR=[['not in clan','noclan'],['in clan','inclan'],['level too low','level'],['min level','minlvl'],['bad name','name'],['bad tag','tag'],['name taken','nametaken'],['tag taken','tagtaken'],
  ['forbidden word','word'],['cooldown','cooldown'],['not enough rub','rub'],['not enough usd','usd'],['bad amount','amount'],['treasury low','treasury'],['overdue','overdue'],['max level','maxlvl'],
- ['full','full'],['closed','closed'],['too many requests','manyreq'],['role limit','rolelimit'],['not allowed','denied'],['bad settings','settings'],['bad link','link'],['gone','gone'],['leader','leader'],['region limit','reglimit'],['bad region','badregion'],['already owned','owned'],['not owned','notowned'],['bad item','baditem']];
+ ['full','full'],['closed','closed'],['too many requests','manyreq'],['role limit','rolelimit'],['not allowed','denied'],['bad settings','settings'],['bad link','link'],['gone','gone'],['leader','leader'],['region limit','reglimit'],['bad region','badregion'],['already owned','owned'],['not owned','notowned'],['bad item','baditem'],['bad text','text']];
 async function clanCall(f,money){
  let res;
  try{res=await f()}
@@ -59,9 +59,9 @@ export const api={
   try{await rpc('buy_capacity',{kind:k})}catch(e){if(notEnough(e))return {err:1,need:cost};throw e}
   await loadPlayer();return {ok:1}},
  async buyAutosell(){
-  const n=AL[S.as.lvl];if(!n)return {err:1,need:0};
-  if(S.usd<n[1])return {err:1,need:n[1]};
-  try{await rpc('buy_autosell')}catch(e){if(notEnough(e))return {err:1,need:n[1]};throw e}
+  if(S.as.lvl)return {err:1,need:0};
+  if(S.usd<AUTO.cost)return {err:1,need:AUTO.cost};
+  try{await rpc('buy_autosell')}catch(e){if(notEnough(e))return {err:1,need:AUTO.cost};throw e}
   await loadPlayer();return {ok:1}},
  async claimDaily(){
   const r=await rpc('claim_daily');if(!r)return null;
@@ -72,11 +72,14 @@ export const api={
  async bailout(){
   if(S.bal>=COST||S.col.length||S.safe.length||Date.now()-(S.rs||0)<RESCUE_MS)return false;
   const ok=await rpc('bailout');if(ok)await loadPlayer();return !!ok},
- async autoToggle(k){await rpc('autosell_toggle',{k});await loadPlayer()},
+ async autoSet(k,v){await rpc('autosell_set',{k,v:+v});await loadPlayer()},
+ // Одна продажа по правилу. Проданные номера и баланс сервер возвращает в ответе, поэтому список и игрока заново не грузим (раньше после каждого тапа был loadState)
  async autosell(){
   if(!S.as.lvl||!S.as.on)return null;
   const r=await rpc('autosell');if(!r)return null;
-  await loadState();return {n:r.n,gain:+r.gain}},
+  const gone=new Set((r.ids||[]).map(String));
+  S.col=S.col.filter(p=>!gone.has(String(p.id)));S.bal=+r.bal;
+  return {n:r.n,gain:+r.gain}},
   // Магазин: цены и права проверяет сервер (buy_item / equip_item в shop.sql)
  async buyItem(id){
   const it=itemOf(id);if(!it)return {err:1,need:0};
@@ -170,7 +173,6 @@ export const api={
  async clanPing(){try{await rpc('clan_ping')}catch(e){}},
  async clanSearch(q,off){return await rpc('clan_search',{p_q:q||'',p_off:off||0})},
  async clanLeaderboard(kind){return await rpc('clan_leaderboard',{p_kind:kind})},
- async clanView(id){return await rpc('clan_view',{p_clan:id})},
  async clanCreate(name,tag,mode,minLvl){return await clanCall(()=>rpc('clan_create',{p_name:name,p_tag:tag,p_mode:mode,p_min_lvl:minLvl}),1)},
  async clanJoin(id){return await clanCall(()=>rpc('clan_join',{p_clan:id}))},
  async clanCancelRequest(id){return await clanCall(()=>rpc('clan_cancel_request',{p_clan:id}))},
@@ -182,13 +184,13 @@ export const api={
  async clanKick(pid){return await clanCall(()=>rpc('clan_kick',{p_player:pid}))},
  async clanSetRole(pid,role){return await clanCall(()=>rpc('clan_set_role',{p_player:pid,p_role:role}))},
  async clanTransfer(pid){return await clanCall(()=>rpc('clan_transfer',{p_player:pid}))},
- async labState(){return rpc('lab_state')},
- async reportBug(cat,body,link){const {data,error}=await sb.functions.invoke('report-bug',{body:{cat,body,link}});if(error)return {err:await errCode(error)};return data},
  async clanExt(){return await rpc('clan_ext')},
  async clanBid(country,region,amount){return await clanCall(()=>rpc('clan_region_bid',{p_country:country,p_region:region,p_amount:amount}))},
  async clanBuy(item){return await clanCall(()=>rpc('clan_shop_buy',{p_item:item}))},
  async clanStyle(frame,fx){return await clanCall(()=>rpc('clan_set_style',{p_frame:frame||'',p_fx:fx||''}))},
  async clanTitle(item){return await clanCall(()=>rpc('clan_equip_title',{p_item:item||''}),1)},
+ async clanDescr(t){return await clanCall(()=>rpc('clan_set_descr',{p_text:t||''}))},
+ async clanMotd(t){return await clanCall(()=>rpc('clan_set_motd',{p_text:t||''}))},
  async clanSettings(mode,minLvl,tg){return await clanCall(()=>rpc('clan_settings',{p_mode:mode,p_min_lvl:minLvl,p_tg:tg||''}))},
  // Страна и регион генерации: set_gen_prefs (schema.sql). Сервер сам сбросит регион, если его нет в стране.
  async setGenPrefs(c,r){await rpc('set_gen_prefs',{c,r:r||''});await loadPlayer()},
