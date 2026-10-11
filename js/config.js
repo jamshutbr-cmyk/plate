@@ -39,7 +39,7 @@ export const EQUIP_SLOTS=['skin','title','drop','nick','bg'];   // надева�
 export const SHOWCASE_MAX=3;
 // Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
 export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1}};
-export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const b=BANK.items.find(x=>x.id==id);return b?{id:b.id,n:b.n,c:b.c,slot:'title'}:null};
+export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
 
 // Кейсы с машинами. Шансы, цены и выдачу считает ТОЛЬКО сервер (supabase/cases.sql: open_case); здесь данные для показа.
 // Должны совпадать с cases.sql, это сверяет tests/cases.test.mjs.
@@ -95,3 +95,12 @@ export const rebStars=lvl=>Math.floor(lvl/PRESTIGE.starsDiv);          // звё
 export const perkCost=lv=>lv+1;                                        // цена следующего уровня бонуса, когда сейчас lv
 // Тройная прокрутка: пасс на время, продаётся окнами (таблица offers). Зеркало supabase/triple_roll.sql
 export const TRIPLE={usd:30,hours:24,max:3};
+
+// Лаборатория тестировщиков (supabase/testers.sql). Титулы и рамка не продаются: их выдаёт сервер за принятые баги.
+// Пороги рангов и бонусы должны совпадать с bug_rank и bug_reward_apply в testers.sql, это сверяет tests/lab.test.mjs.
+export const LAB={
+ ranks:[{n:'Новичок',at:1},{n:'Охотник',at:3},{n:'Профи',at:7},{n:'Легенда',at:15}],
+ bonus:[{rub:0,usd:0},{rub:3000000,usd:20},{rub:10000000,usd:50},{rub:30000000,usd:150}],
+ titles:[{id:'tester',n:'Тестировщик',c:'#22d3ee'},{id:'bh2',n:'Охотник за багами',c:'#4ade80'},{id:'bh3',n:'Профи багов',c:'#f5b82e'},{id:'bh4',n:'Легенда багов',c:'#f43f5e'}],
+ skin:{id:'matrix',n:'Матрица'},
+ cats:[['gen','Генерация и номера'],['shop','Магазин, кейсы, банк'],['market','Рынок, аукцион, обмены'],['ui','Интерфейс и прокрутка'],['other','Другое']]};

@@ -75,6 +75,8 @@ export const api={
   try{await rpc('buy_item',{item_id:id})}catch(e){if(notEnough(e))return {err:1,need:it.p};throw e}
   await loadPlayer();return {ok:1}},
  async equipItem(slot,id){await rpc('equip_item',{slot_name:slot,item_id:id||''});await loadPlayer()},
+ async labState(){return rpc('lab_state')},
+ async reportBug(cat,body,link){const {data,error}=await sb.functions.invoke('report-bug',{body:{cat,body,link}});if(error)return {err:await errCode(error)};return data},
   // Кейсы: класс, машину и возврат за дубликат выбирает сервер (open_case в cases.sql). Клиент только показывает результат.
  async openCase(id){
   const c=CASES.find(x=>x.id==id);if(!c)return {err:1,need:0};

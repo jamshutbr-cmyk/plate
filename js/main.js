@@ -20,6 +20,7 @@ import './views/shop.js';
 import './views/cases.js';
 import './views/prestige.js';
 import './views/multi.js';
+import './views/lab.js';
 import './ui/scene.js';
 import {login, loadAll} from './server.js';
 import {render} from './router.js';
