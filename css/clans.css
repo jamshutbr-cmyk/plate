@@ -166,3 +166,54 @@
 .cl-need{margin-top:22px;gap:8px}
 .cl-pv{padding:28px 0 10px}
 .cl-fm,.cl-i span,.cl-i u{white-space:nowrap}.cl-fi>b{overflow-wrap:anywhere}
+
+/* v3: вкладки прокручиваются, регионы, магазин, рамки и эффекты тега */
+.cl-tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cl-tabs::-webkit-scrollbar{display:none}
+.cl-tabs button{flex:1 0 auto;padding-left:14px;padding-right:14px}
+
+.cl-rg,.cl-sh{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--ln)}
+.cl-rg:last-child,.cl-sh:last-child{border-bottom:0}
+.cl-x3{font-style:normal;font-weight:800;font-family:var(--hd);font-size:20px;color:var(--em)}
+.cl-st{font-style:normal;font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.cl-st.ok{color:#4ade80;background:#4ade8018}.cl-st.bad{color:#fca5a5;background:#ef444418}
+.cl-am2{font-family:var(--hd);font-size:17px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.cl-pks{display:grid;gap:0;margin-top:6px;max-height:300px;overflow-y:auto;border-top:1px solid var(--ln)}
+.cl-pk{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;padding:13px 4px;border:0;border-bottom:1px solid var(--ln);background:none;color:var(--tx);font-family:inherit;cursor:pointer}
+.cl-pk b{font-size:15.5px}.cl-pk span{font-size:12.5px;color:var(--mut)}
+.cl-pk.a{background:var(--emt);box-shadow:inset 3px 0 0 var(--em);padding-left:12px}
+.cl-bid{margin-top:20px;padding-top:20px;border-top:1px solid var(--ln)}
+.cl-sh .cl-shp{flex:none;min-width:74px;display:flex;align-items:center}
+.cl-sh .cl-i{flex:1}
+.cl-sh .ttl{margin:0}
+
+.mp.mp.cf-carbon{background:linear-gradient(#3b3d44,#1d1e23);color:#e6e6ea;border-color:#0a0a0c}
+.mp.mp.cf-carbon em{border-left-color:#555862}
+.mp.mp.cf-gold{background:linear-gradient(#fbe9a4,#d9a92f 55%,#b9871a);border-color:#3b2c0a}
+.mp.mp.cf-neon{background:linear-gradient(#0d2a33,#06161c);color:#7ffbe6;border-color:#27e0c4;box-shadow:0 0 10px #27e0c4aa,inset 0 0 8px #27e0c455}
+.mp.mp.cf-neon em{border-left-color:#27e0c4}
+.mp.mp.cf-holo{background:linear-gradient(115deg,#ffb3e6,#a9c7ff 35%,#b6ffe0 65%,#fff2a8);border-color:#2a2540;background-size:200% 100%;animation:clholo 6s linear infinite}
+@keyframes clholo{to{background-position:200% 0}}
+.mp.cx-glint{position:relative;overflow:hidden}
+.mp.cx-glint::after{content:'';position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,#fff9,transparent);transform:skewX(-20deg);animation:clglint 3.6s ease-in-out infinite}
+@keyframes clglint{0%,55%{left:-60%}100%{left:130%}}
+.mp.cx-pulse{animation:clpulse 2.4s ease-in-out infinite}
+@keyframes clpulse{50%{box-shadow:0 0 14px 2px #7aa2ffcc}}
+.mp.cx-fire{animation:clfire 1.6s ease-in-out infinite}
+@keyframes clfire{0%,100%{box-shadow:0 0 8px 1px #ff7a2fcc,0 -3px 12px #ffd23a88}50%{box-shadow:0 0 14px 3px #ff4a1dcc,0 -5px 16px #ffb30088}}
+@media (prefers-reduced-motion:reduce){.mp.cf-holo,.mp.cx-glint::after,.mp.cx-pulse,.mp.cx-fire{animation:none}}
+.cl-sh .cl-i span,.cl-rg .cl-i span{white-space:normal}
+.cl-sh .cl-i{min-width:0}
+.cl-sh>button,.cl-sh>.cl-fine{flex:none}
+
+/* рейтинг кланов и карточка чужого клана */
+.cl-rks{margin-top:6px}.cl-gap{margin-top:12px}
+.cl-rk{display:flex;align-items:center;gap:12px;padding:12px 10px;margin:0 -10px;border-bottom:1px solid var(--ln);cursor:pointer}
+.cl-rk:active{opacity:.7}.cl-rk.me{background:var(--emt);border-radius:12px}
+.cl-rk .cl-n{flex:none;width:30px;text-align:center;font-weight:800;font-size:16px;color:var(--mut)}
+.cl-rk .cl-fi{flex:1;min-width:0}.cl-rk .cl-fi b{display:block;font-size:16px;line-height:1.2;overflow-wrap:anywhere}
+.cl-rk .cl-fm{margin-top:4px}
+.cl-card .cl-pw{display:flex;justify-content:center;margin-bottom:8px}
+.cl-cm{max-height:38vh;overflow:auto;margin:10px 0;text-align:left}
+.cl-cmr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--ln);font-size:14.5px}
+.cl-cmr span{flex:1;min-width:0;overflow-wrap:anywhere}.cl-cmr em{font-style:normal;color:var(--mut);font-size:13px}.cl-cmr b{font-size:13.5px}

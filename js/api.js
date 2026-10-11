@@ -22,7 +22,7 @@ async function bankCall(f){
 // Кланы (clans.sql): сервер бросает исключения с короткими кодами, здесь они превращаются в {err:'код'}. Порядок важен: 'not in clan' раньше 'in clan'.
 const CLAN_ERR=[['not in clan','noclan'],['in clan','inclan'],['level too low','level'],['min level','minlvl'],['bad name','name'],['bad tag','tag'],['name taken','nametaken'],['tag taken','tagtaken'],
  ['forbidden word','word'],['cooldown','cooldown'],['not enough rub','rub'],['not enough usd','usd'],['bad amount','amount'],['treasury low','treasury'],['overdue','overdue'],['max level','maxlvl'],
- ['full','full'],['closed','closed'],['too many requests','manyreq'],['role limit','rolelimit'],['not allowed','denied'],['bad settings','settings'],['bad link','link'],['gone','gone'],['leader','leader']];
+ ['full','full'],['closed','closed'],['too many requests','manyreq'],['role limit','rolelimit'],['not allowed','denied'],['bad settings','settings'],['bad link','link'],['gone','gone'],['leader','leader'],['region limit','reglimit'],['bad region','badregion'],['already owned','owned'],['not owned','notowned'],['bad item','baditem']];
 async function clanCall(f,money){
  let res;
  try{res=await f()}
@@ -170,6 +170,7 @@ export const api={
  async clanPing(){try{await rpc('clan_ping')}catch(e){}},
  async clanSearch(q,off){return await rpc('clan_search',{p_q:q||'',p_off:off||0})},
  async clanLeaderboard(kind){return await rpc('clan_leaderboard',{p_kind:kind})},
+ async clanView(id){return await rpc('clan_view',{p_clan:id})},
  async clanCreate(name,tag,mode,minLvl){return await clanCall(()=>rpc('clan_create',{p_name:name,p_tag:tag,p_mode:mode,p_min_lvl:minLvl}),1)},
  async clanJoin(id){return await clanCall(()=>rpc('clan_join',{p_clan:id}))},
  async clanCancelRequest(id){return await clanCall(()=>rpc('clan_cancel_request',{p_clan:id}))},
@@ -181,6 +182,11 @@ export const api={
  async clanKick(pid){return await clanCall(()=>rpc('clan_kick',{p_player:pid}))},
  async clanSetRole(pid,role){return await clanCall(()=>rpc('clan_set_role',{p_player:pid,p_role:role}))},
  async clanTransfer(pid){return await clanCall(()=>rpc('clan_transfer',{p_player:pid}))},
+ async clanExt(){return await rpc('clan_ext')},
+ async clanBid(country,region,amount){return await clanCall(()=>rpc('clan_region_bid',{p_country:country,p_region:region,p_amount:amount}))},
+ async clanBuy(item){return await clanCall(()=>rpc('clan_shop_buy',{p_item:item}))},
+ async clanStyle(frame,fx){return await clanCall(()=>rpc('clan_set_style',{p_frame:frame||'',p_fx:fx||''}))},
+ async clanTitle(item){return await clanCall(()=>rpc('clan_equip_title',{p_item:item||''}),1)},
  async clanSettings(mode,minLvl,tg){return await clanCall(()=>rpc('clan_settings',{p_mode:mode,p_min_lvl:minLvl,p_tg:tg||''}))},
  // Страна и регион генерации: set_gen_prefs (schema.sql). Сервер сам сбросит регион, если его нет в стране.
  async setGenPrefs(c,r){await rpc('set_gen_prefs',{c,r:r||''});await loadPlayer()},

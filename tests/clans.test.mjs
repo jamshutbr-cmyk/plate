@@ -73,7 +73,7 @@ test('порядок блокировок: игрок раньше клана, �
 
 test('права: клиентам открыты только действия, внутренние функции закрыты', () => {
   const grant = sql.match(/grant execute on function([\s\S]*?)to authenticated;/)[1];
-  for (const f of ['clan_state', 'clan_search', 'clan_leaderboard', 'clan_tags', 'clan_create', 'clan_join', 'clan_donate', 'clan_upgrade', 'clan_kick', 'clan_disband', 'clan_ping'])
+  for (const f of ['clan_state', 'clan_search', 'clan_leaderboard', 'clan_view', 'clan_tags', 'clan_create', 'clan_join', 'clan_donate', 'clan_upgrade', 'clan_kick', 'clan_disband', 'clan_ping'])
     assert.ok(grant.includes(`public.${f}(`), `${f} не открыта игрокам`);
   for (const f of ['clan_tick', 'clan_sweep', 'clan_reset', 'clan_pick_heir', 'clan_champions']) assert.ok(!grant.includes(`public.${f}(`), `${f} не должна быть открыта`);
   assert.ok(/revoke execute on function\s+public\.clan_tick\(bigint\)[\s\S]*from public, anon, authenticated;/.test(sql));
