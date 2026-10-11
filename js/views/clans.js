@@ -195,7 +195,7 @@ function tabSet(c){
       <button class="cl-go wide" data-click="clSave">Сохранить настройки</button>`)
       :sec(`<h3>О клане</h3><p class="cl-fine">Набор: ${MODE[c.mode]}${c.min_lvl>1?', от '+c.min_lvl+' ур.':''}</p>`))
     +sec(lead?`<h3>Власть</h3><p class="cl-fine">Чтобы выйти, передайте власть участнику: нажмите на него в списке.</p><button class="cl-danger wide" data-click="clDisbandAsk">Распустить клан</button>`
-      :`<button class="cl-danger wide" data-click="clLeaveAsk">Выйти из клана</button><p class="cl-fine">После выхода ${CLAN.joinCdH} ч нельзя вступать в кланы.</p>`,'last')}
+      :`<p class="cl-fine">Выйти из клана можно кнопкой внизу страницы.</p>`,'last')}
 
 function inClan(){
   const c=CS.clan,mgr=c.role!='member',weeks=Math.floor(c.treasury/c.upkeep);
@@ -210,7 +210,8 @@ function inClan(){
       :`<p class="cl-fine cl-up">Содержание ${fmt(c.upkeep)} ₽ через ${cd(c.due)} · хватит на ${weeks} нед.</p>`)
     +`<div class="cl-tabs">${tabs.map(([k,n])=>`<button class="${TAB==k?'a':''}" data-click="clTab" data-arg="${k}">${n}</button>`).join('')}</div>`
     +(TAB=='mem'?tabMembers(c):TAB=='req'?tabReqs():TAB=='reg'?tabRegions(c,mgr):TAB=='shop'?tabShop(c,mgr):TAB=='set'?tabSet(c):tabMain(c,mgr))
-    +`<button class="cl-ghost wide" style="margin-top:18px" data-click="clBrowse">Все кланы и рейтинг</button>`}
+    +`<button class="cl-ghost wide" style="margin-top:18px" data-click="clBrowse">Все кланы и рейтинг</button>`
+    +(c.role=='leader'?'':`<button class="cl-danger wide" data-click="clLeaveAsk">Выйти из клана</button><p class="cl-fine">После выхода ${CLAN.joinCdH} ч нельзя вступать в кланы.</p>`)}
 
 // ---------- отрисовка ----------
 export function drawClans(){
