@@ -7,10 +7,12 @@ import {on} from '../ui/actions.js';
 import {burst, chime} from '../ui/fx.js';
 import {banner, cm, sm} from '../ui/modal.js';
 import {$, esc, fmt, parseAsk} from '../util.js';
+import {bidPrev, mount, styleCls, tabRegions, tabShop} from './clanext.js';
 
 // Кланы: экран «Клан». Правила, цены и права проверяет ТОЛЬКО сервер (supabase/clans.sql); CLAN в config.js нужен лишь для показа.
 // Если клана нет: поиск и создание. Если есть: казна и улучшения, участники, заявки, настройки.
 // Поля ввода не перерисовываются при наборе: обработчики input трогают только подсказку и состояние кнопки.
+let EX=null;                                          // clan_ext: регионы, магазин, вид тега. null, пока clan_regions.sql не выполнен: вкладки скрыты
 let CS=null,OFF=0,AT=0,LOAD=false,ERR=false;          // ответ clan_state, сдвиг часов сервера, время загрузки, идёт ли загрузка, ошибка
 let TAB='main',NOTAB='find',BUSY=false,TM=null,FRESH=true;   // FRESH: плашка-номер «ставится» анимацией только при открытии экрана        // вкладки, защита от двойного нажатия, таймер отсчёта
 let SQ='',SR=null,SMORE=false,SLOAD=false;             // поиск: запрос, результаты, есть ли ещё, идёт ли загрузка
@@ -22,6 +24,7 @@ const ERRS={level:'Уровень слишком мал',minlvl:'Ваш уров
  nametaken:'Такое название уже занято',tagtaken:'Такой тег уже занят',word:'Недопустимое слово в названии или теге',cooldown:'Пока нельзя: действует пауза',rub:'Не хватает рублей',usd:'Не хватает долларов',
  amount:'Взнос от '+fmt(CLAN.donateMin)+' ₽',treasury:'В казне не хватает денег',overdue:'Сначала нужно погасить содержание',maxlvl:'Максимальный уровень',full:'В клане нет мест',closed:'Набор закрыт',
  manyreq:'Не больше '+CLAN.maxReq+' заявок сразу',rolelimit:'Не больше '+CLAN.maxDeputies+' заместителей',denied:'Недостаточно прав',settings:'Проверьте настройки',link:'Ссылка должна начинаться с https://t.me/',
+ reglimit:'Ставок на регионы не больше уровня клана',badregion:'Такого региона нет',owned:'Уже куплено',notowned:'Сначала купите это',baditem:'Такого товара нет',
  gone:'Это уже неактуально',leader:'Глава не может выйти: передайте власть или распустите клан'};
 
 const fail=r=>{banner('Не получилось',ERRS[r.err]||'Попробуйте ещё раз');haptic('rigid');return reload()};
@@ -32,7 +35,7 @@ async function load(){
   LOAD=true;
   try{
     CS=await api.clanState();OFF=CS.now-Date.now();ERR=false;
-    if(CS.clan)ST={mode:CS.clan.mode,min:String(CS.clan.min_lvl),tg:CS.clan.tg||''}}
+    if(CS.clan){ST={mode:CS.clan.mode,min:String(CS.clan.min_lvl),tg:CS.clan.tg||''};try{EX=await api.clanExt()}catch(e){EX=null}}else EX=null}
   catch(e){console.error(e);ERR=true}
   LOAD=false;AT=Date.now()}
 
@@ -50,7 +53,7 @@ function tick(){
 // Клан — это номерной знак: тег на месте номера, уровень в графе региона, цвет по уровню как у редкостей номеров (серый, зелёный, синий, фиолетовый, золото)
 const LV=l=>'c'+Math.min(4,Math.max(0,l-1));
 export const plate=(tag,l,k='')=>`<span class="mp ${LV(l)} ${k}"><span>${esc(tag)}</span><em>${l}</em></span>`;
-export const ctagHTML=t=>t&&t.tag?`<span class="ctag"><span class="mp cl-sm"><span>${esc(t.tag)}</span></span>${t.medal?`<i>${MED[t.medal-1]}</i>`:''}</span>`:'';
+export const ctagHTML=t=>t&&t.tag?`<span class="ctag"><span class="mp cl-sm${styleCls(t.fr,t.fx)}"><span>${esc(t.tag)}</span></span>${t.medal?`<i>${MED[t.medal-1]}</i>`:''}</span>`:'';
 const sec=(h,k='')=>`<section class="cl-sec ${k}">${h}</section>`;
 const seg=(items,cur,click)=>`<div class="cl-seg">${items.map(([k,n])=>`<button class="${cur==k?'a':''}" data-click="${click}" data-arg="${k}">${n}</button>`).join('')}</div>`;
 const pts=n=>Math.floor((+n||0)/CLAN.pt);
@@ -100,8 +103,8 @@ function noClan(){
 // ---------- свой клан ----------
 const logLine=l=>{
   const who=esc(l.nick||'Игрок');
-  const [ic,t,a]=l.k=='donate'?['+',who,'+'+fmt(l.amt)+' ₽']:l.k=='upgrade'?['▲',`${who} поднял клан до ${l.lvl} уровня`,'−'+fmt(l.amt)+' ₽']
-    :l.k=='upkeep'?['−','Содержание клана','−'+fmt(l.amt)+' ₽']:['▼',`Просрочка: клан опустился до ${l.lvl} уровня`,''];
+  const [ic,t,a]=l.k=='donate'?['+',who,'+'+fmt(l.amt)+' ₽']:l.k=='upgrade'?['▲',`${who} поднял клан до ${l.lvl} ур.`,'−'+fmt(l.amt)+' ₽']
+    :l.k=='upkeep'?['−','Содержание клана','−'+fmt(l.amt)+' ₽']:l.k=='bid'?['▲',`${who}: ставка на регион`,'−'+fmt(l.amt)+' ₽']:l.k=='shop'?['★',`${who}: покупка в магазине`,'−'+fmt(l.amt)+' ₽']:['▼',`Просрочка: клан опустился до ${l.lvl} уровня`,''];
   return `<div class="cl-led ${l.k}"><i>${ic}</i><span>${t}</span><b>${a}</b><em>${dt(l.ts)}</em></div>`};
 
 function ladder(c){
@@ -150,16 +153,16 @@ function tabSet(c){
 function inClan(){
   const c=CS.clan,mgr=c.role!='member',weeks=Math.floor(c.treasury/c.upkeep);
   const drop=c.lvl>1?`уровень пропадёт через ${cd(+c.due+CLAN.upkeepDays*864e5)}`:`уровень не упадёт`;
-  const tabs=[['main','Казна'],['mem','Участники'],...(mgr?[['req','Заявки'+(CS.requests.length?`<sup>${CS.requests.length}</sup>`:'')]]:[]),['set','Клан']];
+  const tabs=[['main','Казна'],['mem','Участники'],...(mgr?[['req','Заявки'+(CS.requests.length?`<sup>${CS.requests.length}</sup>`:'')]]:[]),...(EX?[['reg','Регионы'],['shop','Магазин']]:[]),['set','Клан']];
   if(!tabs.some(t=>t[0]==TAB))TAB='main';
   const who={leader:'Глава',deputy:'Заместитель',member:'Участник'}[c.role];
-  return `<section class="cl-top${FRESH?' fresh':''}"><div class="cl-pw">${plate(c.tag,c.lvl,'cl-xl')}${c.medal?`<span class="cl-md">${MED[c.medal-1]}</span>`:''}</div>
+  return `<section class="cl-top${FRESH?' fresh':''}"><div class="cl-pw">${plate(c.tag,c.lvl,'cl-xl'+(EX?styleCls((EX.style||{}).frame,(EX.style||{}).fx):''))}${c.medal?`<span class="cl-md">${MED[c.medal-1]}</span>`:''}</div>
       <h2>${esc(c.name)}</h2><p class="cl-sub">${who} · ${c.members}/${c.cap}</p></section>
     <div class="cl-ledger"><div class="main"><span>В казне</span><b>${fmt(c.treasury)}<small>₽</small></b></div><div><span>Очки</span><b>${fmt(pts(c.season_donated))}</b></div><div><span>До конца сезона</span>${cd(CS.season_end)}</div></div>`
     +(c.lapsed?`<div class="cl-alert"><b>Содержание просрочено</b><span>Нужно ${fmt(c.upkeep)} ₽: ${drop}.</span></div>`
       :`<p class="cl-fine cl-up">Содержание ${fmt(c.upkeep)} ₽ через ${cd(c.due)} · хватит на ${weeks} нед.</p>`)
     +`<div class="cl-tabs">${tabs.map(([k,n])=>`<button class="${TAB==k?'a':''}" data-click="clTab" data-arg="${k}">${n}</button>`).join('')}</div>`
-    +(TAB=='mem'?tabMembers(c):TAB=='req'?tabReqs():TAB=='set'?tabSet(c):tabMain(c,mgr))}
+    +(TAB=='mem'?tabMembers(c):TAB=='req'?tabReqs():TAB=='reg'?tabRegions(c,mgr):TAB=='shop'?tabShop(c,mgr):TAB=='set'?tabSet(c):tabMain(c,mgr))}
 
 // ---------- отрисовка ----------
 export function drawClans(){
@@ -171,7 +174,7 @@ export function drawClans(){
   if(!LOAD&&!typing&&Date.now()-AT>30000)load().then(()=>render(true));
   if(!CS.clan&&NOTAB=='find'&&SR==null&&!SLOAD)search(0);
   el.innerHTML=CS.clan?inClan():noClan();
-  FRESH=false;donPrev();
+  FRESH=false;donPrev();if(CS.clan)bidPrev(CS.clan);
   if(!TM)TM=setInterval(tick,1000)}
 
 async function search(off){
@@ -237,7 +240,7 @@ on({
   clUpgrade:()=>run(()=>api.clanUpgrade(),['Клан улучшен','Новых мест больше']),
   clMember:openMember,
   clRole:a=>{const [id,role]=a.split(':');return run(()=>api.clanSetRole(id,role),[role=='deputy'?'Назначен заместитель':'Разжалован',''])},
-  clKickAsk:id=>{const m=memberById(id);dlg('Исключить '+esc((m&&m.nick)||'игрока')+'?','Он не сможет вступить в клан '+CLAN.joinCdH+' часа. Внесённые им деньги останутся в казне.','clKick',id,'Исключить')},
+  clKickAsk:id=>{const m=memberById(id);dlg('Исключить '+esc((m&&m.nick)||'игрока')+'?','Он не сможет вступить в клан '+CLAN.joinCdH+' ч. Внесённые им деньги останутся в казне.','clKick',id,'Исключить')},
   clKick:id=>run(()=>api.clanKick(id),['Участник исключён','']),
   clTransferAsk:id=>{const m=memberById(id);dlg('Передать власть?','Новым главой станет '+esc((m&&m.nick)||'игрок')+'. Вы станете заместителем (если места нет, участником).','clTransfer',id,'Передать')},
   clTransfer:id=>run(()=>api.clanTransfer(id),['Власть передана','']),
@@ -250,9 +253,10 @@ on({
     if(r.err)return fail(r);
     banner('Сохранено','');haptic('success');await reload()}),
   clTg:()=>{const u=CS&&CS.clan&&CS.clan.tg;if(!u)return;try{TG&&TG.openTelegramLink?TG.openTelegramLink(u):window.open(u,'_blank')}catch(e){window.open(u,'_blank')}},
-  clLeaveAsk:()=>dlg('Выйти из клана?','Внесённые деньги останутся в казне. Вступить в другой клан можно будет через '+CLAN.joinCdH+' часа.','clLeave',null,'Выйти'),
+  clLeaveAsk:()=>dlg('Выйти из клана?','Внесённые деньги останутся в казне. Вступить в другой клан можно будет через '+CLAN.joinCdH+' ч.','clLeave',null,'Выйти'),
   clLeave:()=>run(()=>api.clanLeave(),['Вы вышли из клана',''],()=>{SR=null;NOTAB='find'}),
   clDisbandAsk:()=>dlg('Распустить клан?','Казна пропадёт без возврата, все участники выйдут. Создать новый клан можно будет через '+CLAN.createCdH+' часа.','clDisband',null,'Распустить'),
   clDisband:()=>run(()=>api.clanDisband(),['Клан распущен',''],()=>{SR=null;NOTAB='find'})
 });
+mount({ex:()=>EX||{},clan:()=>CS&&CS.clan,seasonEnd:()=>CS&&CS.season_end,myTitle:()=>S.equip&&S.equip.title,sec,plate,cd,cm,act,fail,win,reload,dlg,render:()=>render(true)});
 DRAW.clans=drawClans;
