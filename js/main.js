@@ -15,6 +15,7 @@ import './views/trade.js';
 import './views/market.js';
 import './views/auction.js';
 import './views/clans.js';
+import './views/lab.js';
 import './views/bank.js';
 import './views/gen.js';
 import './views/shop.js';

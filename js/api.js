@@ -182,6 +182,8 @@ export const api={
  async clanKick(pid){return await clanCall(()=>rpc('clan_kick',{p_player:pid}))},
  async clanSetRole(pid,role){return await clanCall(()=>rpc('clan_set_role',{p_player:pid,p_role:role}))},
  async clanTransfer(pid){return await clanCall(()=>rpc('clan_transfer',{p_player:pid}))},
+ async labState(){return rpc('lab_state')},
+ async reportBug(cat,body,link){const {data,error}=await sb.functions.invoke('report-bug',{body:{cat,body,link}});if(error)return {err:await errCode(error)};return data},
  async clanExt(){return await rpc('clan_ext')},
  async clanBid(country,region,amount){return await clanCall(()=>rpc('clan_region_bid',{p_country:country,p_region:region,p_amount:amount}))},
  async clanBuy(item){return await clanCall(()=>rpc('clan_shop_buy',{p_item:item}))},

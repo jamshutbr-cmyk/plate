@@ -12,7 +12,7 @@ const ms=t=>t?Date.parse(t):0;
 export function playerToState(r){
   const d=fresh(),st=r.settings||{};
   return {since:ms(r.created_at)||Date.now(),nick:r.nick||'',bal:+r.balance,usd:r.usd,xp:r.xp,lvl:r.lvl,capC:r.cap_c,capS:r.cap_s,
-    dl:ms(r.daily_last),ds:r.daily_streak,rs:ms(r.rescue_last),country:r.country,reg:r.reg||'',seen:r.seen||[],owned:r.owned||[],cars:r.cars&&r.cars.length?r.cars:[],equip:r.equip||{},showcase:r.showcase||[],rb:r.rebirths||0,stars:r.stars||0,perks:Object.assign({sell:0,cash:0,usd:0},r.perks),
+    dl:ms(r.daily_last),ds:r.daily_streak,rs:ms(r.rescue_last),country:r.country,reg:r.reg||'',seen:r.seen||[],owned:r.owned||[],tester:!!r.tester,cars:r.cars&&r.cars.length?r.cars:[],equip:r.equip||{},showcase:r.showcase||[],rb:r.rebirths||0,stars:r.stars||0,perks:Object.assign({sell:0,cash:0,usd:0},r.perks),
     stats:Object.assign(d.stats,r.stats),as:Object.assign(d.as,r.autosell),
     theme:st.theme??d.theme,vol:st.vol??d.vol,vib:st.vib??d.vib,reel:st.reel??d.reel,fx:st.fx??d.fx,mute:st.mute??d.mute,music:st.music??d.music}}
 // Строка таблицы plates → номер в формате клиента
