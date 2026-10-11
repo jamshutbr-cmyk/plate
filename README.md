@@ -10,7 +10,7 @@
 3. Раздать статику любым сервером (`npm run dev`, или `python3 -m http.server 5173`) и открыть **из Telegram** (BotFather → Mini App → адрес игры, нужен https).
    Вход идёт по подписи Telegram `initData`, поэтому в обычном браузере игра покажет «Не удалось войти».
    Через `file://` не откроется: браузеры не грузят модули с диска.
-4. `npm test` — тесты логики (нужен Node 22+).
+4. `npm test` — тесты логики (нужен Node 22+). `npm run test:sql` — проверка SQL автопродажи на настоящем Postgres (нужны `psql` и суперпользователь).
 
 ## Структура
 
@@ -59,7 +59,7 @@ tests/                тесты правил, входа, кэша клиент
 | `api.movePlates(ids, to)` | `move_plates(ids, to_safe)` |
 | `api.claimDaily()` | `claim_daily()` |
 | `api.buyCapacity(k)` | `buy_capacity(kind)` |
-| `api.buyAutosell()` / `autoToggle(k)` / `autosell()` | `buy_autosell()` / `autosell_toggle(k)` / `autosell()` |
+| `api.buyAutosell()` / `autoSet(k, v)` / `autosell()` | `buy_autosell()` / `autosell_set(k, v)` / `autosell()` (`autosell_v2.sql`) |
 | `api.bailout()` | `bailout()` |
 | `api.setNick(n)` | `set_nick(n)` |
 | `api.setGenPrefs(c, r)` | `set_gen_prefs(c, r)` |

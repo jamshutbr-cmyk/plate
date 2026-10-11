@@ -189,6 +189,8 @@ export const api={
  async clanBuy(item){return await clanCall(()=>rpc('clan_shop_buy',{p_item:item}))},
  async clanStyle(frame,fx){return await clanCall(()=>rpc('clan_set_style',{p_frame:frame||'',p_fx:fx||''}))},
  async clanTitle(item){return await clanCall(()=>rpc('clan_equip_title',{p_item:item||''}),1)},
+ async labState(){return rpc('lab_state')},
+ async reportBug(cat,body,link){const {data,error}=await sb.functions.invoke('report-bug',{body:{cat,body,link}});if(error)return {err:await errCode(error)};return data},
  async clanDescr(t){return await clanCall(()=>rpc('clan_set_descr',{p_text:t||''}))},
  async clanMotd(t){return await clanCall(()=>rpc('clan_set_motd',{p_text:t||''}))},
  async clanSettings(mode,minLvl,tg){return await clanCall(()=>rpc('clan_settings',{p_mode:mode,p_min_lvl:minLvl,p_tg:tg||''}))},
