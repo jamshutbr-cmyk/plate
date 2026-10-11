@@ -45,10 +45,10 @@ async function loadTr(){
  TLOAD=false;TAT=Date.now();render(true)}
 let PT=null,TICK=0;
 export function initTrades(){
- // Раз в 30 секунд тикаем, на сервер ходим: каждый тик на экране «Обмены», иначе каждый шестой (3 мин); не чаще раза в 25 с (экономим egress Supabase)
- let last=0;const run=()=>{if(document.hidden||Date.now()-last<25000)return;last=Date.now();sync().catch(e=>console.warn('trades',e))};
- const tick=()=>{TICK++;if($('v-trades').classList.contains('on')||TICK%6==0)run()};
- run();clearInterval(PT);PT=setInterval(tick,30000);
+ // Раз в 10 секунд тикаем всегда, но на сервер ходим: каждый тик, если открыт экран «Обмены», иначе каждый четвёртый (40 с)
+ const run=()=>{if(!document.hidden)sync().catch(e=>console.warn('trades',e))};
+ const tick=()=>{TICK++;if($('v-trades').classList.contains('on')||TICK%4==0)run()};
+ run();clearInterval(PT);PT=setInterval(tick,10000);
  document.addEventListener('visibilitychange',run)}
 
 export function drawTrades(){

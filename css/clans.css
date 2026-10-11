@@ -1,0 +1,168 @@
+/* Кланы. Идея: клан это номерной знак. Тег стоит на месте номера, уровень в графе региона, цвет по уровню как у редкостей (.mp.c0–c4 из base.css).
+   Один акцент «огня» для денег, которые сгорают; остальное плоское: разделители вместо одинаковых карточек. */
+#clanC{--em:#ff7a2f;--emt:#ff7a2f1c;--br:#f5b82e;--ln:color-mix(in srgb,var(--tx) 11%,transparent);--bad:#ef4444;--hd:'Barlow Semi Condensed','Arial Narrow',Arial,sans-serif;padding-bottom:28px}
+#clanC h2,#clanC h3,#clanC .cl-ledger b,#clanC .cl-am b{font-family:var(--hd)}
+#clanC h2{margin:0;font-size:32px;line-height:1.05;letter-spacing:.01em}
+#clanC h3{margin:0 0 8px;font-size:21px;line-height:1.15}
+
+/* номерной знак клана */
+.mp.cl-xl{font-size:46px;border-radius:12px;border-width:3px;letter-spacing:.05em}
+.mp.cl-xl>span{padding:8px 18px}.mp.cl-xl em{padding:8px 14px;border-left-width:3px;letter-spacing:0}
+.mp.cl-md-p{font-size:23px;border-radius:8px;flex:none}
+.mp.cl-md-p>span{padding:5px 11px;letter-spacing:.04em}.mp.cl-md-p em{padding:5px 9px}
+.mp.cl-sm{font-size:15px;border-radius:6px;border-width:2px;box-shadow:none}
+.mp.cl-sm>span{padding:3px 8px;letter-spacing:.03em}
+
+/* шапка своего клана */
+.cl-top{text-align:center;padding:10px 0 18px}
+.cl-pw{position:relative;display:inline-block;margin-bottom:16px}
+.cl-md{position:absolute;right:-18px;top:-20px;font-size:34px;filter:drop-shadow(0 3px 6px #0008)}
+.cl-sub{margin:6px 0 0;font-size:14.5px;color:var(--mut)}
+.cl-top.fresh .cl-pw{animation:clstamp .55s cubic-bezier(.2,.9,.25,1)}
+@keyframes clstamp{0%{transform:translateY(-30px) scale(1.14);opacity:0}55%{transform:translateY(3px) scale(.985);opacity:1}100%{transform:none}}
+@media (prefers-reduced-motion:reduce){.cl-top.fresh .cl-pw{animation:none}}
+
+/* бухгалтерия клана */
+.cl-ledger{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--ln);border-bottom:1px solid var(--ln)}
+.cl-ledger>div{padding:12px 0}
+.cl-ledger>div:last-child{padding-left:16px;border-left:1px solid var(--ln)}
+.cl-ledger span{display:block;font-size:13px;color:var(--mut);margin-bottom:2px}
+.cl-ledger b{display:block;font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+.cl-ledger .main{grid-column:1/3;padding:16px 0 14px;border-bottom:1px solid var(--ln)}
+.cl-ledger .main b{font-size:44px;color:var(--em);letter-spacing:.01em}
+.cl-ledger .main small{font-size:22px;margin-left:6px;color:var(--mut);font-weight:600}
+.cl-ledger>div:nth-child(2){padding-right:16px}
+.cl-fine{margin:6px 0 0;font-size:13.5px;line-height:1.45;color:var(--mut)}
+.cl-up{margin:12px 0 4px}
+.cl-rules{margin:16px 0 0}
+.cl-alert{margin:14px 0 4px;padding:12px 14px;border-left:3px solid var(--bad);background:#ef44441a;border-radius:0 12px 12px 0}
+.cl-alert b{display:block;font-size:15.5px;margin-bottom:2px}.cl-alert span{font-size:13.5px;color:var(--mut);line-height:1.4}
+.cl-warn{margin:12px 0;padding:11px 14px;border-left:3px solid var(--br);background:#f5b82e14;border-radius:0 12px 12px 0;font-size:14px;line-height:1.4}
+
+/* вкладки: подчёркивание */
+.cl-tabs{display:flex;gap:0;margin:16px 0 0;border-bottom:1px solid var(--ln)}
+.cl-tabs button{flex:1 1 0;min-width:0;border:0;background:none;color:var(--mut);font-weight:700;font-size:14.5px;line-height:1;font-family:inherit;padding:13px 2px 12px;margin-bottom:-1px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+.cl-tabs button.a{color:var(--tx);border-bottom-color:var(--em)}
+.cl-tabs sup{display:inline-block;min-width:18px;margin-left:5px;padding:2px 5px;border-radius:9px;background:var(--em);color:#1f0c00;font-size:11.5px;font-weight:800;line-height:1.1;vertical-align:2px;text-align:center}
+
+/* секции */
+.cl-sec{padding:20px 0;border-bottom:1px solid var(--ln)}
+.cl-sec.last{border-bottom:0}
+.cl-sec.burn{margin-top:16px;padding:18px 16px;border:1px solid #ff7a2f55;border-radius:18px;background:#ff7a2f0d}
+.cl-lb{display:block;margin:16px 0 6px;font-size:13.5px;font-weight:700;color:var(--mut)}
+#clanC .gq{width:100%;box-sizing:border-box}
+
+/* кнопки */
+.cl-go,.cl-ghost,.cl-danger{display:inline-flex;align-items:center;justify-content:center;border-radius:14px;padding:14px 20px;font-weight:800;font-size:16px;line-height:1.1;font-family:inherit;cursor:pointer;transition:transform .12s}
+.cl-go{border:0;background:var(--em);color:#1f0c00}
+.cl-ghost{border:1px solid color-mix(in srgb,var(--tx) 22%,transparent);background:none;color:var(--tx)}
+.cl-danger{border:1px solid #ef444477;background:#ef44441a;color:#fca5a5}
+.cl-go.sm,.cl-ghost.sm{padding:10px 15px;font-size:14.5px;border-radius:12px}
+.cl-ghost.sq{width:42px;height:42px;padding:0;flex:none}
+.wide{width:100%;margin-top:14px}
+.cl-go:active,.cl-ghost:active,.cl-danger:active{transform:scale(.98)}
+.cl-go:disabled,.cl-ghost:disabled{opacity:.38;cursor:default;transform:none}
+.cl-go:focus-visible,.cl-ghost:focus-visible,.cl-danger:focus-visible,.cl-tabs button:focus-visible,.cl-seg button:focus-visible,.cl-chips button:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
+
+/* переключатель */
+.cl-seg{display:flex;gap:6px}
+.cl-seg button{flex:1;padding:11px 4px;border-radius:12px;border:1px solid var(--ln);background:none;color:var(--mut);font-weight:700;font-size:14.5px;line-height:1;font-family:inherit;cursor:pointer}
+.cl-seg button.a{color:var(--em);border-color:var(--em);background:var(--emt)}
+
+/* взнос */
+.cl-chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.cl-chips button{border:1px solid var(--ln);background:none;color:var(--tx);border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px;line-height:1;font-family:inherit;cursor:pointer}
+.cl-chips button:active{background:var(--emt)}
+.cl-prev{min-height:40px;display:flex;align-items:center;padding:0 2px;font-size:13.5px;color:var(--mut)}
+.cl-prev.ok{color:var(--tx)}
+
+/* уровни */
+.cl-lad{display:flex;justify-content:space-between;gap:4px;margin-top:14px}
+.cl-lad>div{flex:1;text-align:center;opacity:.32}
+.cl-lad>div.done{opacity:.72}.cl-lad>div.cur{opacity:1}
+.cl-lad .mp{font-size:19px}.cl-lad .mp>span{padding:4px 12px}
+.cl-lad .cur .mp{outline:2px solid var(--em);outline-offset:3px}
+.cl-lad small{display:block;margin-top:7px;font-size:11.5px;color:var(--mut)}
+.cl-gauge{height:8px;border-radius:4px;background:var(--ln);margin:12px 0 6px;overflow:hidden}
+.cl-gauge i{display:block;height:100%;background:var(--em);border-radius:4px}
+.cl-gl{display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut)}
+
+/* журнал */
+.cl-leds{margin-top:4px}
+.cl-led{display:grid;grid-template-columns:20px 1fr auto 46px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ln);font-size:14px}
+.cl-led:last-child{border-bottom:0}
+.cl-led i{font-style:normal;font-weight:800;text-align:center;color:var(--em)}
+.cl-led b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.cl-led em{font-style:normal;font-size:12.5px;color:var(--mut);text-align:right}
+.cl-led.upkeep i,.cl-led.upkeep span,.cl-led.upkeep b{color:var(--mut)}
+.cl-led.upgrade i{color:var(--br)}.cl-led.drop i,.cl-led.drop span{color:#fca5a5}
+
+/* поиск клана */
+.cl-search{display:flex;gap:8px;margin:16px 0 4px}.cl-search .gq{flex:1;min-width:0}.cl-search .cl-go{flex:none;padding:12px 18px}
+.cl-find{padding:16px 0;border-bottom:1px solid var(--ln)}
+.cl-fh{display:flex;align-items:center;gap:12px}.cl-fh b{flex:1;min-width:0;font-size:18px;line-height:1.2;overflow-wrap:anywhere}
+.cl-mdl{font-size:20px;margin-left:-4px}
+.cl-fm{display:flex;flex-wrap:wrap;gap:3px 14px;margin-top:9px;font-size:13.5px;color:var(--mut)}
+.cl-occ{height:4px;border-radius:2px;background:var(--ln);margin-top:9px;overflow:hidden}.cl-occ i{display:block;height:100%;background:color-mix(in srgb,var(--tx) 45%,transparent)}
+.cl-find .cl-go,.cl-find .cl-ghost{width:100%;margin-top:12px}
+.cl-empty{padding:34px 12px;text-align:center;font-size:14.5px;line-height:1.45;color:var(--mut)}
+
+/* создание */
+.cl-intro{padding:8px 0 4px}.cl-intro p{margin:10px 0 0;font-size:15px;line-height:1.5;color:var(--mut);max-width:42ch}
+.cl-pv{padding:22px 0 6px;text-align:center}#clanC .cl-pv h2{margin-top:16px;font-size:26px;overflow-wrap:anywhere}
+.cl-need{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:6px;font-size:14px}
+.cl-need li::before{display:inline-block;width:20px;font-weight:800}
+.cl-need .ok::before{content:'✓';color:#4ade80}.cl-need .bad::before{content:'✗';color:var(--bad)}.cl-need .bad{color:var(--mut)}
+
+/* участники и заявки: полоса позади строки показывает долю самого щедрого взноса */
+.cl-mem{display:flex;align-items:center;gap:12px;padding:12px 10px;margin:0 -10px;border-bottom:1px solid var(--ln);background:linear-gradient(90deg,var(--emt) var(--sh,0%),transparent var(--sh,0%))}
+.cl-mem.tap{cursor:pointer}.cl-mem.tap:active{opacity:.7}
+.cl-av{flex:none;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--ln);font:700 18px/1 var(--hd)}
+.cl-av.leader{box-shadow:0 0 0 2px var(--br)}.cl-av.deputy{box-shadow:0 0 0 2px #7aa2ff}
+.cl-i{flex:1;min-width:0}.cl-i b{display:block;font-size:16px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-i span{display:block;font-size:13px;color:var(--mut);margin-top:2px}.cl-i u{text-decoration:none;color:#f59e0b}
+.cl-am{text-align:right;white-space:nowrap}.cl-am b{display:block;font-size:17px;font-variant-numeric:tabular-nums}.cl-am span{font-size:12px;color:var(--mut)}
+.cl-ch{flex:none;font-style:normal;font-size:22px;color:var(--mut)}
+
+/* тег клана рядом с ником (рейтинг, профиль) */
+.ctag{display:inline-flex;align-items:center;gap:3px;flex:none;vertical-align:middle}
+.ctag .mp{font-size:12px;border-width:1.5px;border-radius:5px}.ctag .mp>span{padding:2px 6px}.ctag i{font-style:normal;font-size:13px}
+.tr.cl .tnr{gap:8px}.tr.cl .cl-ps{font-size:clamp(15px,4.4vw,18px);white-space:nowrap}
+.cl-season{text-align:center;color:var(--mut);font-size:13.5px;margin:0 0 10px;line-height:1.4}
+.tr.cl .tnr{flex-wrap:wrap;row-gap:4px}
+.tr.cl .tnr b{flex:1 1 130px;max-width:none;white-space:normal;overflow:visible;line-height:1.15;overflow-wrap:anywhere}
+
+/* v2: воздух и меньше текста */
+.cl-top{padding:14px 0 26px}
+.cl-sub{margin-top:8px}
+.cl-ledger .main{padding:20px 0 18px}
+.cl-ledger>div{padding:16px 0}
+.cl-ledger .main b{font-size:40px}
+.cl-up{margin:16px 0 8px}
+.cl-tabs{margin-top:22px}
+.cl-sec{padding:28px 0}
+.cl-sec.burn{margin-top:24px;padding:22px 18px}
+.cl-sec h3{margin-bottom:12px}
+.cl-chips{margin:16px 0}
+.cl-nx{margin:14px 0 0}
+.cl-gauge{margin:14px 0 8px}
+.wide{margin-top:20px}
+.cl-lb{margin:22px 0 8px}
+.cl-led{padding:13px 0}
+.cl-mem{padding:15px 10px}
+.cl-rules{margin:8px 0 0;padding:6px 0 0;color:var(--mut);font-size:13.5px}
+.cl-rules summary{cursor:pointer;padding:10px 0;list-style:none}.cl-rules summary::-webkit-details-marker{display:none}
+.cl-rules summary::after{content:' ▾'}
+.cl-rules p{margin:4px 0 0;line-height:1.5}
+.cl-intro p{max-width:34ch}
+.cl-search{margin:22px 0 8px}
+.cl-find{display:flex;align-items:center;gap:12px;padding:20px 0}
+.cl-fh{flex:1;min-width:0;gap:14px}
+.cl-fi{min-width:0;display:flex;flex-direction:column;gap:5px}
+.cl-fi>b{flex:none;font-size:17px}
+.cl-fm{margin:0;font-size:13px}
+.cl-find .cl-go,.cl-find .cl-ghost{width:auto;margin:0;flex:none}
+.cl-mdl{font-size:16px;margin:0}
+.cl-need{margin-top:22px;gap:8px}
+.cl-pv{padding:28px 0 10px}
+.cl-fm,.cl-i span,.cl-i u{white-space:nowrap}.cl-fi>b{overflow-wrap:anywhere}

@@ -14,13 +14,13 @@ import './views/top.js';
 import './views/trade.js';
 import './views/market.js';
 import './views/auction.js';
+import './views/clans.js';
 import './views/bank.js';
 import './views/gen.js';
 import './views/shop.js';
 import './views/cases.js';
 import './views/prestige.js';
 import './views/multi.js';
-import './views/lab.js';
 import './ui/scene.js';
 import {login, loadAll} from './server.js';
 import {render} from './router.js';
@@ -48,5 +48,7 @@ async function boot(){
   // Ник по умолчанию — имя из Telegram, чтобы в рейтинге были имена, а не «Игрок»
   if(!S.nick){const u=tgUser(),n=u&&(u.first_name||u.username);if(n)try{await api.setNick(n)}catch(e){console.error(e)}}
   document.getElementById('gate')?.remove();$('boot').remove();render();daily();initTrades();initMarket();initAuction();checkPending();
+  // Клан считает главу «живым», пока он заходит: пинг при запуске и при возвращении в приложение (сервер пишет не чаще раза в минуту)
+  api.clanPing();document.addEventListener('visibilitychange',()=>{if(!document.hidden)api.clanPing()});
 }
 boot();

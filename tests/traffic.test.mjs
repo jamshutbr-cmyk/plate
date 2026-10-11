@@ -21,11 +21,11 @@ test('ставка, автопродажа, рынок и обмен не пер
   assert.ok(!/loadAll/.test(rd('js/views/trade.js')));
 });
 
-test('частота опросов: обмены 30 с / 3 мин, рынок 3 мин, аукцион 30 с на экране и 3 мин в фоне', () => {
-  assert.ok(/setInterval\(tick,30000\)/.test(rd('js/views/trade.js')) && /TICK%6==0/.test(rd('js/views/trade.js')));
-  assert.ok(/setInterval\(run,180000\)/.test(rd('js/views/market.js')));
+test('частота опросов: обмены 10 с / 40 с, рынок 45 с, аукцион 15 с на экране и 45 с в фоне', () => {
+  assert.ok(/setInterval\(tick,10000\)/.test(rd('js/views/trade.js')) && /TICK%4==0/.test(rd('js/views/trade.js')));
+  assert.ok(/setInterval\(run,45000\)/.test(rd('js/views/market.js')));
   const a = rd('js/views/auction.js');
-  assert.ok(/\+\+BG%6==0/.test(a) && /,30000\)/.test(a));
+  assert.ok(/\+\+BG%3==0/.test(a) && /,15000\)/.test(a));
 });
 
 test('таймер аукциона не трогает чужие таймеры: свой атрибут data-aend, банк остаётся на data-end', () => {

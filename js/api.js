@@ -19,6 +19,16 @@ async function bankCall(f){
  catch(e){const m=(e&&e.message)||'',h=BANK_ERR.find(x=>m.includes(x[0]));if(h){await loadPlayer();return {err:h[1]}}throw e}
  await loadPlayer();return {ok:1,res}}
 
+// Кланы (clans.sql): сервер бросает исключения с короткими кодами, здесь они превращаются в {err:'код'}. Порядок важен: 'not in clan' раньше 'in clan'.
+const CLAN_ERR=[['not in clan','noclan'],['in clan','inclan'],['level too low','level'],['min level','minlvl'],['bad name','name'],['bad tag','tag'],['name taken','nametaken'],['tag taken','tagtaken'],
+ ['forbidden word','word'],['cooldown','cooldown'],['not enough rub','rub'],['not enough usd','usd'],['bad amount','amount'],['treasury low','treasury'],['overdue','overdue'],['max level','maxlvl'],
+ ['full','full'],['closed','closed'],['too many requests','manyreq'],['role limit','rolelimit'],['not allowed','denied'],['bad settings','settings'],['bad link','link'],['gone','gone'],['leader','leader']];
+async function clanCall(f,money){
+ let res;
+ try{res=await f()}
+ catch(e){const m=(e&&e.message)||'',h=CLAN_ERR.find(x=>m.includes(x[0]));if(h){await loadPlayer();return {err:h[1]}}throw e}
+ if(money)await loadPlayer();return {ok:1,res}}
+
 export const api={
  // Тройная прокрутка (supabase/triple_roll.sql): покупка пасса, бросок пакета, решение по номерам
  async buyPass(){const {error}=await sb.functions.invoke('buy-pass');if(error)return {err:await errCode(error)};await loadAll();return {ok:1}},
@@ -75,8 +85,6 @@ export const api={
   try{await rpc('buy_item',{item_id:id})}catch(e){if(notEnough(e))return {err:1,need:it.p};throw e}
   await loadPlayer();return {ok:1}},
  async equipItem(slot,id){await rpc('equip_item',{slot_name:slot,item_id:id||''});await loadPlayer()},
- async labState(){return rpc('lab_state')},
- async reportBug(cat,body,link){const {data,error}=await sb.functions.invoke('report-bug',{body:{cat,body,link}});if(error)return {err:await errCode(error)};return data},
   // Кейсы: класс, машину и возврат за дубликат выбирает сервер (open_case в cases.sql). Клиент только показывает результат.
  async openCase(id){
   const c=CASES.find(x=>x.id==id);if(!c)return {err:1,need:0};
@@ -157,6 +165,23 @@ export const api={
   if(r.ended)return {err:'ended'};
   return {ok:1,bid:+r.bid,ends:+r.ends_at,extended:!!r.extended}},
  async auctionAck(upto){await rpc('auction_ack',{p_upto:upto})},
+ // Кланы (clans.sql): правила, цены и права проверяет сервер. Отказы возвращаются как {err:'код'}; money: после действия сверить баланс
+ async clanState(){return await rpc('clan_state')},
+ async clanPing(){try{await rpc('clan_ping')}catch(e){}},
+ async clanSearch(q,off){return await rpc('clan_search',{p_q:q||'',p_off:off||0})},
+ async clanLeaderboard(kind){return await rpc('clan_leaderboard',{p_kind:kind})},
+ async clanCreate(name,tag,mode,minLvl){return await clanCall(()=>rpc('clan_create',{p_name:name,p_tag:tag,p_mode:mode,p_min_lvl:minLvl}),1)},
+ async clanJoin(id){return await clanCall(()=>rpc('clan_join',{p_clan:id}))},
+ async clanCancelRequest(id){return await clanCall(()=>rpc('clan_cancel_request',{p_clan:id}))},
+ async clanLeave(){return await clanCall(()=>rpc('clan_leave'))},
+ async clanDisband(){return await clanCall(()=>rpc('clan_disband'))},
+ async clanDonate(amount){return await clanCall(()=>rpc('clan_donate',{p_amount:amount}),1)},
+ async clanUpgrade(){return await clanCall(()=>rpc('clan_upgrade'))},
+ async clanResolve(pid,accept){return await clanCall(()=>rpc('clan_resolve',{p_player:pid,p_accept:!!accept}))},
+ async clanKick(pid){return await clanCall(()=>rpc('clan_kick',{p_player:pid}))},
+ async clanSetRole(pid,role){return await clanCall(()=>rpc('clan_set_role',{p_player:pid,p_role:role}))},
+ async clanTransfer(pid){return await clanCall(()=>rpc('clan_transfer',{p_player:pid}))},
+ async clanSettings(mode,minLvl,tg){return await clanCall(()=>rpc('clan_settings',{p_mode:mode,p_min_lvl:minLvl,p_tg:tg||''}))},
  // Страна и регион генерации: set_gen_prefs (schema.sql). Сервер сам сбросит регион, если его нет в стране.
  async setGenPrefs(c,r){await rpc('set_gen_prefs',{c,r:r||''});await loadPlayer()},
  async syncPlayer(){await loadPlayer()},   // сверить кэш с сервером (например, после обрыва связи во время открытия)
