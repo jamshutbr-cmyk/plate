@@ -61,8 +61,8 @@ async function refresh(){
 let MT=null;
 // Раз в 45 секунд (пока игра видна) узнаём, купили ли наши номера
 export function initMarket(){
-  const run=()=>{if(!document.hidden)syncMine().catch(e=>console.warn('market',e))};
-  run();clearInterval(MT);MT=setInterval(run,45000);
+  let last=0;const run=()=>{if(document.hidden||Date.now()-last<20000)return;last=Date.now();syncMine().catch(e=>console.warn('market',e))};
+  run();clearInterval(MT);MT=setInterval(run,120000);
   document.addEventListener('visibilitychange',run)}
 
 // ---------- экраны ----------

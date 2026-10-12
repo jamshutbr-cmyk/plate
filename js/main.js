@@ -50,6 +50,6 @@ async function boot(){
   if(!S.nick){const u=tgUser(),n=u&&(u.first_name||u.username);if(n)try{await api.setNick(n)}catch(e){console.error(e)}}
   document.getElementById('gate')?.remove();$('boot').remove();render();daily();initTrades();initMarket();initAuction();checkPending();
   // Клан считает главу «живым», пока он заходит: пинг при запуске и при возвращении в приложение (сервер пишет не чаще раза в минуту)
-  api.clanPing();document.addEventListener('visibilitychange',()=>{if(!document.hidden)api.clanPing()});
+  let cpAt=0;const cp=()=>{if(Date.now()-cpAt<300000)return;cpAt=Date.now();api.clanPing()};cp();document.addEventListener('visibilitychange',()=>{if(!document.hidden)cp()});
 }
 boot();
