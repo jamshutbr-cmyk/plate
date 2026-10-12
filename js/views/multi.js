@@ -50,13 +50,17 @@ function mxPaint(){
   e.style.display='';e.className='chip mxb'+(S.mul>1?' a':'');e.dataset.click='mMul';e.dataset.arg='';e.textContent='×'+S.mul}
 painters.push(mxPaint);
 
+let busyGen=false,busyOk=false;   // защита от повторного тапа, пока запрос идёт (на медленной сети второй запрос давал ложную ошибку)
 export async function multiGen(){
+  if(busyGen)return;busyGen=true;try{await multiGen0()}finally{busyGen=false}}
+async function multiGen0(){
   const n=S.mul;
   if(S.pend.length){go('multi');return}
   if(S.bal<costN(n)){banner('Не хватает денег','Нужно '+fmt(costN(n))+' ₽');return}
   const st=$('stage'),iv=setInterval(()=>{st.innerHTML=`<div class="tl">Генерация ×${n}…</div>`+Array.from({length:n},()=>plateHTML(fake(),'blur mini')).join('')},90);
   const r=await api.multiRoll(n).finally(()=>clearInterval(iv));
   st.innerHTML='';
+  if(r.err&&S.pend.length){go('multi');return}   // связь оборвалась, но сервер успел выдать пакет: показываем его
   if(r.err){const t=({money:'Не хватает денег',pass:'Пасс закончился','no pass':'Пасс закончился',pending:'Есть нерешённый пакет'})[r.err];banner(t||'Ошибка',t?(r.err=='pending'?'Сначала решите по номерам':'Попробуйте ещё раз'):String(r.err).slice(0,80));render();return}
   for(const k in D)delete D[k];go('multi')}
 
@@ -85,9 +89,20 @@ on({
     if(r.err){const t=({window:'Окно продаж закрыто',active:'Пасс уже активен',usd:'Не хватает $'})[r.err];banner(t||'Ошибка',t?'Попробуйте ещё раз':String(r.err).slice(0,80));return}
     S.mul=3;banner('Пасс куплен','Тройная прокрутка на '+TRIPLE.hours+' ч');render(true)},
   mOk:async()=>{
-    const ds=S.pend.map(p=>({id:p.id,act:dec(p)})),r=await api.resolveRolls(ds);
-    if(r&&r.err){banner(({full:'Нет места в коллекции',safe_full:'Нет места в сейфе'})[r.err]||'Ошибка','Освободите место или продайте номера');return}
-    banner('Пакет закрыт','Оставлено '+(r.kept+r.safe)+' · продано '+r.sold+(r.gain?' · +'+fmt(r.gain)+' ₽':''));go('main')}
+    if(busyOk)return;busyOk=true;
+    try{
+      const ds=S.pend.map(p=>({id:p.id,act:dec(p)}));
+      let r=await api.resolveRolls(ds);
+      // Обрыв связи или сбой сервера: один повтор с теми же решениями
+      if(r&&r.err&&!['full','safe_full','bad'].includes(r.err))r=await api.resolveRolls(ds)   // те же решения; если пакет уже закрыт, сервер ответит 'none' → done
+      if(r&&r.done){banner('Пакет закрыт','Номера уже выданы');go('main');return}
+      if(r&&r.err){
+        const t=({full:'Нет места в коллекции',safe_full:'Нет места в сейфе'})[r.err];
+        if(t)banner(t,'Освободите место или продайте номера');
+        else{banner('Не удалось закрыть пакет','Код: '+String(r.err).slice(0,60)+'. Нажмите «Подтвердить» ещё раз');render()}   // пакет на сервере цел, баланс уже сверен
+        return}
+      banner('Пакет закрыт','Оставлено '+(r.kept+r.safe)+' · продано '+r.sold+(r.gain?' · +'+fmt(r.gain)+' ₽':''));go('main')
+    }finally{busyOk=false}}
 });
 
 // При входе: свежий пакет ждёт игрока на своём экране, пакет старше 24 ч сервер решает сам

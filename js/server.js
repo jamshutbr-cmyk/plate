@@ -5,7 +5,8 @@ import {S, applyPlates, applyPlayer, applyTriple} from './state.js';
 
 // Связь с Supabase: вход через Telegram и загрузка данных в кэш S. Единственное место, где создаётся клиент.
 // Любой запрос к серверу обрывается через 15 с: иначе при перегрузке игра висит на «Загрузке…» бесконечно
-const tfetch=(u,o={})=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),15000);if(o.signal)o.signal.addEventListener('abort',()=>c.abort());return fetch(u,{...o,signal:c.signal}).finally(()=>clearTimeout(t))};
+// Edge Functions (прокрутка ×3, подтверждение пакета) на медленной сети идут дольше 15 с: обрыв клиентом не отменяет работу сервера и оставлял игрока без номеров, поэтому им даём 45 с
+const tfetch=(u,o={})=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),String(u).includes('/functions/v1/')?45000:15000);if(o.signal)o.signal.addEventListener('abort',()=>c.abort());return fetch(u,{...o,signal:c.signal}).finally(()=>clearTimeout(t))};
 export const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true},global:{fetch:tfetch}});
 // Пауза фоновых опросов после сбоев сервера (5xx / нет связи): 15 с, 30 с, 60 с … до 5 минут. Успешный ответ сбрасывает.
 const DOWN={n:0,until:0};
