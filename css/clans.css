@@ -212,3 +212,10 @@
 .cl-ar.l{left:0;background:linear-gradient(90deg,var(--bg,#111) 55%,transparent)}
 .cl-ar.r{right:0;background:linear-gradient(270deg,var(--bg,#111) 55%,transparent)}
 .cl-tw.nl .cl-ar.l,.cl-tw.nr .cl-ar.r{display:none}
+
+.cl-kvs{margin-top:12px}
+.cl-kv{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid var(--ln);font-size:14.5px}
+.cl-kv span{color:var(--mut);white-space:nowrap}.cl-kv b{text-align:right}
+.cl-find .cl-ghost.sq{width:40px;height:40px;padding:0;font-size:24px;line-height:1;flex:none}
+.cl-mine{display:inline-block;margin-right:8px;padding:2px 6px;border-radius:6px;background:var(--em);color:#1f0c00;font-size:11px;font-weight:800}
+.dlg .cl-mem{padding:8px 0}
