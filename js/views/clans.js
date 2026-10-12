@@ -65,20 +65,20 @@ const nameOk=s=>{s=s.trim().replace(/\s+/g,' ');return s.length>=CLAN.name[0]&&s
 const tagOk=s=>/^[A-Za-zА-Яа-яЁё0-9]{2,4}$/.test(s.trim());
 const canCreate=()=>S.lvl>=CLAN.createLvl&&S.bal>=CLAN.createRub&&S.usd>=CLAN.createUsd&&nameOk(F.name)&&tagOk(F.tag);
 
-function clanRow(c,jw){
+function clanRow(c,jw,ro){
   const req=(CS.reqs||[]).includes(c.id),full=c.n>=c.cap;
-  const btn=req?`<button class="cl-ghost sm" data-click="clCancelReq" data-arg="${c.id}">Отозвать</button>`
+  const btn=ro?(CS.clan&&CS.clan.id==c.id?`<span class="cl-fine">Ваш клан</span>`:''):req?`<button class="cl-ghost sm" data-click="clCancelReq" data-arg="${c.id}">Отозвать</button>`
     :c.mode=='closed'?`<button class="cl-ghost sm" disabled>Закрыт</button>`
     :full?`<button class="cl-ghost sm" disabled>Мест нет</button>`
     :`<button class="cl-go sm" ${S.lvl<CLAN.joinLvl||S.lvl<c.min_lvl||jw?'disabled ':''}data-click="clJoin" data-arg="${c.id}">${c.mode=='open'?'Вступить':'Заявка'}</button>`;
   return `<div class="cl-find"><div class="cl-fh">${plate(c.tag,c.lvl,'cl-md-p')}<div class="cl-fi"><b>${esc(c.name)}${c.medal?` <span class="cl-mdl">${MED[c.medal-1]}</span>`:''}</b>
     <div class="cl-fm">${c.n}/${c.cap} · ${MODE[c.mode]}${c.min_lvl>1?` · ${c.min_lvl}+ ур.`:''}</div></div></div>${btn}</div>`}
 
-function findForm(jw){
+function findForm(jw,ro){
   return `<div class="cl-search"><input class="gq" id="clQ" placeholder="Название или тег" maxlength="20" autocomplete="off" value="${esc(SQ)}" data-input="clQ" data-change="clFind"><button class="cl-go" data-click="clFind">Найти</button></div>`
-    +(S.lvl<CLAN.joinLvl?`<p class="cl-warn">Вступать можно с ${CLAN.joinLvl} уровня, у вас ${S.lvl}.</p>`:'')
+    +(!ro&&S.lvl<CLAN.joinLvl?`<p class="cl-warn">Вступать можно с ${CLAN.joinLvl} уровня, у вас ${S.lvl}.</p>`:'')
     +(SR==null?`<p class="cl-empty">Загружаю список…</p>`
-      :SR.clans.length?SR.clans.map(c=>clanRow(c,jw)).join('')+(SMORE?`<button class="cl-ghost wide" data-click="clMore">Показать ещё</button>`:'')
+      :SR.clans.length?SR.clans.map(c=>clanRow(c,jw,ro)).join('')+(SMORE?`<button class="cl-ghost wide" data-click="clMore">Показать ещё</button>`:'')
       :`<p class="cl-empty">Ничего не нашлось. Создайте свой клан.</p>`)}
 
 const need=(ok,t)=>`<li class="${ok?'ok':'bad'}">${t}</li>`;
@@ -153,7 +153,7 @@ function tabSet(c){
 function inClan(){
   const c=CS.clan,mgr=c.role!='member',weeks=Math.floor(c.treasury/c.upkeep);
   const drop=c.lvl>1?`уровень пропадёт через ${cd(+c.due+CLAN.upkeepDays*864e5)}`:`уровень не упадёт`;
-  const tabs=[['main','Казна'],['mem','Участники'],...(mgr?[['req','Заявки'+(CS.requests.length?`<sup>${CS.requests.length}</sup>`:'')]]:[]),...(EX?[['reg','Регионы'],['shop','Магазин']]:[]),['set','Клан']];
+  const tabs=[['main','Казна'],['mem','Участники'],...(mgr?[['req','Заявки'+(CS.requests.length?`<sup>${CS.requests.length}</sup>`:'')]]:[]),...(EX?[['reg','Регионы'],['shop','Магазин']]:[]),['all','Все кланы'],['set','Клан']];
   if(!tabs.some(t=>t[0]==TAB))TAB='main';
   const who={leader:'Глава',deputy:'Заместитель',member:'Участник'}[c.role];
   return `<section class="cl-top${FRESH?' fresh':''}"><div class="cl-pw">${plate(c.tag,c.lvl,'cl-xl'+(EX?styleCls((EX.style||{}).frame,(EX.style||{}).fx):''))}${c.medal?`<span class="cl-md">${MED[c.medal-1]}</span>`:''}</div>
@@ -162,7 +162,7 @@ function inClan(){
     +(c.lapsed?`<div class="cl-alert"><b>Содержание просрочено</b><span>Нужно ${fmt(c.upkeep)} ₽: ${drop}.</span></div>`
       :`<p class="cl-fine cl-up">Содержание ${fmt(c.upkeep)} ₽ через ${cd(c.due)} · хватит на ${weeks} нед.</p>`)
     +`<div class="cl-tabs">${tabs.map(([k,n])=>`<button class="${TAB==k?'a':''}" data-click="clTab" data-arg="${k}">${n}</button>`).join('')}</div>`
-    +(TAB=='mem'?tabMembers(c):TAB=='req'?tabReqs():TAB=='reg'?tabRegions(c,mgr):TAB=='shop'?tabShop(c,mgr):TAB=='set'?tabSet(c):tabMain(c,mgr))}
+    +(TAB=='mem'?tabMembers(c):TAB=='req'?tabReqs():TAB=='reg'?tabRegions(c,mgr):TAB=='shop'?tabShop(c,mgr):TAB=='all'?findForm(true,true):TAB=='set'?tabSet(c):tabMain(c,mgr))}
 
 // ---------- отрисовка ----------
 export function drawClans(){
@@ -172,7 +172,7 @@ export function drawClans(){
     if(!LOAD)load().then(()=>render(true));
     el.innerHTML=`<p class="tl" style="text-align:center">Загрузка…</p>`;return}
   if(!LOAD&&!typing&&Date.now()-AT>30000)load().then(()=>render(true));
-  if(!CS.clan&&NOTAB=='find'&&SR==null&&!SLOAD)search(0);
+  if(((!CS.clan&&NOTAB=='find')||(CS.clan&&TAB=='all'))&&SR==null&&!SLOAD)search(0);
   el.innerHTML=CS.clan?inClan():noClan();
   FRESH=false;donPrev();if(CS.clan)bidPrev(CS.clan);
   if(!TM)TM=setInterval(tick,1000)}
@@ -212,7 +212,7 @@ on({
   cm,
   clRetry:()=>{ERR=false;CS=null;render(true)},
   clNo:k=>{NOTAB=k;render(true)},
-  clTab:k=>{TAB=k;render(true)},
+  clTab:k=>{TAB=k;if(k=='all'){SQ='';SR=null}render(true)},
   clF:(k,el)=>{F[k]=el.value;const b=$('clGo');if(b)b.disabled=!canCreate();const v=$('clPv');if(v)v.innerHTML=pv()},
   clMode:k=>{F.mode=k;render(true)},
   clQ:(_,el)=>{SQ=el.value},
