@@ -1,4 +1,4 @@
-import {createClient} from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+import {createClient} from './vendor/supabase.js';
 import {SUPABASE_ANON_KEY, SUPABASE_URL} from './env.js';
 import {TG, tgUser} from './platform.js';
 import {S, applyPlates, applyPlayer, applyTriple} from './state.js';
