@@ -103,6 +103,10 @@
 <div id="v-set" class="view"><div class="head"><button class="burger" data-click="go" data-arg="menu">←</button>Настройки</div><div id="setC"></div></div>
 <div class="cso" id="csOv"></div>
 <div class="md" id="md" data-click="backdrop"><div class="sheet" id="sh"></div></div>
+<script>
+// Если за 15 с игра так и не запустилась (сервер или CDN не отвечают) — показываем сообщение вместо вечной «Загрузки…»
+setTimeout(function(){var b=document.getElementById('boot');if(b&&!b.querySelector('button')){b.innerHTML='<div class="bootmsg"><b>Нет связи с сервером</b><span>Сервер перегружен. Попробуйте через пару минут</span><button class="btn" onclick="location.reload()">Повторить</button></div>'}},15000);
+</script>
 <script type="module" src="js/main.js"></script>
 </body>
 </html>

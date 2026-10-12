@@ -2,7 +2,7 @@ import {api} from '../api.js';
 import {AUCTION, CN, RAR, TYPES, auctionFee, auctionNext} from '../config.js';
 import {haptic} from '../platform.js';
 import {DRAW, go, render} from '../router.js';
-import {loadPlates, loadPlayer, rpc} from '../server.js';
+import {loadPlates, loadPlayer, rpc, serverDown} from '../server.js';
 import {S, find} from '../state.js';
 import {on} from '../ui/actions.js';
 import {banner, cm, sm} from '../ui/modal.js';
@@ -81,8 +81,8 @@ async function refresh(){
 
 let MT=null,TT=null,EXP=0,BG=0;     // опрос: на экране аукциона каждые 15 с, в фоне каждые 45 с
 export function initAuction(){
-  let last=0;const run=()=>{if(document.hidden||Date.now()-last<20000)return;last=Date.now();syncMine().catch(e=>console.warn('auction',e))};
-  run();clearInterval(MT);MT=setInterval(()=>{if(!document.hidden&&($('v-auction').classList.contains('on')||++BG%3==0))run()},40000);
+  let last=0;const run=()=>{if(document.hidden||serverDown()||Date.now()-last<20000)return;last=Date.now();syncMine().catch(e=>console.warn('auction',e))};
+  run();clearInterval(MT);MT=setInterval(()=>{if(!document.hidden&&($('v-auction').classList.contains('on')||++BG%6==0))run()},40000);
   document.addEventListener('visibilitychange',run);
   // Раз в секунду обновляем таймеры; когда лот истёк, один раз просим сервер закрыть его и обновляем список
   clearInterval(TT);

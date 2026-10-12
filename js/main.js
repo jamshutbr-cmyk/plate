@@ -23,7 +23,7 @@ import './views/cases.js';
 import './views/prestige.js';
 import './views/multi.js';
 import './ui/scene.js';
-import {login, loadAll} from './server.js';
+import {login, loadAll, serverDown} from './server.js';
 import {render} from './router.js';
 import {bind, on} from './ui/actions.js';
 import {banner} from './ui/modal.js';
@@ -50,6 +50,6 @@ async function boot(){
   if(!S.nick){const u=tgUser(),n=u&&(u.first_name||u.username);if(n)try{await api.setNick(n)}catch(e){console.error(e)}}
   document.getElementById('gate')?.remove();$('boot').remove();render();daily();initTrades();initMarket();initAuction();checkPending();
   // Клан считает главу «живым», пока он заходит: пинг при запуске и при возвращении в приложение (сервер пишет не чаще раза в минуту)
-  let cpAt=0;const cp=()=>{if(Date.now()-cpAt<300000)return;cpAt=Date.now();api.clanPing()};cp();document.addEventListener('visibilitychange',()=>{if(!document.hidden)cp()});
+  let cpAt=0;const cp=()=>{if(serverDown()||Date.now()-cpAt<300000)return;cpAt=Date.now();api.clanPing()};cp();document.addEventListener('visibilitychange',()=>{if(!document.hidden)cp()});
 }
 boot();

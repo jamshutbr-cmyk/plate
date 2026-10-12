@@ -1,7 +1,7 @@
 import {CN, TYPES} from '../config.js';
 import {DRAW, go, render} from '../router.js';
 import {haptic} from '../platform.js';
-import {loadState, rpc, sb} from '../server.js';
+import {loadState, rpc, sb, serverDown} from '../server.js';
 import {S} from '../state.js';
 import {on} from '../ui/actions.js';
 import {banner, cm, sm} from '../ui/modal.js';
@@ -46,8 +46,8 @@ async function loadTr(){
 let PT=null,TICK=0;
 export function initTrades(){
  // Раз в 10 секунд тикаем всегда, но на сервер ходим: каждый тик, если открыт экран «Обмены», иначе каждый четвёртый (40 с)
- let last=0;const run=()=>{if(document.hidden||Date.now()-last<15000)return;last=Date.now();sync().catch(e=>console.warn('trades',e))};
- const tick=()=>{TICK++;if($('v-trades').classList.contains('on')||TICK%4==0)run()};
+ let last=0;const run=()=>{if(document.hidden||serverDown()||Date.now()-last<15000)return;last=Date.now();sync().catch(e=>console.warn('trades',e))};
+ const tick=()=>{TICK++;if($('v-trades').classList.contains('on')||TICK%8==0)run()};
  run();clearInterval(PT);PT=setInterval(tick,30000);
  document.addEventListener('visibilitychange',run)}
 
