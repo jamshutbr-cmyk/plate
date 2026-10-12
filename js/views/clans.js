@@ -161,7 +161,7 @@ function inClan(){
     <div class="cl-ledger"><div class="main"><span>В казне</span><b>${fmt(c.treasury)}<small>₽</small></b></div><div><span>Очки</span><b>${fmt(pts(c.season_donated))}</b></div><div><span>До конца сезона</span>${cd(CS.season_end)}</div></div>`
     +(c.lapsed?`<div class="cl-alert"><b>Содержание просрочено</b><span>Нужно ${fmt(c.upkeep)} ₽: ${drop}.</span></div>`
       :`<p class="cl-fine cl-up">Содержание ${fmt(c.upkeep)} ₽ через ${cd(c.due)} · хватит на ${weeks} нед.</p>`)
-    +`<div class="cl-tabs">${tabs.map(([k,n])=>`<button class="${TAB==k?'a':''}" data-click="clTab" data-arg="${k}">${n}</button>`).join('')}</div>`
+    +`<div class="cl-tw"><button class="cl-ar l" aria-label="Назад" data-click="clScr" data-arg="-1">‹</button><div class="cl-tabs" id="clTabs">${tabs.map(([k,n])=>`<button class="${TAB==k?'a':''}" data-click="clTab" data-arg="${k}">${n}</button>`).join('')}</div><button class="cl-ar r" aria-label="Вперёд" data-click="clScr" data-arg="1">›</button></div>`
     +(TAB=='mem'?tabMembers(c):TAB=='req'?tabReqs():TAB=='reg'?tabRegions(c,mgr):TAB=='shop'?tabShop(c,mgr):TAB=='all'?findForm(true,true):TAB=='set'?tabSet(c):tabMain(c,mgr))}
 
 // ---------- отрисовка ----------
@@ -174,9 +174,14 @@ export function drawClans(){
   if(!LOAD&&!typing&&Date.now()-AT>30000)load().then(()=>render(true));
   if(((!CS.clan&&NOTAB=='find')||(CS.clan&&TAB=='all'))&&SR==null&&!SLOAD)search(0);
   el.innerHTML=CS.clan?inClan():noClan();
-  FRESH=false;donPrev();if(CS.clan)bidPrev(CS.clan);
+  FRESH=false;tabsFix();donPrev();if(CS.clan)bidPrev(CS.clan);
   if(!TM)TM=setInterval(tick,1000)}
 
+function tabsFix(){
+  const t=$('clTabs');if(!t)return;
+  const a=t.querySelector('.a');if(a)t.scrollLeft=Math.max(0,a.offsetLeft-t.clientWidth/2+a.offsetWidth/2);
+  const u=()=>{const w=t.parentNode;w.classList.toggle('nl',t.scrollLeft<4);w.classList.toggle('nr',t.scrollLeft+t.clientWidth>=t.scrollWidth-4)};
+  t.onscroll=u;u()}
 async function search(off){
   SLOAD=true;
   try{const d=await api.clanSearch(SQ.trim(),off);SR=off&&SR?{clans:[...SR.clans,...d.clans]}:d;SMORE=!!d.more}
@@ -211,6 +216,7 @@ const run=(f,ok,pre)=>act(async()=>{cm();const r=await f();if(r.err)return fail(
 on({
   cm,
   clRetry:()=>{ERR=false;CS=null;render(true)},
+  clScr:d=>{const t=$('clTabs');if(t)t.scrollBy({left:+d*140,behavior:'smooth'})},
   clNo:k=>{NOTAB=k;render(true)},
   clTab:k=>{TAB=k;if(k=='all'){SQ='';SR=null}render(true)},
   clF:(k,el)=>{F[k]=el.value;const b=$('clGo');if(b)b.disabled=!canCreate();const v=$('clPv');if(v)v.innerHTML=pv()},
