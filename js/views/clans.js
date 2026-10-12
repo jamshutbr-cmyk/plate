@@ -67,12 +67,12 @@ const canCreate=()=>S.lvl>=CLAN.createLvl&&S.bal>=CLAN.createRub&&S.usd>=CLAN.cr
 
 function clanRow(c,jw,ro){
   const req=(CS.reqs||[]).includes(c.id),full=c.n>=c.cap;
-  const btn=ro?(CS.clan&&CS.clan.id==c.id?`<button class="cl-ghost sm" disabled>Ваш клан</button>`:`<button class="cl-ghost sm" data-click="clInfo" data-arg="${c.id}">Подробнее</button>`):req?`<button class="cl-ghost sm" data-click="clCancelReq" data-arg="${c.id}">Отозвать</button>`
+  const btn=ro?(CS.clan&&CS.clan.id==c.id?`<button class="cl-ghost sq cl-own" aria-label="Подробнее" data-click="clInfo" data-arg="${c.id}">›</button>`:`<button class="cl-ghost sq" aria-label="Подробнее" data-click="clInfo" data-arg="${c.id}">›</button>`):req?`<button class="cl-ghost sm" data-click="clCancelReq" data-arg="${c.id}">Отозвать</button>`
     :c.mode=='closed'?`<button class="cl-ghost sm" disabled>Закрыт</button>`
     :full?`<button class="cl-ghost sm" disabled>Мест нет</button>`
     :`<button class="cl-go sm" ${S.lvl<CLAN.joinLvl||S.lvl<c.min_lvl||jw?'disabled ':''}data-click="clJoin" data-arg="${c.id}">${c.mode=='open'?'Вступить':'Заявка'}</button>`;
   return `<div class="cl-find"><div class="cl-fh" data-click="clInfo" data-arg="${c.id}">${plate(c.tag,c.lvl,'cl-md-p')}<div class="cl-fi"><b>${esc(c.name)}${c.medal?` <span class="cl-mdl">${MED[c.medal-1]}</span>`:''}</b>
-    <div class="cl-fm">${c.n}/${c.cap} · ${MODE[c.mode]}${c.min_lvl>1?` · ${c.min_lvl}+ ур.`:''}</div></div></div>${btn}</div>`}
+    <div class="cl-fm">${CS.clan&&CS.clan.id==c.id?'<b class="cl-mine">ВАШ</b>':''}${c.n}/${c.cap} · ${MODE[c.mode]}${c.min_lvl>1?` · ${c.min_lvl}+ ур.`:''}</div></div></div>${btn}</div>`}
 
 function findForm(jw,ro){
   return `<div class="cl-search"><input class="gq" id="clQ" placeholder="Название или тег" maxlength="20" autocomplete="off" value="${esc(SQ)}" data-input="clQ" data-change="clFind"><button class="cl-go" data-click="clFind">Найти</button></div>`
@@ -220,9 +220,9 @@ on({
     const c=(SR&&SR.clans||[]).find(x=>x.id==id);if(!c)return;
     let v;try{v=await api.clanView(+id)}catch(e){console.error(e);banner('Не получилось','Не удалось загрузить клан');return}
     if(!v)return;
-    const row=(a,b)=>`<div class="cl-led"><span>${a}</span><b>${b}</b></div>`,mem=v.members||[];
+    const row=(a,b)=>`<div class="cl-kv"><span>${a}</span><b>${b}</b></div>`,mem=v.members||[];
     sm(`<div class="dlg"><div style="text-align:center">${plate(v.tag,v.lvl,'cl-xl')}</div><h3>${esc(v.name)}${v.medal?' '+MED[v.medal-1]:''}</h3>
-      <div class="cl-leds">${row('Уровень клана',v.lvl)}${row('Участники',mem.length+' / '+v.cap)}${row('Набор',MODE[v.mode]+(v.min_lvl>1?', от '+v.min_lvl+' ур.':''))}${row('Очки сезона',fmt(v.pts))}${v.srk?row('Место в сезоне','#'+v.srk):''}${v.created?row('Создан',new Date(+v.created).toLocaleDateString('ru-RU')):''}</div>
+      <div class="cl-kvs">${row('Уровень клана',v.lvl)}${row('Участники',mem.length+' / '+v.cap)}${row('Набор',MODE[v.mode]+(v.min_lvl>1?', от '+v.min_lvl+' ур.':''))}${row('Очки сезона',fmt(v.pts))}${v.srk?row('Место в сезоне','#'+v.srk):''}${v.created?row('Создан',new Date(+v.created).toLocaleDateString('ru-RU')):''}</div>
       <h3 style="margin-top:14px">Состав</h3>
       <div style="max-height:34vh;overflow-y:auto">${mem.map(m=>`<div class="cl-mem"><span class="cl-av ${m.role}">${esc(ini(m.nick))}</span><div class="cl-i"><b>${esc(m.nick||'Игрок')} ${RIC[m.role]}</b><span>${m.role=='member'?'':ROLE[m.role]+', '}уровень ${m.lvl}</span></div><div class="cl-am"><b>${fmt(m.donated)} ₽</b></div></div>`).join('')}</div>
       ${!CS.clan&&c.mode!='closed'&&c.n<c.cap&&!(CS.reqs||[]).includes(c.id)?`<button class="btn" data-click="clJoin" data-arg="${c.id}">${c.mode=='open'?'Вступить':'Подать заявку'}</button>`:''}

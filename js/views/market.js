@@ -62,7 +62,7 @@ let MT=null;
 // Раз в 45 секунд (пока игра видна) узнаём, купили ли наши номера
 export function initMarket(){
   let last=0;const run=()=>{if(document.hidden||serverDown()||Date.now()-last<20000)return;last=Date.now();syncMine().catch(e=>console.warn('market',e))};
-  run();clearInterval(MT);MT=setInterval(run,240000);
+  run();clearInterval(MT);MT=setInterval(run,180000);
   document.addEventListener('visibilitychange',run)}
 
 // ---------- экраны ----------
