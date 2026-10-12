@@ -224,7 +224,7 @@ on({
     sm(`<div class="dlg"><div style="text-align:center">${plate(v.tag,v.lvl,'cl-xl')}</div><h3>${esc(v.name)}${v.medal?' '+MED[v.medal-1]:''}</h3>
       <div class="cl-kvs">${row('Уровень клана',v.lvl)}${row('Участники',mem.length+' / '+v.cap)}${row('Набор',MODE[v.mode]+(v.min_lvl>1?', от '+v.min_lvl+' ур.':''))}${row('Очки сезона',fmt(v.pts))}${v.srk?row('Место в сезоне','#'+v.srk):''}${v.created?row('Создан',new Date(+v.created).toLocaleDateString('ru-RU')):''}</div>
       <h3 style="margin-top:14px">Состав</h3>
-      <div style="max-height:34vh;overflow-y:auto">${mem.map(m=>`<div class="cl-mem"><span class="cl-av ${m.role}">${esc(ini(m.nick))}</span><div class="cl-i"><b>${esc(m.nick||'Игрок')} ${RIC[m.role]}</b><span>${m.role=='member'?'':ROLE[m.role]+', '}уровень ${m.lvl}</span></div><div class="cl-am"><b>${fmt(m.donated)} ₽</b></div></div>`).join('')}</div>
+      <div class="cl-list">${mem.map(m=>`<div class="cl-mem"><span class="cl-av ${m.role}">${esc(ini(m.nick))}</span><div class="cl-i"><b>${esc(m.nick||'Игрок')} ${RIC[m.role]}</b><span>${m.role=='member'?'':ROLE[m.role]+', '}уровень ${m.lvl}</span></div><div class="cl-am"><b>${fmt(m.donated)} ₽</b></div></div>`).join('')}</div>
       ${!CS.clan&&c.mode!='closed'&&c.n<c.cap&&!(CS.reqs||[]).includes(c.id)?`<button class="btn" data-click="clJoin" data-arg="${c.id}">${c.mode=='open'?'Вступить':'Подать заявку'}</button>`:''}
       <button class="btn" data-click="cm">Закрыть</button></div>`)},
   clScr:d=>{const t=$('clTabs');if(t)t.scrollBy({left:+d*140,behavior:'smooth'})},
