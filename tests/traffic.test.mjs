@@ -17,7 +17,7 @@ test('ставка, автопродажа, рынок и обмен не пер
   const grab = (name) => { const i = api.indexOf(` async ${name}(`); return api.slice(i, api.indexOf('\n async ', i + 5)); };
   assert.ok(!/loadAll/.test(grab('auctionBid')) && /loadPlayer/.test(grab('auctionBid')), 'ставка меняет только баланс');
   assert.ok(!/loadAll/.test(grab('marketBuy')) && /loadState/.test(grab('marketBuy')));
-  assert.ok(!/loadAll/.test(grab('autosell')) && /loadState/.test(grab('autosell')));
+  assert.ok(!/loadAll|loadState|loadPlates/.test(grab('autosell')), 'автопродажа правит кэш по ответу сервера, список не перезагружает');
   assert.ok(!/loadAll/.test(rd('js/views/trade.js')));
 });
 

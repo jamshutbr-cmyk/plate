@@ -134,7 +134,7 @@ const bkTab=a=>{TAB=a;FRESH=true;render(true)};
 const bkXd=a=>{XD=a;FRESH=true;render(true)};
 function bkChip(a){
   TXT=String(a);const el=$('bkAmt');el.value=TXT;haptic('light');bkAmtIn(a,el)}
-const bkCur=a=>{CUR=a;render(true)};
+const bkCur=a=>{if(a!=CUR)TXT='';CUR=a;render(true)};   // сумма сбрасывается вместе с валютой: 100 $ не превращаются в 100 ₽
 const bkDays=a=>{DAYS=+a;render(true)};
 function bkAmtIn(a,el){
   TXT=el.value;

@@ -210,3 +210,8 @@ body.fx2 .cf{backdrop-filter:none}
 .aseg{display:flex;gap:6px}.aseg button{flex:1;min-width:0;padding:11px 4px;border-radius:12px;border:1px solid color-mix(in srgb,var(--tx) 14%,transparent);background:none;color:var(--mut);font-weight:700;font-size:14px;line-height:1.1;font-family:inherit;cursor:pointer}
 .aseg button.a{background:var(--ac);border-color:var(--ac);color:#fff}
 .anow{font-size:34px;font-weight:800;line-height:1.1}.anow small{font-size:15px;font-weight:600;color:var(--mut)}
+
+/* окна: длинное содержимое прокручивается внутри окна, а не страница позади */
+.md{overscroll-behavior:contain}
+.sheet{max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+body:has(.md.on){overflow:hidden}

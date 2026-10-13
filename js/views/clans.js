@@ -53,7 +53,7 @@ function tick(){
 // Клан — это номерной знак: тег на месте номера, уровень в графе региона, цвет по уровню как у редкостей номеров (серый, зелёный, синий, фиолетовый, золото)
 const LV=l=>'c'+Math.min(4,Math.max(0,l-1));
 export const plate=(tag,l,k='')=>`<span class="mp ${LV(l)} ${k}"><span>${esc(tag)}</span><em>${l}</em></span>`;
-export const ctagHTML=t=>t&&t.tag?`<span class="ctag"><span class="mp cl-sm${styleCls(t.fr,t.fx)}"><span>${esc(t.tag)}</span></span>${t.medal?`<i>${MED[t.medal-1]}</i>`:''}</span>`:'';
+export const ctagHTML=t=>t&&t.tag?`<span class="ctag"><span class="mp cl-sm${t.lvl?' '+LV(t.lvl):''}${styleCls(t.fr,t.fx)}"><span>${esc(t.tag)}</span></span>${t.medal?`<i>${MED[t.medal-1]}</i>`:''}</span>`:'';
 const sec=(h,k='')=>`<section class="cl-sec ${k}">${h}</section>`;
 const seg=(items,cur,click)=>`<div class="cl-seg">${items.map(([k,n])=>`<button class="${cur==k?'a':''}" data-click="${click}" data-arg="${k}">${n}</button>`).join('')}</div>`;
 const pts=n=>Math.floor((+n||0)/CLAN.pt);

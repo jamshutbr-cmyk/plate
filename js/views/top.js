@@ -14,7 +14,7 @@ import {$, esc, fmt} from '../util.js';
 const KINDS=[['best','🏆','Дорогой номер'],['coins','💰','Монеты'],['rebirths','♻️','Перерождения'],['clans','🛡️','Кланы: сезон'],['clanlvl','🏰','Кланы: уровень']];
 const CLK=k=>k=='clans'||k=='clanlvl';   // виды рейтинга кланов: данные из clan_leaderboard, строки другие
 let KIND='best',OPEN=false,TOPS={},ATS={},LOAD=false,ERR=false;   // вид, ответы сервера и время загрузки по видам
-let CT={};   // теги кланов игроков {id:{tag,medal}} (clan_tags)
+let CT={};   // теги кланов игроков {id:{tag,lvl,medal,fr,fx}} (clan_tags): lvl красит тег как плашку клана, fr и fx рамка и эффект
 let STY={};   // титулы и рамки игроков {id:{title,skin}}: отдельный запрос get_styles, чтобы не трогать get_leaderboard
 const titleOf=r=>r.me?S.equip.title:(STY[r.id]||{}).title;
 const nickOf=r=>r.me?S.equip.nick:(STY[r.id]||{}).nick;
