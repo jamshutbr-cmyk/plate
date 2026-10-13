@@ -210,11 +210,11 @@ export const api={
  // Перерождение (prestige.sql). Отказы сервера возвращаются как {err:'код'}
  async rebirth(){
   let r;try{r=await rpc('rebirth')}catch(e){const m=(e&&e.message)||'',h=REB_ERR.find(x=>m.includes(x[0]));if(h){await loadPlayer();return {err:h[1]}}throw e}
-  await loadAll();Object.assign(SESS,{n:0,best:0,cls:[0,0,0,0,0],f:{}});return {ok:1,stars:r.stars}},
+  await loadAll();Object.assign(SESS,{n:0,best:0,cls:[0,0,0,0,0,0],f:{}});return {ok:1,stars:r.stars}},
  async buyPerk(k){
   try{await rpc('buy_perk',{k})}catch(e){const m=(e&&e.message)||'',h=REB_ERR.find(x=>m.includes(x[0]));if(h){await loadPlayer();return {err:h[1]}}throw e}
   await loadPlayer();return {ok:1}},
  async resetProgress(){
   await rpc('reset_progress');await loadAll();
-  Object.assign(SESS,{n:0,best:0,cls:[0,0,0,0,0],f:{}})}
+  Object.assign(SESS,{n:0,best:0,cls:[0,0,0,0,0,0],f:{}})}
 };

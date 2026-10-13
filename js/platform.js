@@ -20,7 +20,8 @@ export function hapticDrop(c){
   if(c==2){haptic('medium');setTimeout(()=>haptic('success'),160);return}
   const seq=c==3
     ?[['heavy',0],['heavy',110],['success',300]]
-    :[['heavy',0],['rigid',90],['heavy',180],['heavy',300],['heavy',420],['success',620]];
+    :c==4?[['heavy',0],['rigid',90],['heavy',180],['heavy',300],['heavy',420],['success',620]]
+    :[['heavy',0],['rigid',80],['heavy',160],['rigid',240],['heavy',330],['heavy',440],['heavy',560],['rigid',700],['success',900]];
   seq.forEach(([k,t])=>setTimeout(()=>haptic(k),t));
 }
 export function tgUser(){return TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user||null}

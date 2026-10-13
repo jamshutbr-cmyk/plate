@@ -136,3 +136,15 @@ html body .plate:has(.fl-BY) .pm{font-size:12cqw}
 html body .grow.row2 .plate:not(.nr) .pm,html body .at .plate:not(.nr) .pm{padding:0 1.5cqw 0 3.2cqw}
 html body .grow.row2 .plate:has(.fl-BY) .pm{font-size:11.5cqw}
 html body .at .plate:has(.fl-BY) .pm{font-size:10.5cqw}
+
+/* === Мифический (rz5, слова): красная рамка и свечение, фон как у эпических и легендарных у гражданских === */
+html .plate.rz5{--rzc:#ff4d6d}
+html body .plate.rz5{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #ffd3dc,0 10px 24px #000a,0 0 48px 3px #ff4d6df0}
+html body .plate.t-police.rz5,html body .plate.t-transit.rz5{box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a,0 0 48px 3px #ff4d6df0}
+html body .plate.rz5:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro){background:linear-gradient(180deg,#fff9 0%,#fff0 38%,#0000 62%,#0003 100%),linear-gradient(115deg,#ffd1da,#ff6b86 28%,#ffc2cf 50%,#e0284a 75%,#ff9aae)}
+html body .plate.rz5::before{border-color:#7a0f26;border-width:2.5px}
+html body .plate.t-police.rz5::before{border-color:#fff}
+html .plate.rz5::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,#ffffffb3 50%,transparent 60%);transform:translateX(-130%);animation:shine 2.6s .6s infinite}
+html .row2 .plate.rz5::after{animation-duration:4s}
+html .plate.rz5 .pm,html .plate.rz5 .pr{text-shadow:0 1px 0 #fff8,0 -1px 0 #5a0014aa,0 3px 3px #0005}
+html body .plate.rz5.blur::after{display:none}
