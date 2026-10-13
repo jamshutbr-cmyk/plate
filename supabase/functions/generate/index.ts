@@ -5,6 +5,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { cors, json } from '../_shared/cors.ts';
 import { mk, feats, regionFee } from '../_shared/engine.ts';
 import { loadRegions } from '../_shared/regions.ts';
+import { banActive, bannedBody } from '../_shared/ban.ts';
 
 const url = Deno.env.get('SUPABASE_URL')!;
 const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
@@ -16,8 +17,9 @@ Deno.serve(async (req) => {
   if (ae || !au.user) return json({ error: 'unauthorized' }, 401);
   const uid = au.user.id;
 
-  const { data: pl } = await admin.from('players').select('country, reg, luck').eq('id', uid).single();
+  const { data: pl } = await admin.from('players').select('country, reg, luck, banned_until, ban_reason').eq('id', uid).single();
   if (!pl) return json({ error: 'no player' }, 404);
+  if (banActive(pl.banned_until)) return json(bannedBody(pl.ban_reason, pl.banned_until), 403);
 
   const regs = (await loadRegions(admin))[pl.country];
   // Буст удачи из банка: пока luck > 0, делаем 3 попытки и берём самый дорогой номер (BANK.luck.best в js/config.js).

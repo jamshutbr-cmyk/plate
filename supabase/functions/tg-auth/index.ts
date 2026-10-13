@@ -4,6 +4,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { cors, json } from '../_shared/cors.ts';
 import { playerPassword, verifyInitData } from '../_shared/tg.ts';
+import { banActive, bannedBody } from '../_shared/ban.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -34,7 +35,8 @@ Deno.serve(async (req) => {
   const password = await playerPassword(user.id, Deno.env.get('PASSWORD_PEPPER')!);
 
   // Игрок уже есть?
-  const { data: existing } = await admin.from('players').select('id').eq('tg_id', user.id).maybeSingle();
+  const { data: existing } = await admin.from('players').select('id, banned_until, ban_reason').eq('tg_id', user.id).maybeSingle();
+  if (existing && banActive(existing.banned_until)) return json(bannedBody(existing.ban_reason, existing.banned_until), 403);
   if (!existing) {
     const { data: created, error } = await admin.auth.admin.createUser({
       email, password, email_confirm: true, user_metadata: { tg_id: user.id },

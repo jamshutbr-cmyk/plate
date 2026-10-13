@@ -2,6 +2,7 @@ import {createClient} from './vendor/supabase.js';
 import {SUPABASE_ANON_KEY, SUPABASE_URL} from './env.js';
 import {TG, tgUser} from './platform.js';
 import {S, applyPlates, applyPlayer, applyTriple} from './state.js';
+import {showBan} from './ban.js';
 
 // Связь с Supabase: вход через Telegram и загрузка данных в кэш S. Единственное место, где создаётся клиент.
 // Любой запрос к серверу обрывается через 15 с: иначе при перегрузке игра висит на «Загрузке…» бесконечно
@@ -20,7 +21,9 @@ export async function login(){
   if(!initData)throw new Error('Откройте игру из Telegram');
   const u=tgUser();
   const res=await tfetch(SUPABASE_URL+'/functions/v1/tg-auth',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_ANON_KEY},body:JSON.stringify({initData})});
-  if(res.status===403){const j=await res.json().catch(()=>({}));if(j.error==='not_subscribed')throw Object.assign(new Error('not_subscribed'),{code:'not_subscribed'})}
+  if(res.status===403){const j=await res.json().catch(()=>({}));
+    if(j.error==='not_subscribed')throw Object.assign(new Error('not_subscribed'),{code:'not_subscribed'});
+    if(j.error==='banned')throw Object.assign(new Error('banned'),{code:'banned',reason:j.reason,until:j.until,banned:true})}
   if(!res.ok)throw new Error('Не удалось войти ('+res.status+')');
   const s=await res.json();
   const {error}=await sb.auth.setSession({access_token:s.access_token,refresh_token:s.refresh_token});
@@ -40,4 +43,12 @@ export async function loadTriple(){
 // Игрок и номера без пасса/окна продажи (три лишних запроса): для действий, где они не меняются (продажа, рынок, обмен)
 export const loadState=()=>Promise.all([loadPlayer(),loadPlates()]);
 export const loadAll=()=>Promise.all([loadPlayer(),loadPlates(),loadTriple()]);
-export async function rpc(name,args){const {data,error,status}=await sb.rpc(name,args);if(error){if(status===0||status>=500)markBad();throw error}markOk();return data}
+// Бан посреди игры: сервер ответил banned (триггер в базе или Edge Function). Один раз узнаём причину и закрываем игру экраном бана.
+let banShown=false;
+export async function handleBan(info){
+  if(banShown)return;banShown=true;
+  let i=info||{};
+  if(!i.reason&&!i.until){try{const {data}=await sb.from('players').select('banned_until,ban_reason').single();if(data)i={reason:data.ban_reason,until:data.banned_until}}catch(_){}}
+  showBan(i)}
+export const isBanErr=e=>!!e&&(e.banned===true||/^banned$/i.test(e.message||''));
+export async function rpc(name,args){const {data,error,status}=await sb.rpc(name,args);if(error){if(isBanErr(error)){handleBan();throw Object.assign(error,{banned:true})}if(status===0||status>=500)markBad();throw error}markOk();return data}

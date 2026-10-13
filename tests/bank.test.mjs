@@ -113,7 +113,7 @@ test('в bank.sql нет case ... then внутри условия if (PL/pgSQL 
 
 test('generate: читает luck, берёт лучший из 3 и списывает прокрут через consume_luck', () => {
   const ts = readFileSync(new URL('../supabase/functions/generate/index.ts', import.meta.url), 'utf8');
-  assert.ok(/select\('country, reg, luck'\)/.test(ts));
+  assert.ok(/select\('country, reg, luck(, banned_until, ban_reason)?'\)/.test(ts));
   assert.ok(/const tries = pl\.luck > 0 \? (\d+) : 1/.test(ts));
   assert.equal(+ts.match(/pl\.luck > 0 \? (\d+) : 1/)[1], BANK.luck.best);
   assert.ok(/consume_luck/.test(ts) && ts.indexOf('commit_plate_fee') < ts.indexOf('consume_luck'));

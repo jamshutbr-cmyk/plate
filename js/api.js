@@ -1,6 +1,6 @@
 import {AUTO, CASES, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
 import {genCost, trackSession} from './engine.js';
-import {loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
+import {handleBan, loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
 import {S, SESS, applyPlayer, flags} from './state.js';
 import {fmt} from './util.js';
 
@@ -8,7 +8,7 @@ import {fmt} from './util.js';
 // после ответа обновляется кэш S. Сетевые и серверные ошибки бросаются как исключения: их ловит main.js.
 // Бизнес-отказы (не хватает денег и т.п.) возвращаются значением, как раньше.
 const REB_ERR=[['level too low','level'],['has listings','listings'],['has deposits','deposits'],['not enough stars','stars'],['max','max']];
-async function errCode(er){try{const j=await er.context.json();return j.error||j.code||j.message||'server'}catch(_){return (er&&er.message)||'network'}}
+async function errCode(er){try{const j=await er.context.json();if(j.error==='banned')handleBan({reason:j.reason,until:j.until});return j.error||j.code||j.message||'server'}catch(_){return (er&&er.message)||'network'}}
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
 // Банковская операция: ошибку сервера превращаем в {err:'код'}, успех — в {ok:1,res}, затем сверяем кэш игрока
@@ -43,6 +43,7 @@ export const api={
   if(error){
    let e=null;try{e=await error.context.json()}catch(_){}
    if(e&&(e.error=='full'||e.error=='money')){await loadAll();return null}   // кэш разошёлся с сервером
+   if(e&&e.error=='banned'){handleBan({reason:e.reason,until:e.until});return null}
    throw error}
   const p=data.plate,pl=data.player;
   S.col.push(p);S.bal=+pl.balance;S.usd=pl.usd;S.xp=pl.xp;S.lvl=pl.lvl;S.stats=pl.stats;S.seen=pl.seen;

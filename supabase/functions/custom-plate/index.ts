@@ -4,6 +4,7 @@
 // Правила (формат, редкость, цена) считает только сервер: _shared/engine.ts → customPlate.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { cors, json } from '../_shared/cors.ts';
+import { banOf } from '../_shared/ban.ts';
 import { customPlate } from '../_shared/engine.ts';
 import { loadRegions } from '../_shared/regions.ts';
 
@@ -16,6 +17,8 @@ async function handle(req: Request): Promise<Response> {
   const { data: au, error: ae } = await admin.auth.getUser(token);
   if (ae || !au.user) return json({ error: 'unauthorized' }, 401);
   const uid = au.user.id;
+  const bn = await banOf(admin, uid);
+  if (bn) return json(bn, 403);
 
   let body: { action?: string; letters?: string; digits?: string; reg?: string };
   try { body = await req.json(); } catch { return json({ error: 'bad request' }, 400); }

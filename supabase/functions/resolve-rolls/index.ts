@@ -2,6 +2,7 @@
 // Вход: { decisions: [{ id, act: 'keep'|'safe'|'sell' }] }. Выход: итоги или { error }.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { cors, json } from '../_shared/cors.ts';
+import { banOf } from '../_shared/ban.ts';
 
 const url = Deno.env.get('SUPABASE_URL')!;
 const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } });
@@ -12,6 +13,8 @@ Deno.serve(async (req) => {
   const { data: au, error: ae } = await admin.auth.getUser(token);
   if (ae || !au.user) return json({ error: 'unauthorized' }, 401);
   const uid = au.user.id;
+  const bn = await banOf(admin, uid);
+  if (bn) return json(bn, 403);
 
   const body = await req.json().catch(() => ({}));
   // Вход в игру: пакет старше 24 ч решается автоматически, свежий остаётся игроку
