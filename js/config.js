@@ -41,7 +41,7 @@ export const EQUIP_SLOTS=['skin','title','drop','nick','bg'];   // надева�
 export const SHOWCASE_MAX=3;
 // Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
 export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1}};
-export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
+export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};const pt=PATRON.titles.find(x=>x.id==id);if(pt)return {id:pt.id,n:pt.n,c:pt.c,slot:'title'};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
 
 // Кейсы с машинами. Шансы, цены и выдачу считает ТОЛЬКО сервер (supabase/cases.sql: open_case); здесь данные для показа.
 // Должны совпадать с cases.sql, это сверяет tests/cases.test.mjs.
@@ -125,4 +125,7 @@ export const LAB={
  titles:[{id:'tester',n:'Тестировщик',c:'#22d3ee'},{id:'bh2',n:'Охотник за багами',c:'#4ade80'},{id:'bh3',n:'Профи багов',c:'#f5b82e'},{id:'bh4',n:'Легенда багов',c:'#f43f5e'}],
  skin:{id:'matrix',n:'Матрица'},
  cats:[['gen','Генерация и номера'],['shop','Магазин, кейсы, банк'],['market','Рынок, аукцион, обмены'],['ui','Интерфейс и прокрутка'],['other','Другое']]};
+// Титулы за поддержку проекта (Спонсор, Меценат) (supabase/patron.sql). Не продаётся: его выдаёт владелец вручную (supabase/admin/grant_patron.sql).
+// id и слот должны совпадать с patron.sql, это сверяет tests/patron.test.mjs.
+export const PATRON={titles:[{id:'sponsor',n:'Спонсор',c:'#2dd4bf',d:'Выдаётся тем, кто оплатил хостинг проекта'},{id:'patron',n:'Меценат',c:'#ff4fa3',d:'Выдаётся тем, кто поддержал проект'}]};
 export const TRIPLE={usd:30,hours:24,max:3};
