@@ -35,7 +35,6 @@ export async function shopBuy(id){
   const it=itemOf(id);if(!it)return;
   const r=await api.buyItem(id);
   if(r.err){banner('Не хватает денег','Нужно '+fmt(r.need)+' ₽');return}
-  if(EQUIP_SLOTS.includes(it.slot))await api.equipItem(it.slot,id);   // купленное сразу надеваем
   banner('Куплено',it.n);haptic('success');render(true)}
 export async function shopEq(a){const [slot,id]=String(a).split(':');await api.equipItem(slot,id);render(true)}
 DRAW.shop=drawShop;
