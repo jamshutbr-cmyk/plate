@@ -221,9 +221,3 @@
 .dlg .cl-mem{padding:8px 0;margin:0;gap:10px}
 .dlg .cl-list{max-height:34vh;overflow-y:auto;overflow-x:hidden;padding:2px 6px 2px 3px}
 .dlg .cl-am{flex:none}.dlg .cl-am b{font-size:15px}
-
-/* список состава в окне клана: свой скролл, края не пробрасываются на окно и страницу */
-.dlg .cl-list{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-/* тег клана в рейтинге: свечение и рамка не обрезаются строкой */
-.ctag{overflow:visible;position:relative}
-.tr,.tn,.tnr{overflow:visible}

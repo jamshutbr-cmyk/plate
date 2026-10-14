@@ -86,7 +86,7 @@ export function drawMarket(){
 
 export function drawMnew(){
   const left=SLOTS-(MINE?MINE.lots.length:0),sf=new Set(S.safe.map(x=>x.id));
-  const all=[...S.col,...S.safe].sort((a,b)=>b.price-a.price);
+  const all=[...S.col,...S.safe].filter(p=>!p.bound).sort((a,b)=>b.price-a.price);
   setHTML($('mnC'),`<p class="tl">Выберите номер для продажи другим игрокам. Пока он на рынке, его нельзя продать, обменять или поместить в сейф: только снять с рынка. Свободных лотов: ${Math.max(left,0)}.</p>`
     +(all.length?all.map(p=>row(p,'mPick',sf.has(p.id)?' · в сейфе':'')).join(''):'<p class="tl" style="text-align:center">У вас нет номеров.</p>'))}
 

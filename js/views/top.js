@@ -5,7 +5,6 @@ import {on} from '../ui/actions.js';
 import {S} from '../state.js';
 import {nickCls, plateHTML, titleHTML} from '../ui/plate.js';
 import {ctagHTML, plate} from './clans.js';
-import {styleCls} from './clanext.js';
 import {pubShowcase} from './showcase.js';
 import {startTrade} from './trade.js';
 import {$, esc, fmt} from '../util.js';
@@ -15,7 +14,7 @@ import {$, esc, fmt} from '../util.js';
 const KINDS=[['best','🏆','Дорогой номер'],['coins','💰','Монеты'],['rebirths','♻️','Перерождения'],['clans','🛡️','Кланы: сезон'],['clanlvl','🏰','Кланы: уровень']];
 const CLK=k=>k=='clans'||k=='clanlvl';   // виды рейтинга кланов: данные из clan_leaderboard, строки другие
 let KIND='best',OPEN=false,TOPS={},ATS={},LOAD=false,ERR=false;   // вид, ответы сервера и время загрузки по видам
-let CT={};   // теги кланов игроков {id:{tag,lvl,medal,fr,fx}} (clan_tags): lvl красит тег как плашку клана, fr и fx рамка и эффект
+let CT={};   // теги кланов игроков {id:{tag,medal}} (clan_tags)
 let STY={};   // титулы и рамки игроков {id:{title,skin}}: отдельный запрос get_styles, чтобы не трогать get_leaderboard
 const titleOf=r=>r.me?S.equip.title:(STY[r.id]||{}).title;
 const nickOf=r=>r.me?S.equip.nick:(STY[r.id]||{}).nick;
@@ -23,13 +22,13 @@ async function loadStyles(ids){ids=ids.filter(Boolean);if(!ids.length)return;try
  try{const t=await rpc('clan_tags',{ids})||{};for(const i of ids){delete CT[i];if(t[i])CT[i]=t[i]}}catch(e){console.warn('clan tags',e)}}
 const MEDAL=['🥇','🥈','🥉'],MIN=10;   // сколько мест показывать минимум: пустые рисуются заглушками
 const row=(r,me)=>`<div class="tr${me?' me':''}" data-click="openPlayer" data-arg="${r.id}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><div class="tnr">${ctagHTML(CT[r.id])}<b class="${nickCls(nickOf(r)).trim()}">${esc(r.nick||'Игрок')}</b>${titleHTML(titleOf(r))}</div><div class="tsb"><span class="tl">${KIND!='rebirths'&&r.rb?`<span class="rbb" title="Перерождений: ${r.rb}">♻ ${r.rb}</span>`:''}Ур. ${r.lvl}</span><b class="tpr">${KIND=='rebirths'?'♻ '+fmt(r.val):fmt(r.val)+' ₽'}</b></div></div></div>`;
-const clanRow=r=>`<div class="tr cl${r.mine?' me':''}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><div class="tnr">${plate(r.tag,r.lvl,'cl-md-p'+styleCls(r.fr,r.fx))}${r.medal?`<span>${MEDAL[r.medal-1]}</span>`:''}<b>${esc(r.name)}</b></div><div class="tsb"><span class="tl">${r.n} из ${r.cap} мест</span><b class="cl-ps">${KIND=='clans'?fmt(r.pts)+' очк.':r.lvl+' ур.'}</b></div></div></div>`;
+const clanRow=r=>`<div class="tr cl${r.mine?' me':''}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><div class="tnr">${plate(r.tag,r.lvl,'cl-md-p')}${r.medal?`<span>${MEDAL[r.medal-1]}</span>`:''}<b>${esc(r.name)}</b></div><div class="tsb"><span class="tl">${r.n} из ${r.cap} мест</span><b class="cl-ps">${KIND=='clans'?fmt(r.pts)+' очк.':r.lvl+' ур.'}</b></div></div></div>`;
 const empty=n=>`<div class="tr emp"><span class="rk">${MEDAL[n-1]||n}</span><div class="tn"><b>Свободно</b></div></div>`;
 async function load(){
 
  const k=KIND;LOAD=true;ERR=false;
  try{let d;
-  if(CLK(k)){d=await rpc('clan_leaderboard',{p_kind:k=='clans'?'season':'level'});try{const ids=(d.top||[]).map(r=>r.id),m=ids.length?await rpc('clan_styles',{ids})||{}:{};for(const r of d.top||[])Object.assign(r,m[r.id]||{})}catch(e){console.warn('clan styles',e)}TOPS[k]=d;LOAD=false;ATS[k]=Date.now();render(true);return}
+  if(CLK(k)){d=await rpc('clan_leaderboard',{p_kind:k=='clans'?'season':'level'});TOPS[k]=d;LOAD=false;ATS[k]=Date.now();render(true);return}
   try{d=await rpc('get_leaderboard',{p_kind:k})}
   catch(e){   // сервер ещё со старой функцией без аргумента (leaderboard.sql не запускали заново): рейтинг по номеру работает как раньше
    if(k!='best')throw e;
@@ -74,6 +73,6 @@ export function drawPub(){
  <div class="st2"><div><b>${fmt(st.n)}</b><span>Выпало номеров</span></div><div><b>${fmt(st.best)} ₽</b><span>Рекорд цены</span></div><div><b>${fmt(p.count)}</b><span>Номеров сейчас</span></div><div><b>${fmt(p.value)} ₽</b><span>Общая стоимость</span></div></div>
  ${p.me?'':pubShowcase(PSC,sy.skin)}
  ${p.top?`<div class="card"><h3>Самый дорогой сейчас<span class="tl">${fmt(p.top.price)} ₽</span></h3><div class="tp">${plateHTML(p.top,'',sy.skin||'')}</div></div>`:''}
- <div class="card"><h3>Редкости</h3><div class="bars" style="margin:6px 0 0">${RAR.map((R,i)=>`<span>${R.n}</span><div class="pb" style="background:${R.c}33"><i style="width:${(st.cls[i]||0)/mx*100}%;background:${R.c}"></i></div><span class="tl" style="text-align:right">${st.cls[i]||0}</span>`).join('')}</div></div>`}
+ <div class="card"><h3>Редкости</h3><div class="bars" style="margin:6px 0 0">${RAR.map((R,i)=>`<span>${R.n}</span><div class="pb" style="background:${R.c}33"><i style="width:${st.cls[i]/mx*100}%;background:${R.c}"></i></div><span class="tl" style="text-align:right">${st.cls[i]}</span>`).join('')}</div></div>`}
 DRAW.pub=drawPub;
 on({openPlayer,newTrade:()=>startTrade(PID,(PUB&&PUB.nick)||'Игрок')});

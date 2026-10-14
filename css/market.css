@@ -86,3 +86,21 @@
 
 /* ряд редкостей листается вбок: правый край плавно гаснет, чтобы было видно продолжение */
 #auC .chips:not(.seg),#mkC .chips:not(.seg){-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent)}
+
+/* поиск игрока на экране «Обмены» */
+.trs{margin-bottom:14px}
+.trqw{position:relative}
+.trqw svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--mut);pointer-events:none}
+.trq{width:100%;box-sizing:border-box;padding:15px 16px 15px 44px;border-radius:16px;border:1px solid color-mix(in srgb,var(--tx) 14%,transparent);background:var(--card);color:var(--tx);font:inherit;font-size:16px;outline:none;-webkit-appearance:none;appearance:none}
+.trq::-webkit-search-cancel-button{-webkit-appearance:none}
+.trq:focus{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 22%,transparent)}
+.trs #trSR{margin-top:10px}
+.trs .trsm{text-align:center;margin:10px 0}
+.trp{display:flex;align-items:center;gap:12px;padding:10px 14px 10px 10px;margin-bottom:8px;border-radius:18px;background:var(--card);border:1px solid color-mix(in srgb,var(--tx) 10%,transparent);cursor:pointer}
+.trp:active{opacity:.7}
+.trpa{width:44px;height:44px;font-size:19px}
+.trpn{flex:1;min-width:0}
+.trpn b{display:block;font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trpn b mark{background:none;color:var(--ac)}
+.trpn .tl{font-size:13px}
+.trpg{flex:none;font-style:normal;font-size:18px;font-weight:800;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,transparent)}

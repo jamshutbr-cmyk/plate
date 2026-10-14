@@ -22,9 +22,7 @@ export const styleCls=(fr,fx)=>`${fr?' '+fr.replace('_','-'):''}${fx?' '+fx.repl
 // ---------- Регионы ----------
 function mineRows(){
   const ex=X.ex(),held=ex.held||[],bids=(ex.board||[]).filter(b=>b.m);
-  // чужой клан тоже может ставить на наш регион: если он лидирует, регион перейдёт к нему в понедельник, пока мы не добавим ставку
-  const h=held.map(o=>{const b=boardOf(o.c,o.r),th=b&&b.l&&!b.lm;
-    return `<div class="cl-rg"><div class="cl-i"><b>${esc(o.r)}</b><span>${o.c} · удерживаем${th?`, ставка ${esc(b.l)} ${short(b.la)}`:''}</span></div>${th?'<em class="cl-st bad">под угрозой</em>':`<em class="cl-x3">×${CLAN_REG.boost}</em>`}</div>`}).join('');
+  const h=held.map(o=>`<div class="cl-rg"><div class="cl-i"><b>${esc(o.r)}</b><span>${o.c} · удерживаем</span></div><em class="cl-x3">×${CLAN_REG.boost}</em></div>`).join('');
   const t=bids.map(b=>{
     const ok=b.lm;
     return `<div class="cl-rg"><div class="cl-i"><b>${esc(b.r)}</b><span>ставка ${short(b.m)}${ok?'':`, лидер ${esc(b.l||'')} ${short(b.la)}`}</span></div><em class="cl-st ${ok?'ok':'bad'}">${ok?'лидируем':'перебили'}</em></div>`}).join('');
@@ -51,7 +49,7 @@ function bidPanel(c){
 export function tabRegions(c,mgr){
   const {h,t,hn,tn}=mineRows(),ex=X.ex(),top=(ex.board||[]).filter(b=>b.l).slice(0,5);
   return X.sec(`<h3>Регионы клана, ${hn} из ${c.lvl}</h3>
-      <p class="cl-fine">Участникам клана номера этих регионов выпадают в ${CLAN_REG.boost} раза чаще. Любой клан может поставить на ваш регион: если его ставка выше ваших ${CLAN_REG.def}%-защиты, в понедельник регион перейдёт к нему.</p>
+      <p class="cl-fine">Участникам клана номера этих регионов выпадают в ${CLAN_REG.boost} раза чаще.</p>
       ${h||'<p class="cl-fine cl-nx">Пока ничего не удерживаем.</p>'}`)
     +X.sec(`<h3>Торги этой недели${tn?', '+tn+' из '+c.lvl:''}</h3>${t||'<p class="cl-fine">Ставок нет.</p>'}
       <p class="cl-fine cl-nx">Итоги в понедельник, через ${X.cd(X.seasonEnd())}</p>`)
@@ -60,7 +58,7 @@ export function tabRegions(c,mgr){
       <input class="gq" id="clRQ" placeholder="Найти регион" maxlength="30" autocomplete="off" value="${esc(RQ)}" data-input="clRQ">
       <div class="cl-pks" id="clPks">${picker()}</div>${bidPanel(c)}`,'burn')
       :X.sec(`<p class="cl-fine">Ставки делает глава или заместитель.</p>`))
-    +(top.length?X.sec(`<h3>Лидеры недели</h3><p class="cl-fine">Лидер: клан с наибольшей ставкой на регион. Хозяин региона получает +25% к своей ставке.</p>${top.map(b=>`<div class="cl-rg"><div class="cl-i"><b>${esc(b.r)}</b><span>${esc(b.l)}${b.hm?', регион держит ваш клан':b.h?', держит '+esc(b.h):''}</span></div><b class="cl-am2">${short(b.la)}</b></div>`).join('')}`,'last'):'')}
+    +(top.length?X.sec(`<h3>Лидеры недели</h3>${top.map(b=>`<div class="cl-rg"><div class="cl-i"><b>${esc(b.r)}</b><span>${esc(b.l)}</span></div><b class="cl-am2">${short(b.la)}</b></div>`).join('')}`,'last'):'')}
 
 export function bidPrev(c){
   const p=$('clBP'),g=$('clBG');if(!p||!g||!PICK||!c)return;

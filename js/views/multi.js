@@ -57,9 +57,7 @@ async function multiGen0(){
   const n=S.mul;
   if(S.pend.length){go('multi');return}
   if(S.bal<costN(n)){banner('Не хватает денег','Нужно '+fmt(costN(n))+' ₽');return}
-  // «Анимация прокрутки» выключена в настройках: без мелькающих номеров, только подпись (S.reel===false)
-  const st=$('stage'),calm=S.reel===false,draw=()=>{st.innerHTML=`<div class="tl">Генерация ×${n}…</div>`+(calm?'':Array.from({length:n},()=>plateHTML(fake(),'blur mini')).join(''))};
-  draw();const iv=calm?0:setInterval(draw,90);
+  const st=$('stage'),iv=setInterval(()=>{st.innerHTML=`<div class="tl">Генерация ×${n}…</div>`+Array.from({length:n},()=>plateHTML(fake(),'blur mini')).join('')},90);
   const r=await api.multiRoll(n).finally(()=>clearInterval(iv));
   st.innerHTML='';
   if(r.err&&S.pend.length){go('multi');return}   // связь оборвалась, но сервер успел выдать пакет: показываем его

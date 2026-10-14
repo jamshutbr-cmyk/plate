@@ -1,5 +1,5 @@
 import {api} from '../api.js';
-import {EQUIP_SLOTS, FXE, PATRON, SHOP, SLOTS, itemOf} from '../config.js';
+import {EQUIP_SLOTS, FXE, SHOP, SLOTS, itemOf} from '../config.js';
 import {haptic} from '../platform.js';
 import {DRAW, render} from '../router.js';
 import {S} from '../state.js';
@@ -27,14 +27,10 @@ const card=(slot,it)=>{
    :own?`<button class="big2" data-click="shopEq" data-arg="${slot}:${it.id}">Надеть</button>`
    :`<button class="big2" data-click="shopBuy" data-arg="${it.id}">Купить · ${fmt(it.p)} ₽</button>`;
   return `<div class="card"><h3>${it.n}<span class="tl">${eq?'Надето':own?'Куплено':''}</span></h3>${it.d?`<div class="tl" style="margin-bottom:10px">${it.d}</div>`:''}${preview(slot,it)}${btn}</div>`};
-// Выдаваемые титулы (не продаются): показываем только тем, кому выдали
-const grantedCards=()=>PATRON.titles.filter(it=>S.owned.includes(it.id)).map(it=>{
-  const eq=S.equip.title==it.id;
-  return `<div class="card"><h3>${it.n}<span class="tl">${eq?'Надето':'Особый'}</span></h3><div class="tl" style="margin-bottom:10px">${it.d}</div><div class="sp">${titleHTML(it.id)}</div>${eq?`<button class="big2 alt" data-click="shopEq" data-arg="title:">Снять</button>`:`<button class="big2" data-click="shopEq" data-arg="title:${it.id}">Надеть</button>`}</div>`}).join('');
 export function drawShop(){
   $('shopC').innerHTML=`<div class="sub" style="margin:0 6px 4px"><span>Баланс</span><b style="color:var(--tx)">${fmt(S.bal)} ₽ · ${fmt(S.usd)} $</b></div>${tripleBanner(TAB=='triple')}
    <div class="chips">${TABS.map(([k,n])=>`<button class="${TAB==k?'a':''}" data-click="shopTab" data-arg="${k}">${n}</button>`).join('')}</div>`
-   +(TAB=='triple'?tripleCard():(TAB=='title'?grantedCards():'')+SHOP[TAB].map(it=>card(TAB,it)).join(''))}
+   +(TAB=='triple'?tripleCard():SHOP[TAB].map(it=>card(TAB,it)).join(''))}
 export async function shopBuy(id){
   const it=itemOf(id);if(!it)return;
   const r=await api.buyItem(id);

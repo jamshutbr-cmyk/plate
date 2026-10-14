@@ -1,14 +1,15 @@
 import {AUTO, CASES, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
 import {genCost, trackSession} from './engine.js';
-import {handleBan, loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
+import {loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
 import {S, SESS, applyPlayer, flags} from './state.js';
 import {fmt} from './util.js';
+import {TG} from './platform.js';
 
 // Слой действий: ВСЁ, что меняет состояние игры, живёт здесь. Каждое действие — запрос к серверу (async),
 // после ответа обновляется кэш S. Сетевые и серверные ошибки бросаются как исключения: их ловит main.js.
 // Бизнес-отказы (не хватает денег и т.п.) возвращаются значением, как раньше.
 const REB_ERR=[['level too low','level'],['has listings','listings'],['has deposits','deposits'],['not enough stars','stars'],['max','max']];
-async function errCode(er){try{const j=await er.context.json();if(j.error==='banned')handleBan({reason:j.reason,until:j.until});return j.error||j.code||j.message||'server'}catch(_){return (er&&er.message)||'network'}}
+async function errCode(er){try{const j=await er.context.json();return j.error||j.code||j.message||'server'}catch(_){return (er&&er.message)||'network'}}
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
 // Банковская операция: ошибку сервера превращаем в {err:'код'}, успех — в {ok:1,res}, затем сверяем кэш игрока
@@ -30,6 +31,24 @@ async function clanCall(f,money){
  if(money)await loadPlayer();return {ok:1,res}}
 
 export const api={
+ // Донат (supabase/donate.sql, функции donate-invoice и tg-webhook). Деньги принимает Telegram: клиент только открывает счёт и ждёт, пока сервер зачислит покупку.
+ async donateState(){return rpc('donate_state')},
+ async donateWall(){return rpc('donate_wall')},
+ async donatePublic(v){await rpc('donate_set_public',{v});S.dpub=!!v;return v},
+ async namedQuote(text,reg){const {data,error}=await sb.functions.invoke('named-plate',{body:{text,reg}});if(error)throw error;return data},
+ async donateBuy(pack,amount,plate){
+  if(!TG||!TG.openInvoice)return {err:'unsupported'};
+  const {data,error}=await sb.functions.invoke('donate-invoice',{body:{pack,amount,...(plate||{})}});
+  if(error)return {err:await errCode(error)};
+  const status=await new Promise(res=>{try{TG.openInvoice(data.link,res)}catch(e){res('failed')}});
+  if(status=='cancelled')return {err:'cancelled'};
+  if(status!='paid'&&status!='pending')return {err:'failed'};
+  // Зачисляет вебхук, обычно за секунду-две: ждём до ~30 с
+  for(let i=0;i<16;i++){
+   const r=await rpc('donate_order_status',{p_order:data.order}).catch(()=>null);
+   if(r&&r.status=='paid'){await loadPlayer();if(pack=='named')await loadPlates();return {ok:1,res:r.result}}
+   await new Promise(f=>setTimeout(f,i<4?1000:2000))}
+  await loadPlayer().catch(()=>{});return {wait:1}},
  // Тройная прокрутка (supabase/triple_roll.sql): покупка пасса, бросок пакета, решение по номерам
  async buyPass(){const {error}=await sb.functions.invoke('buy-pass');if(error){const err=await errCode(error);await loadAll().catch(()=>{});return {err}}await loadAll();return {ok:1}},
  // При любой ошибке (в т.ч. обрыв связи, когда сервер мог успеть выполнить запрос) сверяем кэш с сервером: баланс и пакет не должны оставаться устаревшими
@@ -43,7 +62,6 @@ export const api={
   if(error){
    let e=null;try{e=await error.context.json()}catch(_){}
    if(e&&(e.error=='full'||e.error=='money')){await loadAll();return null}   // кэш разошёлся с сервером
-   if(e&&e.error=='banned'){handleBan({reason:e.reason,until:e.until});return null}
    throw error}
   const p=data.plate,pl=data.player;
   S.col.push(p);S.bal=+pl.balance;S.usd=pl.usd;S.xp=pl.xp;S.lvl=pl.lvl;S.stats=pl.stats;S.seen=pl.seen;
@@ -210,11 +228,11 @@ export const api={
  // Перерождение (prestige.sql). Отказы сервера возвращаются как {err:'код'}
  async rebirth(){
   let r;try{r=await rpc('rebirth')}catch(e){const m=(e&&e.message)||'',h=REB_ERR.find(x=>m.includes(x[0]));if(h){await loadPlayer();return {err:h[1]}}throw e}
-  await loadAll();Object.assign(SESS,{n:0,best:0,cls:[0,0,0,0,0,0],f:{}});return {ok:1,stars:r.stars}},
+  await loadAll();Object.assign(SESS,{n:0,best:0,cls:[0,0,0,0,0],f:{}});return {ok:1,stars:r.stars}},
  async buyPerk(k){
   try{await rpc('buy_perk',{k})}catch(e){const m=(e&&e.message)||'',h=REB_ERR.find(x=>m.includes(x[0]));if(h){await loadPlayer();return {err:h[1]}}throw e}
   await loadPlayer();return {ok:1}},
  async resetProgress(){
   await rpc('reset_progress');await loadAll();
-  Object.assign(SESS,{n:0,best:0,cls:[0,0,0,0,0,0],f:{}})}
+  Object.assign(SESS,{n:0,best:0,cls:[0,0,0,0,0],f:{}})}
 };

@@ -19,6 +19,7 @@ import './views/lab.js';
 import './views/bank.js';
 import './views/gen.js';
 import './views/shop.js';
+import './views/donate.js';
 import './views/cases.js';
 import './views/prestige.js';
 import './views/multi.js';
@@ -36,17 +37,16 @@ import {api} from './api.js';
 import {S} from './state.js';
 import {tgUser} from './platform.js';
 import {showGate} from './gate.js';
-import {showBan} from './ban.js';
 import {checkPending} from './views/multi.js';
 
 bind();
 on({retry:()=>location.reload()});
 // Сетевые и серверные ошибки из любых действий: одна плашка вместо падения интерфейса
-window.addEventListener('unhandledrejection',e=>{if(e.reason&&(e.reason.banned||/^banned$/i.test(e.reason.message||'')))return;console.error(e.reason);banner('Нет связи с сервером','Повторите действие')});
+window.addEventListener('unhandledrejection',e=>{console.error(e.reason);banner('Нет связи с сервером','Повторите действие')});
 
 async function boot(){
   try{await login();await loadAll()}
-  catch(e){if(e&&e.code==='not_subscribed'){showGate(boot);return}if(e&&e.code==='banned'){showBan({reason:e.reason,until:e.until});return}console.error(e);$('boot').innerHTML=`<div class="bootmsg"><b>Не удалось войти</b><span>${(e&&e.message)||'Ошибка'}</span><button class="btn" data-click="retry">Повторить</button></div>`;return}
+  catch(e){if(e&&e.code==='not_subscribed'){showGate(boot);return}console.error(e);$('boot').innerHTML=`<div class="bootmsg"><b>Не удалось войти</b><span>${(e&&e.message)||'Ошибка'}</span><button class="btn" data-click="retry">Повторить</button></div>`;return}
   // Ник по умолчанию — имя из Telegram, чтобы в рейтинге были имена, а не «Игрок»
   if(!S.nick){const u=tgUser(),n=u&&(u.first_name||u.username);if(n)try{await api.setNick(n)}catch(e){console.error(e)}}
   document.getElementById('gate')?.remove();$('boot').remove();render();daily();initTrades();initMarket();initAuction();checkPending();
