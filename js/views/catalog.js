@@ -28,10 +28,10 @@ export function drawCat(){
   $('csel').innerHTML=dd(0,cl(CC),CC,Object.keys(CN).map(k=>[k,cl(k)]),'pickC')+dd(1,isOpen(tl()[CT].k)?tl()[CT].n:'🔒 ???',CT,tl().map((t,i)=>[i,isOpen(t.k)?t.n:'🔒 ???']),'pickT')+dd(2,tb[CR][0],CR,Object.keys(tb).map(k=>[k,tb[k][0]+' · '+k]),'pickR');
   const ac=document.querySelector('.dd.on .ddo.a');if(ac){const l=ac.parentNode;l.scrollTop=ac.offsetTop-l.clientHeight/2}
   if(!isOpen(tl()[CT].k)){$('ccards').innerHTML='<div class="clock"><b>🔒</b><span>Тип закрыт</span><small>Он откроется, когда такой номер выпадет в первый раз</small></div>';return}
-  $('ccards').innerHTML=RAR.map((R,i)=>{const it=catItem(i);return it?`<div class="cc r${i}" style="animation-delay:${i*70}ms" data-click="openCat" data-arg="${i}"><div class="pw">${plateHTML(it.p)}</div><div class="cf"><div style="color:${R.c}">${R.n}${dots(i)}</div><b>${String(R.p).replace('.',',')}%</b><span>${fmt(it.price)} ₽+</span></div></div>`:''}).join('')}
+  $('ccards').innerHTML=RAR.map((R,i)=>{const it=catItem(i);return it?`<div class="cc r${i}" style="animation-delay:${i*70}ms" data-click="openCat" data-arg="${i}"><div class="pw">${plateHTML(it.p)}</div><div class="cf"><div style="color:${R.c}">${R.n}${dots(i)}</div><b>${R.ps||String(R.p).replace('.',',')}%</b><span>${fmt(it.price)} ₽+</span></div></div>`:''}).join('')}
 export function openCat(i){
   const R=RAR[i],it=catItem(i);
-  sm(`<div class="t2 r${i}">${plateHTML(it.p,'sh')}${dots(i)}<div style="font-size:24px;font-weight:700;color:${R.c}">${R.n}</div></div><div class="bd"><h2>${String(R.p).replace('.',',')}%</h2><div class="tl">шанс выпадения</div><div class="ln"><span>Как выпадает</span><b style="text-align:right;max-width:60%;font-size:15px">${CD[i]}</b></div><div class="ln big"><span>Цена от</span><b>${fmt(it.price)} ₽</b></div><button class="btn" data-click="cm">Закрыть</button></div>`)}
+  sm(`<div class="t2 r${i}">${plateHTML(it.p,'sh')}${dots(i)}<div style="font-size:24px;font-weight:700;color:${R.c}">${R.n}</div></div><div class="bd"><h2>${R.ps||String(R.p).replace('.',',')}%</h2><div class="tl">шанс выпадения</div><div class="ln"><span>Как выпадает</span><b style="text-align:right;max-width:60%;font-size:15px">${CD[i]}</b></div><div class="ln big"><span>Цена от</span><b>${fmt(it.price)} ₽</b></div><button class="btn" data-click="cm">Закрыть</button></div>`)}
 export function ddToggle(i){DD=DD==i?-1:i;drawCat()}
 DRAW.cat=drawCat;
 on({pickC,pickT,pickR,ddToggle:a=>ddToggle(+a),openCat:a=>openCat(+a)});
