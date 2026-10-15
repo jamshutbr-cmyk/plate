@@ -17,16 +17,16 @@ Deno.serve(async (req) => {
   if (ae || !au.user) return json({ error: 'unauthorized' }, 401);
   const uid = au.user.id;
 
-  const { data: pl } = await admin.from('players').select('country, reg, luck, banned_until, ban_reason').eq('id', uid).single();
+  const { data: pl } = await admin.from('players').select('country, reg, luck, luck2, banned_until, ban_reason').eq('id', uid).single();
   if (!pl) return json({ error: 'no player' }, 404);
   if (banActive(pl.banned_until)) return json(bannedBody(pl.ban_reason, pl.banned_until), 403);
 
   const regs = (await loadRegions(admin))[pl.country];
   // Буст удачи из банка: пока luck > 0, делаем 3 попытки и берём самый дорогой номер (BANK.luck.best в js/config.js).
   const tries = pl.luck > 0 ? 3 : 1;
-  let plate = mk({ country: pl.country, reg: pl.reg }, regs);
+  let plate = mk({ country: pl.country, reg: pl.reg }, regs, !!pl.luck2);
   for (let i = 1; i < tries; i++) {
-    const alt = mk({ country: pl.country, reg: pl.reg }, regs);
+    const alt = mk({ country: pl.country, reg: pl.reg }, regs, !!pl.luck2);
     if (alt.price > plate.price) plate = alt;
   }
   const fee = regionFee(regs, pl.reg);

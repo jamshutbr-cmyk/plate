@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
   const { data: pass } = await admin.from('passes').select('expires_at').eq('owner', uid).maybeSingle();
   if (!pass || new Date(pass.expires_at) <= new Date()) return json({ error: 'no pass' }, 403);
 
-  const { data: pl } = await admin.from('players').select('country, reg, luck, banned_until, ban_reason').eq('id', uid).single();
+  const { data: pl } = await admin.from('players').select('country, reg, luck, luck2, banned_until, ban_reason').eq('id', uid).single();
   if (!pl) return json({ error: 'no player' }, 404);
   if (banActive(pl.banned_until)) return json(bannedBody(pl.ban_reason, pl.banned_until), 403);
 
@@ -40,9 +40,9 @@ Deno.serve(async (req) => {
   for (let i = 0; i < n; i++) {
     // банк удачи применяется к каждому номеру отдельно, как в generate
     const tries = luck > 0 ? 3 : 1;
-    let plate = mk({ country: pl.country, reg: pl.reg }, regs);
+    let plate = mk({ country: pl.country, reg: pl.reg }, regs, !!pl.luck2);
     for (let t = 1; t < tries; t++) {
-      const alt = mk({ country: pl.country, reg: pl.reg }, regs);
+      const alt = mk({ country: pl.country, reg: pl.reg }, regs, !!pl.luck2);
       if (alt.price > plate.price) plate = alt;
     }
     if (luck > 0) luck--;

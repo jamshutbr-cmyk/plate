@@ -78,29 +78,35 @@ function pickReg(regs: Region[], c: string, reg: string): Region {
   return w[0][0];
 }
 
-export function mk(prefs: Prefs, allRegions: Region[]): Plate {
+// boost = постоянная «Удача ×2» (донат): шансы редких типов и редких комбинаций цифр/букв выше вдвое (отношение шансов редкий:обычный ×2).
+export function mk(prefs: Prefs, allRegions: Region[], boost = false): Plate {
   const country = prefs.country, regs = allRegions;   // regs уже отфильтрованы по стране вызывающим
   const types = TYPES.filter((T) => T.c.includes(country));   // типы этой страны (в Беларуси только civil/taxi/police/transit)
-  const tot = types.reduce((a, b) => a + b.p, 0);
+  const wt = (T: { p: number; m: number }) => (boost && T.m >= 24 ? T.p * 2 : T.p);   // редкие типы: такси, полиция, военные, дипломаты, ретро
+  const tot = types.reduce((a, b) => a + wt(b), 0);
   let x = rf() * tot, t = types[0], acc = 0;
-  for (const T of types) { acc += T.p; if (x < acc) { t = T; break; } }
+  for (const T of types) { acc += wt(T); if (x < acc) { t = T; break; } }
   const ru = country == 'RU', k = t.k;
   // Сколько цифр и букв и как они складываются в main. Беларусь: у всех типов один формат «1234 AB-».
   // military/diplomat/retro есть только в России, у каждого свой формат (и у них нет блока региона на плашке).
   const nd = !ru ? 4 : k == 'military' || k == 'retro' ? 4 : 3;
   const nl = !ru ? 2 : k == 'taxi' || k == 'military' ? 2 : k == 'diplomat' ? 0 : 3;
-  let d: string;
-  do d = Array.from({ length: nd }, () => rnd(10)).join(''); while (/^0+$/.test(d));
-  const ls = Array.from({ length: nl }, () => pick(ru ? RU_L : BY_L)).join('');
-  // Диплом: два знака кода страны — случайные цифры. Классифицируем по ним (как по «буквам»), фиксированные «CD» в classify не передаём.
-  const cc = k == 'diplomat' ? String(1 + rnd(99)).padStart(2, '0') : '';
+  let d: string, ls: string, cc: string, cl: { cls: number; kd: number };
+  for (;;) {
+    do d = Array.from({ length: nd }, () => rnd(10)).join(''); while (/^0+$/.test(d));
+    ls = Array.from({ length: nl }, () => pick(ru ? RU_L : BY_L)).join('');
+    // Диплом: два знака кода страны — случайные цифры. Классифицируем по ним (как по «буквам»), фиксированные «CD» в classify не передаём.
+    cc = k == 'diplomat' ? String(1 + rnd(99)).padStart(2, '0') : '';
+    cl = classify(d, k == 'diplomat' ? cc : ls);
+    if (!boost || cl.cls > 0 || rf() < 0.5) break;   // обычный номер при бусте принимаем с шансом 1/2 → редкие в 2 раза вероятнее
+  }
   const main = !ru ? d + ' ' + ls + '-'
     : k == 'taxi' ? ls + ' ' + d
     : k == 'military' ? d + ' ' + ls
     : k == 'diplomat' ? d + ' CD ' + cc
     : k == 'retro' ? d.slice(0, 2) + '-' + d.slice(2) + ' ' + ls
     : ls[0] + d + ls.slice(1);   // civil, police, transit
-  const r = pickReg(regs, country, prefs.reg), { cls, kd } = classify(d, k == 'diplomat' ? cc : ls);
+  const r = pickReg(regs, country, prefs.reg), { cls, kd } = cl;
   const combo = RAR_M[cls], f = cls ? 1 + kd / 9 * .6 : 1;
   const rg = regSel(regs, prefs.reg) ? regAvg(regs, country) : r.mult * regNorm(regs, country);
   return {
