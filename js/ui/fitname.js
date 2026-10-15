@@ -7,7 +7,10 @@ function fit(pm){
   const w=pm.clientWidth;if(!w)return;                       // скрыт: подгоним, когда появится (ResizeObserver)
   const cs=getComputedStyle(pm),avail=w-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0)-2;
   s.style.fontSize='1em';
-  const sw=s.getBoundingClientRect().width;
+  // getBoundingClientRect учитывает transform предков: окно профиля появляется с анимацией scale(.85), и текст на старте казался уже,
+  // чем есть на самом деле (шрифт сжимался недостаточно, номер обрезало по краям). Делим на масштаб, чтобы мерить в тех же единицах, что и clientWidth.
+  const k=(w&&pm.getBoundingClientRect().width/w)||1;
+  const sw=s.getBoundingClientRect().width/(k>.05?k:1);
   s.style.fontSize=(sw>avail?Math.max(.3,avail/sw*.96):1).toFixed(3)+'em'}
 function scan(root){
   if(!root||root.nodeType!=1)return;
@@ -17,4 +20,6 @@ function scan(root){
 export function initFitName(){
   new MutationObserver(ms=>{for(const m of ms)m.addedNodes.forEach(scan)}).observe(document.body,{childList:true,subtree:true});
   scan(document.body);
-  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>scan(document.body)).catch(()=>{})}
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>scan(document.body)).catch(()=>{});
+  // шрифт плашки (Barlow) подгружается лениво: если он пришёл уже после подгонки, ширина текста изменилась, а размер контейнера нет, и ResizeObserver молчит
+  if(document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',()=>scan(document.body))}
