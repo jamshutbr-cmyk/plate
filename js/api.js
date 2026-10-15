@@ -122,7 +122,7 @@ export const api={
  async bankDepositOpen(cur,amount,days){return await bankCall(()=>rpc('bank_deposit_open',{p_cur:cur,p_amount:amount,p_days:days}))},
  async bankDepositClaim(id){return await bankCall(()=>rpc('bank_deposit_claim',{p_id:id}))},
  async bankDepositCancel(id){return await bankCall(()=>rpc('bank_deposit_cancel',{p_id:id}))},
- async bankBuyLuck(){return await bankCall(()=>rpc('bank_buy_luck'))},
+ async bankBuyLuck(packs=1){return await bankCall(()=>rpc('bank_buy_luck',{p_packs:packs}))},
  async bankBuyLots(){return await bankCall(()=>rpc('bank_buy_lots'))},
  async bankBuyItem(id){return await bankCall(()=>rpc('bank_buy_item',{p_item:id}))},
  async openCaseUsd(id){

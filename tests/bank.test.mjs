@@ -29,6 +29,12 @@ test('курсы и лимиты обмена, вкладов, буста и с�
   assert.equal(num('lots_max'), BANK.lots.max);
 });
 
+test('буст удачи: кнопка «сразу» помещается в потолок и в лимит паков за вызов', () => {
+  assert.equal(num('luck_packs') >= BANK.luck.bulk, true, 'кнопка шлёт больше паков, чем разрешает сервер');
+  assert.ok(BANK.luck.rolls * BANK.luck.bulk <= BANK.luck.cap, 'кнопка «сразу» не влезает в потолок');
+  assert.ok(/drop function if exists public\.bank_buy_luck\(\);/.test(sql), 'нет drop старой bank_buy_luck(), будет неоднозначный вызов');
+});
+
 test('проценты вкладов: те же, что в bank_deposit_open', () => {
   const m = sql.match(/pct := case when p_cur = 'rub' then case p_days when 1 then (\d+) when 3 then (\d+) when 7 then (\d+) end\s+else case p_days when 1 then (\d+) when 3 then (\d+) when 7 then (\d+) end end;/);
   assert.ok(m, 'не нашли таблицу процентов');
@@ -85,7 +91,7 @@ test('титулы банка находятся через itemOf, но не в
 });
 
 test('права: consume_luck и bank_reset только service_role / никому, остальное authenticated', () => {
-  const fns = ['bank_state()', 'bank_exchange(text, int)', 'bank_deposit_open(text, bigint, int)', 'bank_deposit_claim(bigint)', 'bank_buy_luck()', 'bank_buy_lots()', 'bank_buy_item(text)', 'open_case_usd(text)'];
+  const fns = ['bank_state()', 'bank_exchange(text, int)', 'bank_deposit_open(text, bigint, int)', 'bank_deposit_claim(bigint)', 'bank_buy_luck(int)', 'bank_buy_lots()', 'bank_buy_item(text)', 'open_case_usd(text)'];
   const grant = sql.match(/grant execute on function([\s\S]*?)to authenticated;/)[1];
   const revoke = sql.match(/revoke execute on function([\s\S]*?)from public, anon;/)[1];
   for (const f of fns) {

@@ -192,20 +192,24 @@ end $$;
 
 -- ---------- Усиления за $ ----------
 -- Буст удачи: luck_rolls ближайших прокрутов генерируют 3 номера и выдают самый дорогой (Edge Function generate).
-create or replace function public.bank_buy_luck() returns int
+-- p_packs — сколько паков по luck_rolls прокрутов купить за раз (кнопка «+100» шлёт 10).
+drop function if exists public.bank_buy_luck();
+create or replace function public.bank_buy_luck(p_packs int default 1) returns int
 language plpgsql security definer set search_path = public as $$
 declare
   p players%rowtype; res int;
   luck_cost  constant int := 15;
   luck_rolls constant int := 10;
-  luck_cap   constant int := 100;
+  luck_cap   constant int := 5000;
+  luck_packs constant int := 100;   -- не больше стольких паков за один вызов
 begin
   if auth.uid() is null then raise exception 'unauthorized'; end if;
+  if p_packs is null or p_packs < 1 or p_packs > luck_packs then raise exception 'bad amount'; end if;
   select * into p from players where id = auth.uid() for update;
   if not found then raise exception 'no player'; end if;
-  if p.usd < luck_cost then raise exception 'not enough usd'; end if;
-  if p.luck + luck_rolls > luck_cap then raise exception 'limit'; end if;
-  update players set usd = usd - luck_cost, luck = luck + luck_rolls where id = p.id returning luck into res;
+  if p.usd < luck_cost * p_packs then raise exception 'not enough usd'; end if;
+  if p.luck + luck_rolls * p_packs > luck_cap then raise exception 'limit'; end if;
+  update players set usd = usd - luck_cost * p_packs, luck = luck + luck_rolls * p_packs where id = p.id returning luck into res;
   return res;
 end $$;
 
@@ -310,11 +314,11 @@ $$;
 -- ---------- Права ----------
 revoke execute on function
   public.bank_state(), public.bank_exchange(text, int), public.bank_deposit_open(text, bigint, int), public.bank_deposit_claim(bigint), public.bank_deposit_cancel(bigint),
-  public.bank_buy_luck(), public.bank_buy_lots(), public.bank_buy_item(text), public.open_case_usd(text)
+  public.bank_buy_luck(int), public.bank_buy_lots(), public.bank_buy_item(text), public.open_case_usd(text)
 from public, anon;
 grant execute on function
   public.bank_state(), public.bank_exchange(text, int), public.bank_deposit_open(text, bigint, int), public.bank_deposit_claim(bigint), public.bank_deposit_cancel(bigint),
-  public.bank_buy_luck(), public.bank_buy_lots(), public.bank_buy_item(text), public.open_case_usd(text)
+  public.bank_buy_luck(int), public.bank_buy_lots(), public.bank_buy_item(text), public.open_case_usd(text)
 to authenticated;
 revoke execute on function public.consume_luck(uuid), public.bank_reset(uuid) from public, anon, authenticated;
 grant  execute on function public.consume_luck(uuid) to service_role;
