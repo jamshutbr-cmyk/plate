@@ -1,4 +1,5 @@
 // Точка входа: подключает экраны (они сами регистрируют себя и свои действия), входит через Telegram и запускает игру.
+import {initFitName} from './ui/fitname.js';
 import './views/main.js';
 import './views/list.js';
 import './views/catalog.js';
@@ -53,4 +54,5 @@ async function boot(){
   // Клан считает главу «живым», пока он заходит: пинг при запуске и при возвращении в приложение (сервер пишет не чаще раза в минуту)
   let cpAt=0;const cp=()=>{if(serverDown()||Date.now()-cpAt<300000)return;cpAt=Date.now();api.clanPing()};cp();document.addEventListener('visibilitychange',()=>{if(!document.hidden)cp()});
 }
+initFitName();
 boot();

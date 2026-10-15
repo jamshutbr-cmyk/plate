@@ -147,3 +147,6 @@ html .plate.rz5::after{content:'';position:absolute;inset:0;pointer-events:none;
 html .row2 .plate.rz5::after{animation-duration:4s}
 html .plate.rz5 .pm,html .plate.rz5 .pr{text-shadow:0 1px 0 #fff8,0 -1px 0 #5a0014aa,0 3px 3px #0005}
 html body .plate.rz5.blur::after{display:none}
+/* именной номер: блок текста не растягивается под длинный текст (иначе вытесняет регион), текст подгоняет js/ui/fitname.js */
+html body .plate .pm{min-width:0;overflow:hidden}
+html body .plate .pm>.nm{display:inline-block;white-space:nowrap;line-height:1.1}
