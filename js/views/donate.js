@@ -40,6 +40,7 @@ function gives(p,x2){
   if(v.rub)o.push(`<b>+${fmt(v.rub)} ₽</b>${x2?` <i>(${fmt(v.rub/2)} × 2)</i>`:''}`);
   if(v.days)o.push(`Тройной пасс <b>${v.days} дн.</b>`);
   if(v.luck)o.push(`Удача <b>${v.luck}</b> прокрутов`);
+  if(v.luck2)o.push(`Удача <b>×2</b> навсегда`);
   for(const id of v.items){const it=itemOf(id);if(it)o.push(`${slotName(it.slot)} «${it.n}»${S.owned.includes(id)?' <i>(уже есть)</i>':''}`)}
   return o}
 const slotName=s=>({skin:'Рамка',nick:'Ник',bg:'Фон',drop:'Эффект',title:'Титул'})[s]||'Предмет';
@@ -62,7 +63,7 @@ function preview(it){
 const rowBoost=p=>`<div class="dn-row2"><div class="dn-tileic" style="--ic:${IC[p.k]}">${p.ic}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div>${buyBtn(p)}</div>`;
 function tileBundle(p){
   const v=donateVal(p,0),chips=[];
-  if(v.days)chips.push(`Пасс ${v.days} дн.`);if(v.luck)chips.push(`Удача ${v.luck}`);if(v.items.length)chips.push(`Предметов: ${v.items.length}`);
+  if(v.days)chips.push(`Пасс ${v.days} дн.`);if(v.luck)chips.push(`Удача ${v.luck}`);if(v.luck2)chips.push('Удача ×2 навсегда');if(v.items.length)chips.push(`Предметов: ${v.items.length}`);
   const sep=v.items.length?sumItems(v.items):0;
   return `<div class="dn-bun"><div class="dn-bh"><div class="dn-tileic" style="--ic:${IC.bundle}">${p.ic}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div></div>
    <div class="dn-chips">${chips.map(c=>`<i>${c}</i>`).join('')}</div>
@@ -122,6 +123,7 @@ function success(id,res){
   if(res.rub)lines.push(`+${fmt(res.rub)} ₽${res.doubled&&!res.usd?' <i>(×2 за первую покупку)</i>':''}`);
   if(res.pass_days)lines.push(`Тройной пасс на ${res.pass_days} дн.`);
   if(res.luck)lines.push(`Удача: +${res.luck} прокрутов`);
+  if(res.luck2)lines.push('Удача ×2 навсегда');
   for(const x of res.items||[]){const it=itemOf(x);if(it)lines.push(`${slotName(it.slot)} «${it.n}»`)}
   const tiers=(res.tiers||[]).map(x=>itemOf(x)).filter(Boolean);
   sm(`<div class="dn-sheet"><div class="dn-big">${id=='tip'?'💛':'✅'}</div><h2>${id=='tip'?'Спасибо!':res.plate?'Номер ваш!':'Покупка зачислена'}</h2>${res.plate?`<div class="nm-pv">${plateHTML({...res.plate,bound:true})}</div><p class="tl" style="text-align:center">🔒 Именной номер навсегда в вашей коллекции</p>`:''}

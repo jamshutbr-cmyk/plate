@@ -140,7 +140,7 @@ export const DONATE={
  packs:[
   {id:'named',k:'named',ic:'🪪',t:'Именной номер',st:149,g:{},max:3,d:'Любой текст на плашке: имя, ник, слово. Навсегда в вашей коллекции'},
   {id:'pass7',k:'boost',ic:'🎟️',t:'Тройной пасс на 7 дней',st:90,g:{pass_days:7},d:'Каждая прокрутка даёт три номера на выбор. Время добавляется к текущему пассу'},
-  {id:'luck50',k:'boost',ic:'🍀',t:'Удача на 50 прокрутов',st:45,g:{luck:50},d:'Буст удачи из банка: лучший из трёх номеров'},
+  {id:'luck2x',k:'boost',ic:'🍀',t:'Удача ×2 навсегда',st:399,g:{luck2:1},max:1,d:'Шанс редких номеров и типов (такси, полиция, военные, дипломаты, ретро) вдвое выше на каждой прокрутке. Навсегда, один раз на игрока'},
   {id:'starter',k:'bundle',ic:'🎁',t:'Стартовый набор',st:49,g:{pass_days:3,luck:20},max:1,d:'Один раз на игрока'},
   {id:'founder',k:'bundle',ic:'👑',t:'Набор Основателя',st:349,g:{pass_days:7,luck:50,items:['dn_obsidian','dn_prism','ndn_plasma','ndn_void','bgdn_nebula','dn_nova']},max:1,d:'Вся эксклюзивная косметика со скидкой 33% и бусты. Один раз на игрока'},
   {id:'it_obsidian',k:'item',ic:'🖤',t:'Рамка «Обсидиан»',st:99,g:{items:['dn_obsidian']},max:1},
@@ -158,4 +158,4 @@ export const DONATE={
   {id:'bgdn_nebula',slot:'bg',n:'Туманность',d:'Космические облака на главном экране'},
   {id:'dn_nova',slot:'drop',n:'Сверхновая',d:'Звёздные частицы фиолетового, розового и бирюзового'}]};
 export const donateTier=total=>DONATE.tiers.filter(x=>total>=x.need).pop()||null;
-export const donateVal=(p,x2)=>{const m=x2?2:1,g=p.g;return {usd:(g.usd||0)*m,rub:(g.rub||0)*m,luck:g.luck||0,days:g.pass_days||0,items:g.items||[]}};
+export const donateVal=(p,x2)=>{const m=x2?2:1,g=p.g;return {usd:(g.usd||0)*m,rub:(g.rub||0)*m,luck:g.luck||0,luck2:g.luck2||0,days:g.pass_days||0,items:g.items||[]}};
