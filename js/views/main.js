@@ -42,13 +42,13 @@ export function tilt(e){const pl=$('stage').querySelector('.plate.in');if(!pl)re
 export function show(p,unlock){
   const R=RAR[p.cls];document.documentElement.style.setProperty('--rc',R.c);
   const g=$('glow');g.classList.remove('on');void g.offsetWidth;g.classList.add('on');
-  $('stage').innerHTML=`<div class="badge" style="color:${R.c}"><div>${R.n}${dots(p.cls)}</div><b id="pp">0 ₽</b></div>${plateHTML(p,'in')}<div class="tl">${CN[p.country].n} · ${p.reg} · ${p.rn} · ${TYPES.find(t=>t.k==p.type).n}</div>${p.cls>=2?`<div class="tl" style="color:${R.c};font-weight:700">+${[0,0,2,10,100][p.cls]} $</div>`:''}<div class="hint" style="font-size:14px;margin-top:12px">Нажмите ещё раз (−${fmt(genCost())} ₽)</div>`;
+  $('stage').innerHTML=`<div class="badge" style="color:${R.c}"><div>${R.n}${dots(p.cls)}</div><b id="pp">0 ₽</b></div>${plateHTML(p,'in')}<div class="tl">${CN[p.country].n} · ${p.reg} · ${p.rn} · ${TYPES.find(t=>t.k==p.type).n}</div>${p.cls>=2&&p.cls<5?`<div class="tl" style="color:${R.c};font-weight:700">+${[0,0,2,10,100][p.cls]} $</div>`:''}<div class="hint" style="font-size:14px;margin-top:12px">Нажмите ещё раз (−${fmt(genCost())} ₽)</div>`;
   count($('pp'),p.price);render(true);dropSound(p.cls);if(p.cls>=3){const b=$('big');b.textContent=R.n.toUpperCase()+'!';b.style.setProperty('--rc',R.c);b.classList.remove('on');void b.offsetWidth;b.classList.add('on')}
   if(unlock)banner('Открыто новое',unlock);
   hapticDrop(p.cls);
   const fe=S.equip.drop,E=fe&&FXE[fe],bn=p.cls>=2?p.cls*14:E?8:0;   // купленный эффект: свои частицы и вспышка, у обычных номеров лёгкий всплеск
   if(bn)setTimeout(()=>burst(R.c,bn,fe),500);
-  if(p.cls==4&&S.fx<2){document.body.classList.remove('shake');void document.body.offsetWidth;document.body.classList.add('shake');$('flash').style.background=E?E.flash:'';$('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on')}}
+  if(p.cls>=4&&S.fx<2){document.body.classList.remove('shake');void document.body.offsetWidth;document.body.classList.add('shake');$('flash').style.background=E?E.flash:'';$('flash').classList.remove('on');void $('flash').offsetWidth;$('flash').classList.add('on')}}
 export function stageMsg(t){$('stage').innerHTML=`<div class="hint">${t}</div>`}
 export function brokeMsg(){
   if(S.reg&&S.bal>=COST&&S.bal<genCost())return 'Не хватает на прокрут с регионом «'+S.reg+'»: '+fmt(genCost())+' ₽. Выберите «Все регионы», тогда прокрут стоит '+fmt(COST)+' ₽.';
