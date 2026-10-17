@@ -161,7 +161,7 @@ function look(){
   const e={...ST.wallet.equip,...TRY},tr=Object.keys(TRY).length;
   const chips=COSM.map(k=>`<button type="button" class="ev-slot${k==SHOP_KIND?' a':''}${TRY[k]?' try':''}" data-click="evKind" data-arg="${k}"><span class="ev-slot-i">${ic(k)}</span><span class="ev-slot-t"><small>${SLOT_N[k]}${TRY[k]?' (примерка)':''}</small><span>${e[k]?esc(nameOf(e[k])):'Не надето'}</span></span></button>`).join('');
   const badge=tr?'<span class="ev-try">Примерка</span>':'';
-  const scene=SHOW_KINDS.includes(SHOW_KIND)
+  const scene=SHOW_KINDS.includes(SHOP_KIND)
     ?`<div class="ev-scene ev-show${SHOW_BAD?'':' ld'}" id="evShow">${SHOW_BAD?`<div class="ev-fb">${carSVG(e.car&&item(e.car)&&item(e.car).pl&&item(e.car).pl.c)}</div>`:'<span class="ev-hint">Крутите машину пальцем</span>'}${badge}</div>`
     :`<div class="ev-scene ${e.bg?'scn-'+esc(e.bg):''}"><div class="ev-lp">${plateHTML(SAMPLE,'',e.frame||'')}</div>${badge}</div>`;
   return `<div class="ev-look">${scene}
