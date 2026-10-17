@@ -114,7 +114,7 @@ export function drawAuction(){
 
 export function drawAnew(){
   const left=AUCTION.lots-(MINE?MINE.lots.length:0),sf=new Set(S.safe.map(x=>x.id));
-  const all=[...S.col,...S.safe].filter(p=>!p.bound).sort((a,b)=>b.price-a.price);
+  const all=[...S.col,...S.safe].sort((a,b)=>b.price-a.price);
   setHTML($('anC'),`<p class="tl">Выберите номер для аукциона. Пока идут торги, его нельзя продать, обменять или выставить на рынок. Снять лот можно, пока нет ставок. Свободных аукционов: ${Math.max(left,0)}.</p>`
     +(all.length?all.map(p=>`<div class="row2 r${p.cls}" data-click="aPick" data-arg="${p.id}">${plateHTML(p,'',S.equip.skin)}<div class="ri"><span>${CN[p.country].n} · ${typeName(p.type)}${sf.has(p.id)?' · в сейфе':''}</span>${dots(p.cls)}<b>${fmt(p.price)} ₽</b></div></div>`).join(''):'<p class="tl" style="text-align:center">У вас нет номеров.</p>'));}
 

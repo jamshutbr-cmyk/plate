@@ -12,27 +12,26 @@ import {$, fmt, xf} from '../util.js';
 
 // Коллекция и сейф: список, сортировка, выбор, продажа.
 let LPT,LPD=0;
-export function lp(id){LPD=0;clearTimeout(LPT);LPT=setTimeout(()=>{LPD=1;if(find(id)?.bound){haptic('light');banner('Именной номер','Его нельзя продать или передать');return}sel.has(id)?sel.delete(id):sel.add(id);haptic('light');drawList()},450)}
+export function lp(id){LPD=0;clearTimeout(LPT);LPT=setTimeout(()=>{LPD=1;sel.has(id)?sel.delete(id):sel.add(id);haptic('light');drawList()},450)}
 export function lpc(){clearTimeout(LPT)}
-export function tapRow(id){if(LPD){LPD=0;return}if(sel.size&&!find(id)?.bound){sel.has(id)?sel.delete(id):sel.add(id);drawList()}else openP(id)}
+export function tapRow(id){if(LPD){LPD=0;return}if(sel.size){sel.has(id)?sel.delete(id):sel.add(id);drawList()}else openP(id)}
 export function drawList(){
   const ft=LST.ft?TYPES[LST.ft-1].k:null,key={date:p=>p.id,price:p=>p.price,rar:p=>p.cls*1e12+p.price}[LST.sk];
   const a=S[LST.ls].filter(p=>!ft||p.type==ft).sort((x,y)=>(key(y)-key(x))*LST.sd);
   $('lt').textContent=LST.ls=='col'?'Коллекция':'Сейф';
   $('cnt').textContent=S[LST.ls].length+' / '+(LST.ls=='col'?S.capC:S.capS);
-  $('tot').textContent='Стоимость '+(LST.ls=='col'?'коллекции':'сейфа')+'  '+fmt(S[LST.ls].reduce((s,p)=>s+(p.bound?0:p.price),0))+' ₽';
+  $('tot').textContent='Стоимость '+(LST.ls=='col'?'коллекции':'сейфа')+'  '+fmt(S[LST.ls].reduce((s,p)=>s+p.price,0))+' ₽';
   const ar=k=>LST.sk==k?(LST.sd>0?' ▼':' ▲'):'';
   $('chips').innerHTML=`<button class="${LST.ft?'a':''}" data-click="cycleFilter">${LST.ft?TYPES[LST.ft-1].n:'Фильтры'}</button><button class="${LST.sk=='date'?'a':''}" data-click="sortBy" data-arg="date">Дата${ar('date')}</button><button class="${LST.sk=='price'?'a':''}" data-click="sortBy" data-arg="price">Цена${ar('price')}</button><button class="${LST.sk=='rar'?'a':''}" data-click="sortBy" data-arg="rar">Редкость${ar('rar')}</button>`;
-  $('rows').innerHTML=a.length?a.map((p,i)=>`<div class="row2 r${p.cls} ${sel.has(p.id)?'sel':''}${p.bound?' lk':''}" style="animation-delay:${Math.min(i,10)*30}ms" data-click="tapRow" data-arg="${p.id}" data-pointerdown="lp" data-pointerup="lpc" data-pointerleave="lpc" data-pointercancel="lpc" data-contextmenu="noMenu">${plateHTML(p)}<div class="ri"><span>${CN[p.country].n} · ${TYPES.find(t=>t.k==p.type).n}</span>${dots(p.cls)}<b>${p.bound?'Именной':fmt(p.price)+' ₽'}</b></div></div>`).join(''):'<div class="hint" style="text-align:center;margin-top:60px">Пусто</div>';
+  $('rows').innerHTML=a.length?a.map((p,i)=>`<div class="row2 r${p.cls} ${sel.has(p.id)?'sel':''}" style="animation-delay:${Math.min(i,10)*30}ms" data-click="tapRow" data-arg="${p.id}" data-pointerdown="lp" data-pointerup="lpc" data-pointerleave="lpc" data-pointercancel="lpc" data-contextmenu="noMenu">${plateHTML(p)}<div class="ri"><span>${CN[p.country].n} · ${TYPES.find(t=>t.k==p.type).n}</span>${dots(p.cls)}<b>${fmt(p.price)} ₽</b></div></div>`).join(''):'<div class="hint" style="text-align:center;margin-top:60px">Пусто</div>';
   $('lbar').innerHTML=`<button class="btn" data-click="selAll">${sel.size&&sel.size==a.length?'Снять всё':'Выбрать всё'}</button><button class="btn" ${sel.size?'':'disabled'} data-click="moveSel">${LST.ls=='col'?'Поместить в сейф':'Достать из сейфа'}</button><button class="btn red" ${sel.size?'':'disabled'} data-click="sellDlg" data-arg="${[...sel].join(',')}">${LST.ls=='col'?'Быстрая продажа':'Продать'}</button>`}
 export function sortBy(k){if(LST.sk==k)LST.sd=-LST.sd;else{LST.sk=k;LST.sd=1}drawList()}
-export function selAll(){const ft=LST.ft?TYPES[LST.ft-1].k:null,a=S[LST.ls].filter(p=>!p.bound&&(!ft||p.type==ft));if(sel.size==a.length)sel.clear();else a.forEach(p=>sel.add(p.id));drawList()}
+export function selAll(){const ft=LST.ft?TYPES[LST.ft-1].k:null,a=S[LST.ls].filter(p=>!ft||p.type==ft);if(sel.size==a.length)sel.clear();else a.forEach(p=>sel.add(p.id));drawList()}
 export async function moveSel(){const to=LST.ls=='col'?'safe':'col',n=await api.movePlates([...sel],to);sel.clear();render();if(!n)banner('Нет места','Расширьте хранилище в улучшениях')}
 export function openP(id){
   const p=find(id),R=RAR[p.cls],T=TYPES.find(t=>t.k==p.type),inCol=S.col.some(x=>x.id==id);
-  sm(`<div class="t2 r${p.cls}">${plateHTML(p,'sh')}${dots(p.cls)}<div style="font-size:24px;font-weight:700;color:${R.c}">${R.n}</div></div><div class="bd"><h2>${p.bound?'Именной номер':T.n}</h2><div class="tl">${CN[p.country].n} · ${p.reg} · ${p.rn}</div>${p.bound?'':`<div class="ln"><span>Базовая стоимость</span><b>100 ₽</b></div><div class="cells">${[['комбо',p.mu[0]],['цифры',p.mu[1]],['регион',p.mu[2]],['код',p.mu[3]]].map(c=>`<div>${c[0]}<b>${xf(c[1])}</b></div>`).join('')}</div><div class="ln big"><span>${p.bound?'Оценка':'Цена номера'}</span><b>${fmt(p.price)} ₽</b></div>`}${p.bound?'<div class="tl" style="margin:8px 0">🔒 Именной номер: его нельзя продать, обменять или передать</div>':''}<div class="row"><button class="btn" data-click="moveOne" data-arg="${id}">${inCol?'В сейф':'Из сейфа'}</button>${p.bound?'':`<button class="btn red" data-click="sellDlg" data-arg="${id}">Продать</button>`}</div></div>`)}
+  sm(`<div class="t2 r${p.cls}">${plateHTML(p,'sh')}${dots(p.cls)}<div style="font-size:24px;font-weight:700;color:${R.c}">${R.n}</div></div><div class="bd"><h2>${T.n}</h2><div class="tl">${CN[p.country].n} · ${p.reg} · ${p.rn}</div><div class="ln"><span>Базовая стоимость</span><b>100 ₽</b></div><div class="cells">${[['комбо',p.mu[0]],['цифры',p.mu[1]],['регион',p.mu[2]],['код',p.mu[3]]].map(c=>`<div>${c[0]}<b>${xf(c[1])}</b></div>`).join('')}</div><div class="ln big"><span>Цена номера</span><b>${fmt(p.price)} ₽</b></div><div class="row"><button class="btn" data-click="moveOne" data-arg="${id}">${inCol?'В сейф':'Из сейфа'}</button><button class="btn red" data-click="sellDlg" data-arg="${id}">Продать</button></div></div>`)}
 export function sellDlg(ids){
-  ids=ids.filter(i=>!find(i)?.bound);if(!ids.length)return;
   const tot=ids.reduce((s,i)=>s+(find(i)?.price||0),0);
   sm(`<div class="dlg"><h3>Цена — ${fmt(tot)} ₽</h3><button class="btn red" data-click="sell" data-arg="${ids}">Продать (${S.perks.sell>=100-SELL_PCT?'без комиссии':'−'+(100-SELL_PCT-S.perks.sell)+'%'})<b>${fmt(sellGain(tot,S.perks.sell))} ₽</b></button></div>`)}
 export async function sell(ids){cm();await api.sellPlates(ids);sel.clear();render(true);burst('#f5b82e',12)}

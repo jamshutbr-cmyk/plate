@@ -12,7 +12,7 @@ export function feats(p){const d=p.main.replace(/\D/g,''),l=p.main.replace(/[\d\
  if(d.length>2&&d==r(d))o.push(2);if(l.length>1&&l==r(l))o.push(3);
  if(/^[1-9]0+$/.test(d))o.push(4);if(p.reg.length>1&&d.includes(p.reg))o.push(5);
  if(['777','888','999','555','007'].includes(d))o.push(6);if(/^0+[1-9]$/.test(d))o.push(7);
- o.push({civil:8,taxi:9,police:10,transit:11,military:12,diplomat:13,retro:14}[p.type]);return o}
+ o.push({civil:8,taxi:9,police:10,transit:11,military:12,diplomat:13,retro:14,blat:15}[p.type]);return o}
 export function trackSession(p){const st=SESS;st.n++;st.best=Math.max(st.best,p.price);st.cls[p.cls]=(st.cls[p.cls]||0)+1;for(const k of feats(p))st.f[k]=(st.f[k]||0)+1}
 
 // Номер-пустышка для анимации «барабана». Цены и настоящих правил тут нет, это только картинка.

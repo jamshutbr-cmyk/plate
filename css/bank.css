@@ -64,7 +64,6 @@
 .bk-meter i{flex:1;height:10px;border-radius:3px;background:color-mix(in srgb,var(--tx) 10%,transparent)}
 .bk-meter i.f{background:var(--cc)}
 .bk-buy{width:100%;margin-top:2px}
-.bk-bulk{margin-top:8px}
 .bk-chip{display:inline-block;font-size:12px;font-weight:800;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--cc) 22%,transparent);color:var(--cc)}
 /* титулы */
 .bk-ti{position:relative;overflow:hidden;text-align:center;padding:22px 16px 16px;border-color:color-mix(in srgb,var(--cc) 40%,transparent)}

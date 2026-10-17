@@ -92,11 +92,10 @@ function tabDep(){
     +`<p class="bk-note">С процентами вклад выдаётся после окончания срока. Закрыть раньше можно в любой момент: проценты сгорают, первые ${BANK.cancel.graceMin} минут без штрафа, потом штраф ${BANK.cancel.pct}% от вложенного.</p>`}
 
 function tabUp(){
-  const L=BANK.luck,M=BANK.lots,lf=BS.luck+L.rolls>L.cap,mx=BS.extra_lots+M.step>M.max,bn=L.bulk,br=L.rolls*bn,bc=L.cost*bn,bf=BS.luck+br>L.cap;
+  const L=BANK.luck,M=BANK.lots,lf=BS.luck+L.rolls>L.cap,mx=BS.extra_lots+M.step>M.max;
   return box('#f5b82e',head('🍀','Буст удачи',`Ближайшие ${L.rolls} прокрутов: ${L.best} номера на выбор, достаётся самый дорогой`,'#f5b82e')
    +`<div class="bk-row" style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="tl" style="margin:0">Прокрутов с бустом</span><b>${BS.luck} из ${L.cap}</b></div>${meter(BS.luck,L.cap,20,'#f5b82e')}
-   <button class="btn bk-buy" ${lf||S.usd<L.cost?'disabled':''} data-click="bkLuck" data-arg="1">${lf?'Накоплен максимум':'+'+L.rolls+' прокрутов · '+L.cost+' $'}</button>
-   <button class="btn bk-buy bk-bulk" ${bf||S.usd<bc?'disabled':''} data-click="bkLuck" data-arg="${bn}">${bf?(lf?'Накоплен максимум':'Не влезет +'+br):'+'+br+' прокрутов сразу · '+bc+' $'}</button>`)
+   <button class="btn bk-buy" ${lf||S.usd<L.cost?'disabled':''} data-click="bkLuck">${lf?'Накоплен максимум':'+'+L.rolls+' прокрутов · '+L.cost+' $'}</button>`)
    +box('#4ade80',head('🏪','Слоты рынка',`+${M.step} лотов за покупку на рынке игроков`,'#4ade80')
    +`<div class="bk-row" style="display:flex;justify-content:space-between;margin-bottom:6px"><span class="tl" style="margin:0">Дополнительные слоты</span><b>+${BS.extra_lots} из ${M.max}</b></div>${meter(BS.extra_lots,M.max,M.max/M.step,'#4ade80')}
    <button class="btn bk-buy" ${mx||S.usd<M.cost?'disabled':''} data-click="bkLots">${mx?'Куплено всё':'+'+M.step+' лотов · '+M.cost+' $'}</button>`)}
@@ -135,7 +134,7 @@ const bkTab=a=>{TAB=a;FRESH=true;render(true)};
 const bkXd=a=>{XD=a;FRESH=true;render(true)};
 function bkChip(a){
   TXT=String(a);const el=$('bkAmt');el.value=TXT;haptic('light');bkAmtIn(a,el)}
-const bkCur=a=>{CUR=a;render(true)};
+const bkCur=a=>{if(a!=CUR)TXT='';CUR=a;render(true)};   // сумма сбрасывается вместе с валютой: 100 $ не превращаются в 100 ₽
 const bkDays=a=>{DAYS=+a;render(true)};
 function bkAmtIn(a,el){
   TXT=el.value;
@@ -168,7 +167,7 @@ function bkCancelDlg(a){
     <div class="note ${fee?'bad':'ok'}">${fee?`Вклад открыт больше ${BANK.cancel.graceMin} минут назад: удерживается штраф ${BANK.cancel.pct}% от вложенного, проценты не начисляются.`:`Первые ${BANK.cancel.graceMin} минут штрафа нет: вернётся вся вложенная сумма, но без процентов.`}</div>
     <button class="btn red" data-click="bkCancelOk" data-arg="${d.id}">Закрыть вклад</button><button class="btn ghost" data-click="cm">Оставить</button></div>`)}
 const bkCancelOk=a=>{cm();op(()=>api.bankDepositCancel(+a),r=>{banner('Вклад закрыт','Возвращено '+fmt(r.res.refund)+' '+cur(r.res.cur)+(r.res.fee?', штраф '+fmt(r.res.fee):''));haptic('medium')})};
-const bkLuck=a=>{const k=+a||1;op(()=>api.bankBuyLuck(k),r=>{win('#f5b82e');banner('Буст удачи','+'+BANK.luck.rolls*k+' · всего с бустом: '+r.res)})};
+const bkLuck=()=>op(()=>api.bankBuyLuck(),r=>{win('#f5b82e');banner('Буст удачи','Прокрутов с бустом: '+r.res)});
 const bkLots=()=>op(()=>api.bankBuyLots(),r=>{win('#4ade80');banner('Слоты рынка','Дополнительно +'+r.res+' лотов')});
 async function bkWear(a){try{await api.equipItem('title',a);banner('Титул надет',BANK.items.find(x=>x.id==a).n);render(true)}catch(e){console.error(e);banner('Не получилось','Попробуйте ещё раз')}}
 

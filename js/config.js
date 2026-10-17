@@ -3,7 +3,7 @@ export const COST=3000,START=50000;
 export const RAR=[{n:'Обычный',en:'Common',p:53.81,c:'#9a9aab',m:1},{n:'Необычный',en:'Uncommon',p:37.96,c:'#4ade80',m:11.55},{n:'Редкий',en:'Rare',p:7.98,c:'#5b8cff',m:661.2},{n:'Эпический',en:'Epic',p:.24,c:'#a855f7',m:9955},{n:'Легендарный',en:'Legendary',p:.01,c:'#f5b82e',m:242550},{n:'Мифический',en:'Mythic',p:0,ps:'до 0,005',c:'#ff4d6d',m:1500000}];
 // Типы номеров. k — тип, p — шанс в % (сумма 100), m — множитель цены, c — страны, где тип выпадает (в Беларуси только civil/taxi/police/transit).
 // Должны совпадать с TYPES в supabase/functions/_shared/engine.ts и check в SQL, это сверяет tests/types.test.mjs.
-export const TYPES=[{k:'civil',p:92.86,m:1,n:'Гражданский',c:['RU','BY']},{k:'taxi',p:4,m:24,n:'Такси',c:['RU','BY']},{k:'police',p:1,m:50,n:'Полиция',c:['RU','BY']},{k:'transit',p:2,m:.5,n:'Транзит',c:['RU','BY']},{k:'military',p:.07,m:80,n:'Военный',c:['RU']},{k:'diplomat',p:.06,m:120,n:'Дипломат',c:['RU']},{k:'retro',p:.01,m:200,n:'Ретро',c:['RU']}];
+export const TYPES=[{k:'civil',p:92.86,m:1,n:'Гражданский',c:['RU','BY']},{k:'taxi',p:4,m:24,n:'Такси',c:['RU','BY']},{k:'police',p:1,m:50,n:'Полиция',c:['RU','BY']},{k:'transit',p:2,m:.5,n:'Транзит',c:['RU','BY']},{k:'military',p:.07,m:80,n:'Военный',c:['RU']},{k:'diplomat',p:.06,m:120,n:'Дипломат',c:['RU']},{k:'retro',p:.01,m:200,n:'Ретро',c:['RU']},{k:'blat',p:0,m:150,n:'Блатной',c:['RU']}];   // blat — приз ивента (supabase/event.sql), из генератора не выпадает
 export const NOREG=['military','diplomat','retro'];   // у этих плашек нет блока региона (только отрисовка)
 export const CN={RU:{n:'Россия',cc:'RUS'},BY:{n:'Беларусь',cc:'BY'}};
 export const RU_L='АВЕКМНОРСТУХ',BY_L='ABEIKMHOPCTX';
@@ -14,7 +14,7 @@ light:{n:'Светлая',v:{bg:'#f2f3f7',card:'#ffffff',tx:'#1b1d27',mut:'#6c71
 pink:{n:'Розовая',v:{bg:'#fbeff5',card:'#ffffff',tx:'#3a1c2e',mut:'#94677f',b1:'#ffffff',b2:'#fde4ef',sheet:'#ffffff',m1:'#f08cb9',m2:'#d65b95',ac:'#e0488a',off:'#f0cfe0',pl1:'#ffd6e8',pl2:'#f09bc2'}},
 silver:{n:'Серебро',v:{bg:'#1c1f26',card:'#2a2e38',tx:'#eef1f6',mut:'#9ba3b4',b1:'#353a47',b2:'#2a2e38',sheet:'#2a2e38',m1:'#5d6a85',m2:'#2f3646',ac:'#9fb4de',off:'#444a58',pl1:'#eef0f4',pl2:'#a6adba'}}};
 export const XPV=[5,8,20,100,500,2500];
-export const FL=['Одинаковые цифры','Одинаковые буквы','Зеркальные цифры','Палиндром букв','Круглый номер','Цифры совпадают с регионом','Блатной номер','Малый номер','Гражданский','Такси','Полиция','Транзит','Военный','Дипломат','Ретро'];
+export const FL=['Одинаковые цифры','Одинаковые буквы','Зеркальные цифры','Палиндром букв','Круглый номер','Цифры совпадают с регионом','Блатной номер','Малый номер','Гражданский','Такси','Полиция','Транзит','Военный','Дипломат','Ретро','Блатной'];
 // Автопродажа (supabase/autosell_v2.sql): один режим. cost — цена открытия ($), ceil — варианты потолка цены (0 = без лимита), cls — до какой редкости продаём.
 // autoMatch — то же правило, что в SQL autosell(): клиент им только считает «сколько продастся сейчас».
 export const AUTO={cost:300,ceil:[0,500,5000,50000,500000],cls:['Обычные','До необычных','До редких']};
@@ -40,8 +40,8 @@ export const SLOTS=[['skin','Рамки'],['nick','Ник'],['bg','Фон'],['sh
 export const EQUIP_SLOTS=['skin','title','drop','nick','bg'];   // надеваются; 'show' (витрина) только покупается
 export const SHOWCASE_MAX=3;
 // Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
-export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1},dn_nova:{pal:['#7b2ff7','#ff5fa2','#00e5ff','#ffffff'],flash:'#c4b5fd',star:1}};
-export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};const dt=DONATE.tiers.find(x=>x.id==id);if(dt)return {id:dt.id,n:dt.t,c:dt.c,slot:'title'};const di=DONATE.items.find(x=>x.id==id);if(di)return {...di};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
+export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1},ev_d_dust:{pal:['#b08a5a','#d9b98a','#8c6b3f'],flash:'#d9b98a'},ev_d_siren:{pal:['#d63a3a','#3a6ad6','#ffffff'],flash:'#ffffff'},ev_d_weld:{pal:['#fff3b0','#ffb347','#ff7a1a'],flash:'#ffb347',dir:'up',rad:.8,n:1.2},ev_d_ticket:{pal:['#f4f1e6','#ffe9a8','#d9d4c0'],flash:'#f4f1e6',sq:1,dir:'down',rad:.7},ev_d_smoke:{pal:['#8d8d93','#b4b4ba','#62626a'],flash:'#b4b4ba',big:1,rad:.55,n:.6},ev_d_cones:{pal:['#ef6a1a','#ffffff','#ff8a3a'],flash:'#ef6a1a',sq:1,dir:'up',rad:.9},ev_d_radar:{pal:['#ffffff','#9ad0ff','#2f6bff'],flash:'#ffffff',star:1,rad:1.3},ev_d_salute:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1,rad:1.45,n:1.5}};
+export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};const pt=PATRON.titles.find(x=>x.id==id);if(pt)return {id:pt.id,n:pt.n,c:pt.c,slot:'title'};const ev=EVENT.titles.find(x=>x.id==id);if(ev)return {id:ev.id,n:ev.n,c:ev.c,slot:'title'};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
 
 // Кейсы с машинами. Шансы, цены и выдачу считает ТОЛЬКО сервер (supabase/cases.sql: open_case); здесь данные для показа.
 // Должны совпадать с cases.sql, это сверяет tests/cases.test.mjs.
@@ -64,6 +64,23 @@ export const sellGain=(t,bonus=0)=>Math.floor(t*(SELL_PCT+bonus)/100);   // bonu
 // Аукцион (зеркало констант auction.sql, сверяет tests/auction.test.mjs): fee — % с продавца, lots — лотов на игрока, hours — сроки,
 // stepPct/step — минимальный шаг ставки, snipe — секунд до конца, при ставке в которые конец переносится, extMax — потолок переноса, с
 export const AUCTION={fee:5,min:1000,max:100000000000,lots:5,hours:[1,6,12,24],stepPct:5,step:100,snipe:120,extMax:7200,page:30};
+// ГАИ (gai.sql): константы зеркалят функции в SQL, сверяет tests/gai.test.mjs. g — рост множителя: x(t)=exp(g·t), t в секундах заезда. kmh — км/ч на единицу множителя (x2 = 120 км/ч).
+// Дорожные работы 3D (road.sql): константы зеркалят функции в SQL, сверяет tests/road.test.mjs. rate — ₽ за очко, maxPps — потолок очков в секунду, dayCap — ₽ в сутки.
+export const ROAD={rate:2,maxPps:60,dayCap:150000,minSecs:8,maxAge:1800};
+// Ивент «Полицейский беспредел» (supabase/event.sql). Жетоны 🚧 вместо рублей; цифры зеркалят константы SQL, совпадение проверяет tests/event.test.mjs.
+// titles — только для показа титулов в профиле и рейтинге (остальной каталог приходит с сервера: rpc ev_state); frame/drop/bg/car/trail рисуются по id.
+export const EVENT={scoreDiv:20,maxPps:60,bonusPps:40,maxSpeed:80,minSecs:8,maxAge:1800,dayCap:3000,ptsCap:30000,boostMax:30,
+ chase:{starM:2000,perM:100,maxStars:5},case:{price:350,pityAt:20,forcedMin:3,dupPct:35},
+ modes:{road:'Дорожные работы',chase:'Уйти от полиции'},
+ kinds:{title:'Титулы',frame:'Рамки',drop:'Эффекты',bg:'Фоны',car:'Кузов',trail:'Следы',plate:'Номера',rub:'Рубли',boost:'Расходники'},
+ slotOf:{title:'title',frame:'frame',drop:'drop',bg:'bg',car:'car',trail:'trail'},
+ titles:[{id:'ev_t_patrol',n:'Патрульный',c:'#9aa3b8'},{id:'ev_t_cone',n:'Конусолов',c:'#fb923c'},{id:'ev_t_gai',n:'Знаток ГАИ',c:'#7aa2ff'},{id:'ev_t_runner',n:'Беглец',c:'#4ade80'},{id:'ev_t_ramp',n:'Трамплинщик',c:'#22d3ee'},{id:'ev_t_night',n:'Ночной гонщик',c:'#818cf8'},{id:'ev_t_deal',n:'Договорился',c:'#34d399'},{id:'ev_t_racer',n:'Гонщик без прав',c:'#5b8cff'},{id:'ev_t_drift',n:'Король заноса',c:'#f472b6'},{id:'ev_t_siren',n:'Под мигалками',c:'#60a5fa'},{id:'ev_t_boss',n:'Хозяин трассы',c:'#fbbf24'},{id:'ev_t_chaos',n:'Беспредельщик',c:'#a855f7'},{id:'ev_t_tape',n:'Не пересекать',c:'#facc15'},{id:'ev_t_ghost',n:'Призрак трассы',c:'#c4b5fd'},{id:'ev_t_legend',n:'Легенда погони',c:'#f5b82e'},{id:'ev_t_god',n:'Бог дорожных работ',c:'#ffd166'},{id:'ev_t_king',n:'Неуловимый',c:'#ff4d6d'}]};
+export const chaseStars=d=>Math.min(EVENT.chase.maxStars,1+Math.floor(Math.max(0,d|0)/EVENT.chase.starM));
+export const chaseTokens=d=>{let t=0;for(let k=1;k<=EVENT.chase.maxStars&&d>(k-1)*EVENT.chase.starM;k++){const seg=(k<EVENT.chase.maxStars?Math.min(d,k*EVENT.chase.starM):d)-(k-1)*EVENT.chase.starM;t+=Math.floor(seg/EVENT.chase.perM)*k}return t};
+// Откуда брать three.js r128 для игры: свой файл (если положите в js/vendor/), затем CDN. Игра и её код лежат в js/vendor/roadworks.js
+export const THREE_SRC=['js/vendor/three.min.js','https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js','https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js'];
+export const GAI={bet:8,pause:3,g:0.09,edge:4,cap:1000,min:100,max:1000000000,minAuto:1.01,kmh:60,posts:[2,5,10,25,100],slots:[1,2]};
+export const gaiX=t=>t>0?Math.floor(Math.exp(GAI.g*t)*100)/100:1;
 export const auctionFee=ask=>Math.floor(ask*AUCTION.fee/100);
 export const auctionNext=(cur,hasBid)=>hasBid?cur+Math.max(Math.ceil(cur*AUCTION.stepPct/100),AUCTION.step):cur;   // минимальная следующая ставка
 // Штраф за досрочное закрытие вклада (для показа; считает сервер): первые graceMin минут нет, потом pct% от вложенного, вниз
@@ -71,11 +88,11 @@ export const cancelFee=(amount,startMs,nowMs)=>nowMs-startMs>=BANK.cancel.graceM
 export const marketFee=ask=>Math.floor(ask*MARKET.fee/100);                // сколько удерживает рынок (продавец получает ask минус это)
 
 // Банк. Курсы, проценты, цены и лимиты считает ТОЛЬКО сервер (supabase/bank.sql); здесь данные для показа.
-// Должны совпадать с bank.sql, это сверяет tests/bank.test.mjs. luck.bulk — сколько паков по rolls берёт кнопка «купить сразу» (10 паков = 100 прокрутов). Титулы из items выходят ограниченным тиражом (max — всего штук на сервер, сколько продано отдаёт bank_state) и не входят в SHOP (их нельзя купить за рубли), но находятся через itemOf.
+// Должны совпадать с bank.sql, это сверяет tests/bank.test.mjs. Титулы из items выходят ограниченным тиражом (max — всего штук на сервер, сколько продано отдаёт bank_state) и не входят в SHOP (их нельзя купить за рубли), но находятся через itemOf.
 export const BANK={usdBuy:250000,usdSell:150000,exMax:100000,maxDep:3,
  cancel:{pct:10,graceMin:5},   // досрочное закрытие вклада: штраф % от вложенного, первые graceMin минут без штрафа (зеркало bank_deposit_cancel)
  depRub:{min:100000,max:1e10,pct:{1:2,3:8,7:20}},depUsd:{min:10,max:1000000,pct:{1:4,3:12,7:30}},
- luck:{cost:15,rolls:10,cap:5000,best:3,bulk:10},lots:{cost:40,step:5,max:20},
+ luck:{cost:15,rolls:10,cap:100,best:3},lots:{cost:40,step:5,max:20},
  cases:[
   {id:'vip',n:'VIP',usd:25,w:[0,10,50,40,0],col:'#4ade80',d:'Редкие и эпические машины'},
   {id:'royal',n:'Королевский',usd:120,w:[0,0,20,60,20],col:'#f5b82e',d:'Эпики почти всегда, 20% на легендарную'}],
@@ -125,37 +142,7 @@ export const LAB={
  titles:[{id:'tester',n:'Тестировщик',c:'#22d3ee'},{id:'bh2',n:'Охотник за багами',c:'#4ade80'},{id:'bh3',n:'Профи багов',c:'#f5b82e'},{id:'bh4',n:'Легенда багов',c:'#f43f5e'}],
  skin:{id:'matrix',n:'Матрица'},
  cats:[['gen','Генерация и номера'],['shop','Магазин, кейсы, банк'],['market','Рынок, аукцион, обмены'],['ui','Интерфейс и прокрутка'],['other','Другое']]};
+// Титулы за поддержку проекта (Спонсор, Меценат) (supabase/patron.sql). Не продаётся: его выдаёт владелец вручную (supabase/admin/grant_patron.sql).
+// id и слот должны совпадать с patron.sql, это сверяет tests/patron.test.mjs.
+export const PATRON={titles:[{id:'sponsor',n:'Спонсор',c:'#2dd4bf',d:'Выдаётся тем, кто оплатил хостинг проекта'},{id:'patron',n:'Меценат',c:'#ff4fa3',d:'Выдаётся тем, кто поддержал проект'}]};
 export const TRIPLE={usd:30,hours:24,max:3};
-
-// Донат-шоп и «Поддержать проект» (Telegram Stars ⭐). Цены, составы и пороги выдаёт ТОЛЬКО сервер (supabase/donate.sql);
-// здесь данные для показа. Совпадение с donate.sql сверяет tests/donate.test.mjs.
-// k — вкладка, st — цена в ⭐, g — что выдаётся (usd, rub, luck, pass_days, items), x2 — первая покупка даёт вдвое больше валюты, max — сколько раз можно купить.
-export const DONATE={
- tip:{min:10,max:10000,amounts:[25,50,100,250,500,1000]},
- // Именной номер: любой текст такой длины (зеркало NAMED_MIN и NAMED_MAX в supabase/functions/_shared/moderation.ts)
- named:{min:2,max:10},
- tabs:[['named','Номер'],['boost','Бусты'],['bundle','Наборы'],['item','Стиль']],
- // Роли (титулы благодарности): выдаются автоматически за сумму ⭐ и вручную через grant_role (donate.sql). id patron и sponsor совпадают с уже выданными в базе
- tiers:[{n:1,need:100,id:'sup1',t:'Друг проекта',c:'#4ade80'},{n:2,need:500,id:'patron',t:'Меценат',c:'#ec4899'},{n:3,need:1000,id:'sponsor',t:'Спонсор',c:'#2dd4bf'},{n:4,need:3000,id:'sup3',t:'Покровитель',c:'#a855f7'},{n:5,need:10000,id:'sup4',t:'Легенда проекта',c:'#f5b82e'}],
- packs:[
-  {id:'named',k:'named',ic:'🪪',t:'Именной номер',st:149,g:{},max:3,d:'Любой текст на плашке: имя, ник, слово. Навсегда в вашей коллекции'},
-  {id:'pass7',k:'boost',ic:'🎟️',t:'Тройной пасс на 7 дней',st:90,g:{pass_days:7},d:'Каждая прокрутка даёт три номера на выбор. Время добавляется к текущему пассу'},
-  {id:'luck2x',k:'boost',ic:'🍀',t:'Удача ×2 навсегда',st:399,g:{luck2:1},max:1,d:'Шанс редких номеров и типов (такси, полиция, военные, дипломаты, ретро) вдвое выше на каждой прокрутке. Навсегда, один раз на игрока'},
-  {id:'starter',k:'bundle',ic:'🎁',t:'Стартовый набор',st:49,g:{pass_days:3,luck:20},max:1,d:'Один раз на игрока'},
-  {id:'founder',k:'bundle',ic:'👑',t:'Набор Основателя',st:349,g:{pass_days:7,luck:50,items:['dn_obsidian','dn_prism','ndn_plasma','ndn_void','bgdn_nebula','dn_nova']},max:1,d:'Вся эксклюзивная косметика со скидкой 33% и бусты. Один раз на игрока'},
-  {id:'it_obsidian',k:'item',ic:'🖤',t:'Рамка «Обсидиан»',st:99,g:{items:['dn_obsidian']},max:1},
-  {id:'it_prism',k:'item',ic:'🔮',t:'Рамка «Призма»',st:149,g:{items:['dn_prism']},max:1},
-  {id:'it_plasma',k:'item',ic:'🟣',t:'Ник «Плазма»',st:49,g:{items:['ndn_plasma']},max:1},
-  {id:'it_void',k:'item',ic:'🌌',t:'Ник «Бездна»',st:79,g:{items:['ndn_void']},max:1},
-  {id:'it_nebula',k:'item',ic:'🪐',t:'Фон «Туманность»',st:79,g:{items:['bgdn_nebula']},max:1},
-  {id:'it_nova',k:'item',ic:'💥',t:'Эффект «Сверхновая»',st:69,g:{items:['dn_nova']},max:1}],
- // Эксклюзивная косметика: продаётся только за ⭐, надевается через общие слоты (equip_item). Вид — css/donate.css
- items:[
-  {id:'dn_obsidian',slot:'skin',n:'Обсидиан',d:'Чёрное стекло с алым свечением'},
-  {id:'dn_prism',slot:'skin',n:'Призма',d:'Переливающаяся рамка, меняющая цвет'},
-  {id:'ndn_plasma',slot:'nick',n:'Плазма',d:'Фиолетово-розовый перелив с бирюзой'},
-  {id:'ndn_void',slot:'nick',n:'Бездна',d:'Тёмное фиолетовое свечение'},
-  {id:'bgdn_nebula',slot:'bg',n:'Туманность',d:'Космические облака на главном экране'},
-  {id:'dn_nova',slot:'drop',n:'Сверхновая',d:'Звёздные частицы фиолетового, розового и бирюзового'}]};
-export const donateTier=total=>DONATE.tiers.filter(x=>total>=x.need).pop()||null;
-export const donateVal=(p,x2)=>{const m=x2?2:1,g=p.g;return {usd:(g.usd||0)*m,rub:(g.rub||0)*m,luck:g.luck||0,luck2:g.luck2||0,days:g.pass_days||0,items:g.items||[]}};

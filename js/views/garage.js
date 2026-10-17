@@ -14,6 +14,11 @@ const G={car:CARS[0].id,on:{}};
 let F='all';   // фильтр списка по типу номера, на устройстве не сохраняется
 let Z=false;   // «крупно»: приближение к номеру, на устройстве не сохраняется
 try{Object.assign(G,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+// Выбранная в гараже машина и номер на ней (для ГАИ): первая из имеющихся, если выбранной нет
+export function garageCar(){
+  const mine=CARS.filter(c=>S.cars.includes(c.id)),car=mine.find(c=>c.id==G.car)||mine[0];
+  if(!car)return null;
+  return {car,plate:S.col.concat(S.safe).find(x=>x.id==G.on[car.id])||null}}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(G))}catch(e){}};
 
 export function drawGarage(){
@@ -29,8 +34,8 @@ export function drawGarage(){
   ${all.length?`<div class="gpick">${all.slice(0,MAXP).map(x=>`<div class="gp${p&&x.id==p.id?' a':''}" data-click="garPlate" data-arg="${x.id}"><div class="pfit"><div class="pin">${plateHTML(x)}</div></div><div class="gpr">${fmt(x.price)} ₽</div></div>`).join('')}</div>`:`<div class="sub"><span>${every.length?'Таких номеров нет':'Сгенерируйте номера, и их можно будет повесить на машину.'}</span></div>`}`}
 // Номер рисуется в полный размер (как в игре) и целиком уменьшается, чтобы скругления и рамка не искажались
 const BASE=520;
-function fit(){document.querySelectorAll('#garC .pfit').forEach(w=>{const i=w.firstElementChild,k=w.clientWidth/BASE,sy=+w.dataset.sy||1;i.style.transform='scale('+k+','+k*sy+')';w.style.height=i.offsetHeight*k*sy+'px'})}
-window.addEventListener('resize',fit);
+export function fit(root='#garC'){document.querySelectorAll(root+' .pfit').forEach(w=>{const i=w.firstElementChild,k=w.clientWidth/BASE,sy=+w.dataset.sy||1;i.style.transform='scale('+k+','+k*sy+')';w.style.height=i.offsetHeight*k*sy+'px'})}
+window.addEventListener('resize',()=>fit());
 // Выбранная машина всегда по центру ленты, сколько бы их ни было
 function centerCar(){const a=document.querySelector('#garC .gcs .a');if(a){const c=a.parentNode;c.scrollLeft=a.offsetLeft-(c.clientWidth-a.offsetWidth)/2}}
 DRAW.garage=()=>{drawGarage();fit();centerCar()};   // fit/centerCar при пустом гараже ничего не находят и ничего не делают

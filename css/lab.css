@@ -63,6 +63,6 @@
 .lb-empty div{font-size:40px;margin-bottom:8px}.lb-empty b{display:block;font-size:17px}.lb-empty span{display:block;color:var(--mut);font-size:14px;margin-top:4px}
 html .plate.sk-matrix{border-color:#02100a;filter:drop-shadow(0 0 5px #00ff7a88)}
 html .plate.sk-matrix::before{border-color:#00ff7a;box-shadow:inset 0 0 8px #00ff7a55}
-html .plate.sk-matrix:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4){background:repeating-linear-gradient(0deg,#00ff7a14 0 1px,#0000 1px 3px),linear-gradient(180deg,#04150d,#010805)}
-html .plate.sk-matrix:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pm,
-html .plate.sk-matrix:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.rz3):not(.rz4) .pr{color:#3dff9a;text-shadow:0 0 6px #00ff7acc;border-color:#00ff7a}
+html .plate.sk-matrix:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.rz3):not(.rz4):not(.rz5){background:repeating-linear-gradient(0deg,#00ff7a14 0 1px,#0000 1px 3px),linear-gradient(180deg,#04150d,#010805)}
+html .plate.sk-matrix:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.rz3):not(.rz4):not(.rz5) .pm,
+html .plate.sk-matrix:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.rz3):not(.rz4):not(.rz5) .pr{color:#3dff9a;text-shadow:0 0 6px #00ff7acc;border-color:#00ff7a}

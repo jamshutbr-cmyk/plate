@@ -11,7 +11,7 @@ import {$, esc, fmt} from '../util.js';
 // Обмен номерами 1 на 1. Всё решает сервер (функции propose_trade / respond_trade / cancel_trade в trades.sql):
 // клиент только показывает списки и отправляет выбор.
 let TR=null,TAT=0,TLOAD=false,TERR=false;     // мои активные обмены (входящие и исходящие)
-let TID=null,TNICK='',TFROM='pub',TW=null,WANT=null,GIVE=null;   // черновик нового обмена
+let TID=null,TNICK='',TW=null,WANT=null,GIVE=null;   // черновик нового обмена
 
 const row=(p,click='',sel=false)=>`<div class="row2 r${p.cls}${sel?' sel':''}"${click?` data-click="${click}" data-arg="${p.id}"`:''}>${plateHTML(p)}<div class="ri"><span>${CN[p.country].n} · ${TYPES.find(t=>t.k==p.type).n}</span>${dots(p.cls)}<b>${fmt(p.price)} ₽</b></div></div>`;
 const msg=e=>{const m=(e&&e.message)||'';
@@ -58,7 +58,7 @@ export function drawTrades(){
  else{
   h=(TR.in.length?`<h3 class="tsec">Вам предлагают</h3>`+TR.in.map(t=>`<div class="card"><div class="tl">${esc(t.nick||'Игрок')} предлагает обмен</div><div class="tl" style="margin-top:8px">Вы получите</div>${row(t.give)}<div class="tl">Вы отдадите</div>${row(t.want)}<div class="row" style="margin-top:10px"><button class="btn" data-click="trOk" data-arg="${t.id}">Принять</button><button class="btn red" data-click="trNo" data-arg="${t.id}">Отклонить</button></div></div>`).join(''):'')
   +(TR.out.length?`<h3 class="tsec">Вы предложили</h3>`+TR.out.map(t=>`<div class="card"><div class="tl">Игроку ${esc(t.nick||'Игрок')}</div><div class="tl" style="margin-top:8px">Вы отдаёте</div>${row(t.give)}<div class="tl">Вы получите</div>${row(t.want)}<button class="btn red" style="width:100%;margin-top:10px" data-click="trCancel" data-arg="${t.id}">Отозвать</button></div>`).join(''):'')
-  ||`<p class="tl" style="text-align:center">Нет активных обменов.<br>Найдите игрока по нику выше или откройте его профиль в Рейтинге.</p>`;
+  ||`<p class="tl" style="text-align:center">Нет активных обменов.<br>Откройте профиль игрока в Рейтинге и нажмите «Предложить обмен».</p>`;
  }
  $('trC').innerHTML=h+`<button class="btn" style="width:100%;margin-top:10px" data-click="trRefresh">Обновить</button>`}
 
@@ -80,12 +80,12 @@ async function trCancel(id){
  TAT=0;render(true)}
 
 // Новый обмен: выбираем номер игрока и свой номер
-export async function startTrade(id,nick,from='pub'){
- TID=id;TNICK=nick;TFROM=from;TW=null;WANT=GIVE=null;go('tnew');
+export async function startTrade(id,nick){
+ TID=id;TNICK=nick;TW=null;WANT=GIVE=null;go('tnew');
  try{TW=await rpc('get_player_plates',{pid:id})}catch(e){console.error(e);TW=[]}
  render(true)}
 export function drawTnew(){
- const mine=S.col.filter(p=>!p.bound).sort((a,b)=>b.price-a.price),w=TW&&TW.find(p=>p.id==WANT),g=mine.find(p=>p.id==GIVE);
+ const mine=S.col.slice().sort((a,b)=>b.price-a.price),w=TW&&TW.find(p=>p.id==WANT),g=mine.find(p=>p.id==GIVE);
  $('tnC').innerHTML=`<h3 class="tsec">Что хотите получить у ${esc(TNICK)}</h3>`+(TW?(TW.length?TW.map(p=>row(p,'pickWant',p.id==WANT)).join(''):'<p class="tl">У игрока нет номеров для обмена</p>'):'<p class="tl">Загрузка…</p>')
   +`<h3 class="tsec">Что отдадите</h3>`+(mine.length?mine.map(p=>row(p,'pickGive',p.id==GIVE)).join(''):'<p class="tl">В вашей коллекции нет номеров (сейф в обмене не участвует)</p>');
  $('tnBar').innerHTML=`<div style="flex:1;font-size:14px;color:var(--mut)">${w&&g?`Отдаёте ${fmt(g.price)} ₽ · получаете ${fmt(w.price)} ₽`:'Выберите оба номера'}</div><button class="btn" style="flex:none;width:50%" ${w&&g?'':'disabled'} data-click="sendTrade">Предложить</button>`}
@@ -94,29 +94,6 @@ async function sendTrade(){
   sb.functions.invoke('notify-trade',{body:{trade_id:tid}}).catch(()=>{})}   // пуш в Telegram получателю; если не получится, не страшно
  catch(e){console.error(e);banner('Ошибка',msg(e))}}
 
-// Поиск игрока по нику: поле и список результатов лежат вне #trC (он перерисовывается каждые 10 секунд и сбил бы ввод и фокус)
-let SQ='',SSEQ=0,ST=null;
-// ник с подсветкой найденной части (регистр не важен)
-const hl=(n,q)=>{const i=q?n.toLowerCase().indexOf(q.toLowerCase()):-1;
- return i<0?esc(n):esc(n.slice(0,i))+'<mark>'+esc(n.slice(i,i+q.length))+'</mark>'+esc(n.slice(i+q.length))};
-const srow=r=>{const nm=r.nick||'Игрок';
- return `<div class="trp" data-click="trPick" data-arg="${r.id}"><div class="pav trpa">${esc([...nm][0].toUpperCase())}</div><div class="trpn"><b>${hl(nm,SQ)}</b><span class="tl">Уровень ${r.lvl}</span></div><i class="trpg">⇄</i></div>`};
-let SRES=[];
-function drawSearch(msg){
- $('trSR').innerHTML=msg?`<p class="tl trsm">${msg}</p>`:SRES.map(srow).join('')}
-function trSearch(_,el){
- SQ=(el.value||'').trim();clearTimeout(ST);const n=++SSEQ;
- if(SQ.length<2){SRES=[];drawSearch(SQ.length?'Введите минимум 2 символа':'');return}
- drawSearch('Поиск…');
- ST=setTimeout(async()=>{
-  try{const r=await rpc('search_players',{p_q:SQ});if(n!=SSEQ)return;   // пришёл ответ на устаревший запрос: игнорируем
-   SRES=r||[];drawSearch(SRES.length?'':'Никого не нашли')}
-  catch(e){console.error(e);if(n==SSEQ){SRES=[];drawSearch('Поиск не удался, попробуйте ещё раз')}}},300)}
-function trPick(id){
- const r=SRES.find(x=>x.id==id);if(!r)return;
- const q=$('trQ');if(q)q.blur();
- startTrade(r.id,r.nick||'Игрок','trades')}
-
 DRAW.trades=drawTrades;
 DRAW.tnew=drawTnew;
-on({trSearch,trPick,tnBack:()=>go(TFROM),trOk,trYes,trNo,trCancel,trRefresh:()=>{TAT=0;render(true)},pickWant:a=>{WANT=+a;render(true)},pickGive:a=>{GIVE=+a;render(true)},sendTrade});
+on({trOk,trYes,trNo,trCancel,trRefresh:()=>{TAT=0;render(true)},pickWant:a=>{WANT=+a;render(true)},pickGive:a=>{GIVE=+a;render(true)},sendTrade});

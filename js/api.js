@@ -1,15 +1,14 @@
 import {AUTO, CASES, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
 import {genCost, trackSession} from './engine.js';
-import {loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
+import {handleBan, loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
 import {S, SESS, applyPlayer, flags} from './state.js';
 import {fmt} from './util.js';
-import {TG} from './platform.js';
 
 // Слой действий: ВСЁ, что меняет состояние игры, живёт здесь. Каждое действие — запрос к серверу (async),
 // после ответа обновляется кэш S. Сетевые и серверные ошибки бросаются как исключения: их ловит main.js.
 // Бизнес-отказы (не хватает денег и т.п.) возвращаются значением, как раньше.
 const REB_ERR=[['level too low','level'],['has listings','listings'],['has deposits','deposits'],['not enough stars','stars'],['max','max']];
-async function errCode(er){try{const j=await er.context.json();return j.error||j.code||j.message||'server'}catch(_){return (er&&er.message)||'network'}}
+async function errCode(er){try{const j=await er.context.json();if(j.error==='banned')handleBan({reason:j.reason,until:j.until});return j.error||j.code||j.message||'server'}catch(_){return (er&&er.message)||'network'}}
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
 let setPend={},setT;
 // Банковская операция: ошибку сервера превращаем в {err:'код'}, успех — в {ok:1,res}, затем сверяем кэш игрока
@@ -31,24 +30,6 @@ async function clanCall(f,money){
  if(money)await loadPlayer();return {ok:1,res}}
 
 export const api={
- // Донат (supabase/donate.sql, функции donate-invoice и tg-webhook). Деньги принимает Telegram: клиент только открывает счёт и ждёт, пока сервер зачислит покупку.
- async donateState(){return rpc('donate_state')},
- async donateWall(){return rpc('donate_wall')},
- async donatePublic(v){await rpc('donate_set_public',{v});S.dpub=!!v;return v},
- async namedQuote(text,reg){const {data,error}=await sb.functions.invoke('named-plate',{body:{text,reg}});if(error)throw error;return data},
- async donateBuy(pack,amount,plate){
-  if(!TG||!TG.openInvoice)return {err:'unsupported'};
-  const {data,error}=await sb.functions.invoke('donate-invoice',{body:{pack,amount,...(plate||{})}});
-  if(error)return {err:await errCode(error)};
-  const status=await new Promise(res=>{try{TG.openInvoice(data.link,res)}catch(e){res('failed')}});
-  if(status=='cancelled')return {err:'cancelled'};
-  if(status!='paid'&&status!='pending')return {err:'failed'};
-  // Зачисляет вебхук, обычно за секунду-две: ждём до ~30 с
-  for(let i=0;i<16;i++){
-   const r=await rpc('donate_order_status',{p_order:data.order}).catch(()=>null);
-   if(r&&r.status=='paid'){await loadPlayer();if(pack=='named')await loadPlates();return {ok:1,res:r.result}}
-   await new Promise(f=>setTimeout(f,i<4?1000:2000))}
-  await loadPlayer().catch(()=>{});return {wait:1}},
  // Тройная прокрутка (supabase/triple_roll.sql): покупка пасса, бросок пакета, решение по номерам
  async buyPass(){const {error}=await sb.functions.invoke('buy-pass');if(error){const err=await errCode(error);await loadAll().catch(()=>{});return {err}}await loadAll();return {ok:1}},
  // При любой ошибке (в т.ч. обрыв связи, когда сервер мог успеть выполнить запрос) сверяем кэш с сервером: баланс и пакет не должны оставаться устаревшими
@@ -62,6 +43,7 @@ export const api={
   if(error){
    let e=null;try{e=await error.context.json()}catch(_){}
    if(e&&(e.error=='full'||e.error=='money')){await loadAll();return null}   // кэш разошёлся с сервером
+   if(e&&e.error=='banned'){handleBan({reason:e.reason,until:e.until});return null}
    throw error}
   const p=data.plate,pl=data.player;
   S.col.push(p);S.bal=+pl.balance;S.usd=pl.usd;S.xp=pl.xp;S.lvl=pl.lvl;S.stats=pl.stats;S.seen=pl.seen;
@@ -122,7 +104,7 @@ export const api={
  async bankDepositOpen(cur,amount,days){return await bankCall(()=>rpc('bank_deposit_open',{p_cur:cur,p_amount:amount,p_days:days}))},
  async bankDepositClaim(id){return await bankCall(()=>rpc('bank_deposit_claim',{p_id:id}))},
  async bankDepositCancel(id){return await bankCall(()=>rpc('bank_deposit_cancel',{p_id:id}))},
- async bankBuyLuck(packs=1){return await bankCall(()=>rpc('bank_buy_luck',{p_packs:packs}))},
+ async bankBuyLuck(){return await bankCall(()=>rpc('bank_buy_luck'))},
  async bankBuyLots(){return await bankCall(()=>rpc('bank_buy_lots'))},
  async bankBuyItem(id){return await bankCall(()=>rpc('bank_buy_item',{p_item:id}))},
  async openCaseUsd(id){
@@ -189,6 +171,25 @@ export const api={
   if(r.ended)return {err:'ended'};
   return {ok:1,bid:+r.bid,ends:+r.ends_at,extended:!!r.extended}},
  async auctionAck(upto){await rpc('auction_ack',{p_upto:upto})},
+ // Ивент «Полицейский беспредел» (event.sql): жетоны, магазин, карта, задания, кейс. Всё считает сервер, клиент только показывает ответ.
+ // Бизнес-отказы приходят как {err:'...'}: season, tokens (+need), owned, limit, day_limit, time, full, item, progress, claimed, pts, run, cheat.
+ async evState(){return await rpc('ev_state')},
+ async evStart(mode){return await rpc('ev_start',{p_mode:mode})},
+ async evFinish(run,score,dist,stats){return await rpc('ev_finish',{p_run:run,p_score:Math.floor(score)||0,p_dist:Math.floor(dist)||0,p_stats:stats||{}})},
+ async evBuy(id){const r=await rpc('ev_buy',{p_item:id});if(r&&r.ok)await loadPlayer();return r},
+ async evEquip(slot,id){const r=await rpc('ev_equip',{p_slot:slot,p_item:id||''});await loadPlayer();return r},
+ async evPassClaim(l){const r=await rpc('ev_pass_claim',{p_level:l});if(r&&r.ok)await loadPlayer();return r},
+ async evQuestClaim(id){return await rpc('ev_quest_claim',{p_quest:id})},
+ async evCase(){return await rpc('ev_case_open')},
+ async evTop(kind){return await rpc('ev_top',{p_kind:kind})},
+ // ГАИ (gai.sql): деньги и множитель считает сервер. Отказы по правилам возвращаются как {err:'код'}, баланс берём из ответа
+ async gaiBet(slot,amount,auto){
+  let r;
+  try{r=await rpc('gai_bet',{p_slot:slot,p_amount:amount,p_auto:auto||null})}
+  catch(e){if(/bad (amount|auto)/.test((e&&e.message)||''))return {err:'bad'};throw e}
+  if(r.balance!=null)S.bal=+r.balance;return r},
+ async gaiCancel(slot){const r=await rpc('gai_cancel',{p_slot:slot});if(r.balance!=null)S.bal=+r.balance;return r},
+ async gaiCashout(slot){const r=await rpc('gai_cashout',{p_slot:slot});if(r.balance!=null)S.bal=+r.balance;return r},
  // Кланы (clans.sql): правила, цены и права проверяет сервер. Отказы возвращаются как {err:'код'}; money: после действия сверить баланс
  // Свой номер за рубли: Edge Function custom-plate (supabase/functions/custom-plate): quote — расчёт цены, buy — покупка
  async customQuote(letters,digits,reg){const {data,error}=await sb.functions.invoke('custom-plate',{body:{action:'quote',letters,digits,reg}});if(error)throw error;return data},

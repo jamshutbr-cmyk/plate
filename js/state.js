@@ -2,7 +2,7 @@ import {START} from './config.js';
 
 // Состояние игрока. Один объект S, который меняется «на месте» (его нельзя переприсваивать).
 // Это КЭШ данных с сервера: источник правды — Supabase. Локально ничего не сохраняется.
-export function fresh(){return {pass:0,win:null,pend:[],mul:1,since:Date.now(),nick:'',bal:START,usd:0,col:[],safe:[],country:'RU',reg:'',seen:[],capC:100,capS:5,xp:0,lvl:1,theme:'dark',vol:100,vib:true,reel:true,fx:0,mute:false,music:false,dl:0,ds:0,rs:0,owned:[],cars:[],equip:{},showcase:[],rb:0,don:0,dpub:true,stars:0,perks:{sell:0,cash:0,usd:0},stats:{n:0,best:0,cls:[0,0,0,0,0],f:{}},as:{lvl:0,on:true,cls:0,sp:false,ceil:0,low:false}}}
+export function fresh(){return {pass:0,win:null,pend:[],mul:1,since:Date.now(),nick:'',bal:START,usd:0,col:[],safe:[],country:'RU',reg:'',seen:[],capC:100,capS:5,xp:0,lvl:1,theme:'dark',vol:100,vib:true,reel:true,fx:0,mute:false,music:false,dl:0,ds:0,rs:0,owned:[],cars:[],equip:{},showcase:[],rb:0,stars:0,perks:{sell:0,cash:0,usd:0},stats:{n:0,best:0,cls:[0,0,0,0,0,0],f:{}},as:{lvl:0,on:true,cls:0,sp:false,ceil:0,low:false}}}
 export const S=fresh();
 export const SESS={n:0,best:0,cls:[0,0,0,0,0,0],f:{}};   // статистика «за сессию», живёт только в памяти
 export const flags={lvup:0};   // одноразовые флаги интерфейса (например «новый уровень»)
@@ -12,13 +12,13 @@ const ms=t=>t?Date.parse(t):0;
 export function playerToState(r){
   const d=fresh(),st=r.settings||{};
   return {since:ms(r.created_at)||Date.now(),nick:r.nick||'',bal:+r.balance,usd:r.usd,xp:r.xp,lvl:r.lvl,capC:r.cap_c,capS:r.cap_s,
-    dl:ms(r.daily_last),ds:r.daily_streak,rs:ms(r.rescue_last),country:r.country,reg:r.reg||'',seen:r.seen||[],owned:r.owned||[],tester:!!r.tester,cars:r.cars&&r.cars.length?r.cars:[],equip:r.equip||{},showcase:r.showcase||[],rb:r.rebirths||0,don:r.donated||0,dpub:r.donate_public!==false,stars:r.stars||0,perks:Object.assign({sell:0,cash:0,usd:0},r.perks),
+    dl:ms(r.daily_last),ds:r.daily_streak,rs:ms(r.rescue_last),country:r.country,reg:r.reg||'',seen:r.seen||[],owned:r.owned||[],tester:!!r.tester,cars:r.cars&&r.cars.length?r.cars:[],equip:r.equip||{},showcase:r.showcase||[],rb:r.rebirths||0,stars:r.stars||0,perks:Object.assign({sell:0,cash:0,usd:0},r.perks),
     stats:normStats(Object.assign(d.stats,r.stats)),as:Object.assign(d.as,r.autosell),
     theme:st.theme??d.theme,vol:st.vol??d.vol,vib:st.vib??d.vib,reel:st.reel??d.reel,fx:st.fx??d.fx,mute:st.mute??d.mute,music:st.music??d.music}}
 // Строка таблицы plates → номер в формате клиента
 // У старых игроков на сервере cls из 5 элементов (до первого выпадения после обновления): добиваем нулями до 6
 export function normStats(st){const c=Array.isArray(st.cls)?st.cls.slice():[];while(c.length<6)c.push(0);st.cls=c;return st}
-export function plateFromRow(r){return {id:r.id,country:r.country,type:r.type,main:r.main,reg:r.reg,rn:r.region_name,bound:!!r.bound,cls:r.cls,mu:r.mu,price:+r.price,ts:ms(r.created_at)}}
+export function plateFromRow(r){return {id:r.id,country:r.country,type:r.type,main:r.main,reg:r.reg,rn:r.region_name,cls:r.cls,mu:r.mu,price:+r.price,ts:ms(r.created_at)}}
 export function applyPlayer(r){Object.assign(S,playerToState(r))}
 // Тройная прокрутка: пасс (мс до конца), ближайшее окно продажи, пакет номеров, ждущих решения
 export function applyTriple(pass,win,pend){S.pass=pass?Date.parse(pass.expires_at):0;S.win=win?{a:Date.parse(win.starts_at),b:Date.parse(win.ends_at)}:null;S.pend=(pend||[]).map(r=>({...r.plate,id:r.id,price:+r.price,ts:Date.parse(r.created_at)}));if(!S.pend.length&&S.mul>1&&!S.pass)S.mul=1}

@@ -1,0 +1,11 @@
+/* Дорожные работы 3D: экран целиком отдан игре (её собственные стили подключаются при запуске), здесь только рамка, нижняя панель и плашка награды */
+#v-road{padding:0;height:100vh;height:100dvh;min-height:0;background:#0b0907}
+#roadC{position:relative;flex:1;min-height:0}
+#roadC .rw{position:absolute;inset:0;width:auto;height:auto}
+.rd-load{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;color:#ffe3c2;font-size:17px}
+.rd-load .btn{flex:none;padding:12px 26px}
+#roadBar{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;gap:10px;padding:10px 16px max(14px,env(safe-area-inset-bottom));justify-content:center}
+#roadBar .btn{flex:0 1 190px;padding:12px 10px;font-size:15px;background:#1d1713;color:#ffe3c2;border:1px solid #ffffff22}
+#roadRes{position:absolute;left:16px;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:5;display:none;flex-direction:column;align-items:center;gap:2px;padding:12px;border-radius:16px;background:#1d1713ee;border:1px solid #ffffff22;color:#ffe3c2;text-align:center}
+#roadRes.on{display:flex}
+#roadRes b{font-size:24px;color:#ffd54a}#roadRes span{font-size:13px;opacity:.75}

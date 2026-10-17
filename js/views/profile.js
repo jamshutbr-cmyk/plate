@@ -24,6 +24,6 @@ export function drawProfile(){
  <div class="card"><h3>Хранилище</h3><div class="fr"><span>Коллекция</span><b>${S.col.length} / ${S.capC}</b></div><div class="fr"><span>Сейф</span><b>${S.safe.length} / ${S.capS}</b></div><div class="fr"><span>Общая стоимость</span><b>${fmt(val)} ₽</b></div></div>
  ${showcaseCard()}
  ${top?`<div class="card"><h3>Самый дорогой сейчас<span class="tl">${fmt(top.price)} ₽</span></h3><div class="tp">${plateHTML(top)}</div></div>`:''}
- <div class="card"><h3>Редкости</h3><div class="bars" style="margin:6px 0 0">${RAR.map((R,i)=>`<span>${R.n}</span><div class="pb" style="background:${R.c}33"><i style="width:${(st.cls[i]||0)/mx*100}%;background:${R.c}"></i></div><span class="tl" style="text-align:right">${(st.cls[i]||0)}</span>`).join('')}</div></div>`}
+ <div class="card"><h3>Редкости</h3><div class="bars" style="margin:6px 0 0">${RAR.map((R,i)=>`<span>${R.n}</span><div class="pb" style="background:${R.c}33"><i style="width:${(st.cls[i]||0)/mx*100}%;background:${R.c}"></i></div><span class="tl" style="text-align:right">${st.cls[i]||0}</span>`).join('')}</div></div>`}
 DRAW.profile=drawProfile;
 on({nickDlg,saveNick});

@@ -30,7 +30,7 @@ js/
   api.js              ДЕЙСТВИЯ игрока: всё, что меняет состояние, запрос к серверу (async)
   router.js           go(), render(), реестр экранов DRAW
   ui/                 плашка номера, эффекты, модалки, тема, состояние списка, actions.js (события)
-  views/              по файлу на экран: main, list, catalog, upgrades, stats, theme, settings, profile, gen, album, achievements, shop, cases (кейсы с машинами), garage
+  views/              по файлу на экран: main, list, catalog, upgrades, stats, theme, settings, profile, gen, album, achievements, shop, cases (кейсы с машинами), garage, gai (ГАИ: общий заезд)
 supabase/
   schema.sql          таблицы, RLS, SQL-функции;  seed_regions.sql — регионы;  shop.sql — магазин
   functions/          tg-auth (вход), generate (выдача номера), _shared/engine.ts (ПРАВИЛА игры)
@@ -58,6 +58,7 @@ tests/                тесты правил, входа, кэша клиент
 | `api.sellPlates(ids)` | `sell_plates(ids)` |
 | `api.movePlates(ids, to)` | `move_plates(ids, to_safe)` |
 | `api.claimDaily()` | `claim_daily()` |
+| `api.gaiBet(slot,sum,auto)` / `gaiCancel` / `gaiCashout` | `gai_bet` / `gai_cancel` / `gai_cashout` (состояние и рекорды экран берёт через `rpc('gai_state')`, `rpc('gai_me')`) |
 | `api.buyCapacity(k)` | `buy_capacity(kind)` |
 | `api.buyAutosell()` / `autoSet(k, v)` / `autosell()` | `buy_autosell()` / `autosell_set(k, v)` / `autosell()` (`autosell_v2.sql`) |
 | `api.bailout()` | `bailout()` |
@@ -67,3 +68,18 @@ tests/                тесты правил, входа, кэша клиент
 | `api.resetProgress()` | `reset_progress()` |
 | `api.openCase(id)` | `open_case(case_id)` (`cases.sql`) |
 | `api.marketList(id, ask)` / `marketCancel(id)` / `marketBuy(id)` / `marketAck(upto)` | `market_list_plate` / `market_cancel` / `market_buy` / `market_ack_sales` (`market.sql`) |
+
+## Ивент «Полицейский беспредел» (Дорожные работы 3D + «Уйти от полиции»)
+Сезонный ивент на игре three.js (`js/vendor/roadworks.js`, three грузится лениво из `THREE_SRC`). SQL: `supabase/event.sql` (запускать последним, после `road.sql`, `market.sql`, `prestige.sql`). Экраны: `views/road.js` (игра) и `views/evshop.js` (`v-evshop`: Играть, Магазин, Карта, Задания, Кейс, Топ). Константы `EVENT` в `js/config.js` зеркалят SQL, их сверяет `tests/event.test.mjs`.
+
+- **Управление и рация:** на телефоне есть экранные педали ГАЗ/СТОП, в игре — рация ДПС (вкладка 📻 справа или клавиша R, мат по умолчанию замаскирован).
+- **Валюта — жетоны 🚧**, а не ₽. Хранятся в `event_wallet`, клиент их не меняет: `api.ev*` ↔ `ev_state, ev_start, ev_finish, ev_buy, ev_equip, ev_pass_claim, ev_quest_claim, ev_case_open, ev_top`. ₽ ивент даёт только призами и пачками в магазине; старые `road_start/road_finish/road_me` закрыты (`revoke`), рубли за заезд больше не платятся.
+- **Конец сезона (выбран вариант «сгорают»):** до `ends_at` играем и тратим; ещё 3 дня (`grace_days`) закрыта только игра, магазин, карта, задания и кейс работают; потом жетоны, очки карты, pity и бусты обнуляются при первом обращении. Косметика остаётся навсегда. Сезон правится в таблице `event_seasons`.
+- **Заезд:** `road` («Дорожные работы», финиш на 5000 очков, 20 очков = 1 жетон) или `chase` («Уйти от полиции»: без финиша, закат, розыск растёт каждые 2000 м до 5 звёзд, больше полиции; жетоны за каждые 100 м по числу звёзд). Время считает сервер, заезд закрывается один раз, очки ≤ секунды×60, дистанция ≤ секунды×80, бонусные очки ≤ секунды×40, потолки 3000 жетонов и 30 000 очков карты за 24 часа, подозрительное пишется в `event_flags`, заезд с показателями вдвое выше потолка не засчитывается.
+- **Магазин:** каталог в `event_items` (редкость, цена, лимит на сезон и на сутки, срок продажи), покупка только через `ev_buy` (цена, лимит, баланс и выдача в одной транзакции). Типы: титулы, рамки номера, эффекты появления, фоны, кузов и след для игры, блат-номера, пачки ₽, двойные жетоны.
+- **Прогресс:** дорожная карта на 20 уровней за сумму очков заездов (уровень 20 — эксклюзив), задания дня и недели (3 км без аварий, «впритирку», трамплины, очки за заезд, звёзды), кейс «Дорожный кейс» (шансы в `event_case_odds` показываются игроку, `gen_random_uuid()`, гарантия редкого на 20-м кейсе, дубликат возвращает 35%). Награды выдаются один раз по ключу в `event_claims`.
+- **Косметика работает:** титул, рамка, эффект и фон лежат в `players.equip` (профиль, рейтинг и сцены показывают их как обычно), кузов и след в `event_wallet.equip`. `ev_equip` надевает, `RoadWorks.mount(el, {mode, skin, trail, frame, plate, best, onStart, onGameOver})` получает надетое при каждом запуске.
+- **Блат-номер:** новый тип `blat` (`TYPES`, `engine.ts`, `types_v2.sql`, CSS `.t-blat`), шанс в генераторе 0, выдаётся только как приз (магазин, уровни 10 и 20 карты).
+- **Лидерборд ивента** отдельный: очки карты, лучший заезд «Дорожных работ», самая длинная погоня (`ev_top`).
+- **Сброс прогресса:** `event_reset` подключён в `reset_progress` через `to_regprocedure`. Он обнуляет жетоны, pity и бусты. Журнал заездов, счётчики покупок, полученные награды и косметика остаются: иначе сброс обходил бы суточные лимиты и давал забрать награду второй раз.
+- **Проверки:** `node --test tests/event.test.mjs`; экран в браузере с моком Supabase и заглушкой RoadWorks: `node tests/e2e/evshop.e2e.mjs`; SQL на Postgres 16: `tests/sql/run_event.sh` (psql, создаёт временную базу).

@@ -184,7 +184,7 @@ body{font-family:Manrope,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;fo
 .mp.c2{background:linear-gradient(#cddcf8,#8aaae6);border-color:#1d2a4d}.mp.c3{background:linear-gradient(#ddcdf4,#a98bdc);border-color:#2c1d4d}.mp.c4{background:linear-gradient(#f6e2a6,#d3a93f);border-color:#3d3018}
 .stk .mp[class*=" c"]{font-size:13px}
 
-.plate:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro){background:linear-gradient(var(--pl1),var(--pl2))}
+.plate:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat){background:linear-gradient(var(--pl1),var(--pl2))}
 .th{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:24px 20px;border:2px solid;border-radius:22px;margin-bottom:12px;transition:transform .15s,border-color .2s}
 .th .dots i{background:currentColor}
 .th s{width:30px;height:30px;border-radius:50%;border:2px solid;display:grid;place-items:center;font-size:16px;font-weight:800;text-decoration:none;flex:none}
@@ -211,3 +211,8 @@ body.fx2 .cf{backdrop-filter:none}
 .aseg{display:flex;gap:6px}.aseg button{flex:1;min-width:0;padding:11px 4px;border-radius:12px;border:1px solid color-mix(in srgb,var(--tx) 14%,transparent);background:none;color:var(--mut);font-weight:700;font-size:14px;line-height:1.1;font-family:inherit;cursor:pointer}
 .aseg button.a{background:var(--ac);border-color:var(--ac);color:#fff}
 .anow{font-size:34px;font-weight:800;line-height:1.1}.anow small{font-size:15px;font-weight:600;color:var(--mut)}
+
+/* окна: длинное содержимое прокручивается внутри окна, а не страница позади */
+.md{overscroll-behavior:contain}
+.sheet{max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+body:has(.md.on){overflow:hidden}
