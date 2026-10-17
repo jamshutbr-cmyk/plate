@@ -8,6 +8,7 @@ import {TG} from './platform.js';
 // Слой действий: ВСЁ, что меняет состояние игры, живёт здесь. Каждое действие — запрос к серверу (async),
 // после ответа обновляется кэш S. Сетевые и серверные ошибки бросаются как исключения: их ловит main.js.
 // Бизнес-отказы (не хватает денег и т.п.) возвращаются значением, как раньше.
+let TOP_P=null;   // null: ещё не знаем, умеет ли сервер периоды топа; true/false после первого ответа
 const REB_ERR=[['level too low','level'],['has listings','listings'],['has deposits','deposits'],['not enough stars','stars'],['max','max']];
 async function errCode(er){try{const j=await er.context.json();if(j.error==='banned')handleBan({reason:j.reason,until:j.until});return j.error||j.code||j.message||'server'}catch(_){return (er&&er.message)||'network'}}
 const notEnough=e=>/not enough/i.test((e&&e.message)||'');
@@ -200,7 +201,13 @@ export const api={
  async evPassClaim(l){const r=await rpc('ev_pass_claim',{p_level:l});if(r&&r.ok)await loadPlayer();return r},
  async evQuestClaim(id){return await rpc('ev_quest_claim',{p_quest:id})},
  async evCase(){return await rpc('ev_case_open')},
- async evTop(kind){return await rpc('ev_top',{p_kind:kind})},
+ // Топ ивента. Период (season|week|day) понимает новая версия ev_top с параметром p_period; со старой сервер ответит ошибкой, тогда
+ // молча берём топ за сезон и сообщаем экрану (periods:false), чтобы он спрятал переключатель периодов.
+ async evTop(kind,period='season'){
+  if(TOP_P!==false){
+   try{const r=await rpc('ev_top',{p_kind:kind,p_period:period});TOP_P=true;return Object.assign({rows:[],me:null},r,{periods:true})}
+   catch(e){if(e&&e.banned)throw e;TOP_P=false}}
+  const r=await rpc('ev_top',{p_kind:kind});return Object.assign({rows:[],me:null},r,{periods:false})},
  // ГАИ (gai.sql): деньги и множитель считает сервер. Отказы по правилам возвращаются как {err:'код'}, баланс берём из ответа
  async gaiBet(slot,amount,auto){
   let r;

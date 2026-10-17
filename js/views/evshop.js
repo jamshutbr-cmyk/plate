@@ -17,6 +17,8 @@ let ST=null,TAB='play',SHOP_KIND='title',TOP_KIND='pts',TOP=null,STY={},TRY={},B
 const ERR={season:'Сейчас нет активного сезона',tokens:'Не хватает жетонов',owned:'Уже куплено',limit:'Лимит на сезон исчерпан',day_limit:'Лимит на сегодня исчерпан',time:'Сейчас недоступно',
   full:'Нет места под номер: освободите коллекцию или сейф',item:'Товар недоступен',progress:'Задание ещё не выполнено',claimed:'Уже получено',pts:'Не хватает очков карты',level:'Нет такого уровня'};
 const TABS={play:'Играть',shop:'Магазин',pass:'Карта',quests:'Задания',case:'Кейс',top:'Топ'};
+const PERIODS={season:'Сезон',week:'Неделя',day:'Сегодня'};
+let PERIOD='season';
 const TOPS={pts:'Очки карты',score:'Работы',chase:'Погоня'};
 const SLOT_OF={title:'title',frame:'frame',drop:'drop',bg:'bg',car:'car',trail:'trail'};
 const rar=r=>RAR[r]||RAR[0];
@@ -69,7 +71,7 @@ async function load(){
   if(TAB=='top'&&ST)await loadTop();
   LOADING=false;paint()}
 async function loadTop(){
-  try{TOP=await api.evTop(TOP_KIND);const ids=(TOP.rows||[]).map(r=>r.id);if(ids.length)Object.assign(STY,await rpc('get_styles',{ids})||{})}catch(e){console.warn('ev_top',e);TOP={rows:[],me:null}}}
+  try{TOP=await api.evTop(TOP_KIND,PERIOD);const ids=(TOP.rows||[]).map(r=>r.id);if(ids.length)Object.assign(STY,await rpc('get_styles',{ids})||{})}catch(e){console.warn('ev_top',e);TOP={rows:[],me:null}}}
 
 // Сколько наград уже можно забрать: карта и задания (показываем на вкладках и на главной)
 function claimable(){
@@ -242,11 +244,17 @@ function tabCase(){
 // ---------- Топ ----------
 function tabTop(){
   const unit=TOP_KIND=='chase'?' м':'';
+  // «Работы» считаются по времени до финиша (секунды с десятыми), остальное числом
+  const fv=v=>TOP_KIND=='score'?`${Math.floor(v/60)}:${String(Math.floor(v%60)).padStart(2,'0')}.${Math.round((v%1)*10)}`:fmt(v)+unit;
+  const CAP={pts:'Очки дороги. При равенстве выше тот, кто набрал раньше',score:'Лучшее время до финиша «Дорожных работ»',chase:'Самая длинная погоня'};
+  const EMPTY=TOP_KIND=='score'?'Пока никто не добежал до финиша.':PERIOD=='season'?'В этом сезоне ещё никого.':'За этот период ещё никого.';
   const row=(r,extra)=>{const st=STY[r.id]||{},m=r.rk<=3?['g','s','b'][r.rk-1]:'';
-    return `<div class="tp${r.me?' me':''}"><span class="ev-rk ${m}">${r.rk}</span><span class="ev-nm">${esc(r.n)}${r.me?'<em class="ev-tag on">Вы</em>':''} ${st.title?titleHTML(st.title):''}</span><span class="ev-v">${fmt(r.v)}${unit}</span></div>`};
+    return `<div class="tp${r.me?' me':''}"><span class="ev-rk ${m}">${r.rk}</span><span class="ev-nm">${esc(r.n)}${r.me?'<em class="ev-tag on">Вы</em>':''} ${st.title?titleHTML(st.title):''}</span><span class="ev-v">${fv(r.v)}</span></div>`};
   let h=`<div class="ev-seg fit">${Object.keys(TOPS).map(x=>`<button type="button" class="${x==TOP_KIND?'a':''}" data-click="evTopK" data-arg="${x}">${TOPS[x]}</button>`).join('')}</div>`;
-  h+=TOP&&TOP.rows.length?TOP.rows.map(row).join(''):'<div class="ev-empty">В этом сезоне ещё никого. Сыграйте заезд и займите первое место.</div>';
-  if(TOP&&TOP.me&&!TOP.rows.some(r=>r.me))h+=`<div class="ev-gap">…</div><div class="tp me"><span class="ev-rk">${TOP.me.rk}</span><span class="ev-nm">Вы<em class="ev-tag on">Ваше место</em></span><span class="ev-v">${fmt(TOP.me.v)}${unit}</span></div>`;
+  if(TOP&&TOP.periods)h+=`<div class="ev-seg fit" role="group" aria-label="Период">${Object.keys(PERIODS).map(x=>`<button type="button" class="${x==PERIOD?'a':''}" data-click="evTopP" data-arg="${x}">${PERIODS[x]}</button>`).join('')}</div>`;
+  h+=`<p class="ev-note">${CAP[TOP_KIND]}</p>`;
+  h+=TOP&&TOP.rows.length?TOP.rows.map(row).join(''):`<div class="ev-empty">${EMPTY} Сыграйте заезд и займите первое место.</div>`;
+  if(TOP&&TOP.me&&!TOP.rows.some(r=>r.me))h+=`<div class="ev-gap">…</div><div class="tp me"><span class="ev-rk">${TOP.me.rk}</span><span class="ev-nm">Вы<em class="ev-tag on">Ваше место</em></span><span class="ev-v">${fv(TOP.me.v)}</span></div>`;
   return h}
 
 function nav(){
@@ -305,6 +313,7 @@ on({
   evTry:a=>{const [k,id]=a.split('|');if(TRY[k]==id)delete TRY[k];else TRY[k]=id;paint()},
   evTryReset:()=>{TRY={};paint()},
   evTopK:async k=>{TOP_KIND=k;await loadTop();paint()},
+  evTopP:async p=>{PERIOD=p;await loadTop();paint()},
   evReload:()=>load(),
   evPlay:m=>{setRoadMode(m);go('road')},
   evBuy:id=>act(async()=>{const r=await api.evBuy(id);if(check(r)){TRY={};const i=item(id);banner('Куплено',i?i.n:'');haptic&&haptic('success');await load()}}),
