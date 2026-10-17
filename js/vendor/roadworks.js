@@ -1118,7 +1118,7 @@ function sfx(k,pan,vol){if(!AC||AC.state!=='running'||!MG)return;const T=AC.curr
  else if(k==='over'){tn(180,35,1.3,'sawtooth',.15,0,o);ns(1,.2,1000,60,o);tn(392,392,.25,'triangle',.08,.5,o);tn(330,330,.25,'triangle',.08,.75,o);tn(262,262,.5,'triangle',.08,1,o);}}
 function whEnd(){if(P.wd>1){const b=Math.round(P.wd*P.wd*30);bonus+=b;say('ДЫБЫ '+P.wd.toFixed(1)+'с! +'+b,'#ffd54a');sfx('coin');if(P.wd>2.2)rad('wend',1);}P.wh=0;P.wd=0;P.wk=1;P.wc=2.5;if(st==='play')box0.classList.remove('nitro');}
 function reset(){drag0=null;tx=null;for(const e of E)kill(e);for(const s of SC)scene.remove(s.g);E=[];SC=[];t=0;v=26;dist=0;bonus=0;ST={cd:0,clean:0,near:0,ramps:0};lastStars=0;hStar.textContent='';for(const m of TRS)m.visible=false;if(FG){scene.remove(FG);FG=null;}FC=null;for(const m of ext)scene.remove(m);ext=[];box0.classList.remove('intro','cops','nitro');lives=3;HB.x=0;HB.j=0;copWarn=0;inv=0;shake=0;rowT=70;rampCD=50;zCD=14;onT=0;onCD=40;copCD=CHASE?8:28;gT=300;sT=160;P.x=0;P.vx=0;P.y=0;P.vy=0;P.jr=0;P.pt=0;P.ptV=0;P.rl=0;P.rlV=0;P.yaw=0;P.yawV=0;P.pv=null;P.ice=0;P.slip=0;P.wh=0;P.wd=0;P.wk=1;P.sk=0;rdClr();P.hu=0;P.hn=0;P.wc=0;heartCD=20;shT=0;shCD=60;LS=[0,1,2,3].map(()=>rnd(10,18));buildPlayer();hearts();}
-function over(){st='over';endT=0;sfx('over');const s=score();if(s>best){best=s;try{localStorage.setItem('rw_best',String(best))}catch(e){}}
+function over(){drag0=null;tx=null;st='over';endT=0;sfx('over');const s=score();if(s>best){best=s;try{localStorage.setItem('rw_best',String(best))}catch(e){}}
  showMenu('over');opts.onGameOver&&opts.onGameOver({score:s,distance:Math.round(dist),best,plate:P.plate,stats:runStats(),mode:CHASE?'chase':'road'});}
 const es=k=>k*k*(3-2*k),TT=8.2;
 function introCam(sx,sy){const T=ci;let px,py,pz,lx,ly,lz,rz=0;fx=0;
@@ -1302,10 +1302,10 @@ endT+=dt;if(st==='play')update(dt);else{t+=dt;if(st==='intro')introUpdate(dt);el
 
 /* input */
 const kd=e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;if(k.startsWith('Arrow')||k===' ')e.preventDefault();keys[k]=1;if(k==='m'&&MG)MG.gain.value=MG.gain.value?0:1;if(k==='r'&&st==='play')rdTog();
- if(k==='p'||k==='Escape'){if(st==='play'){st='pause';showMenu('pause');}else if(st==='pause'){st='play';menu.style.display='none';}}
+ if(k==='p'||k==='Escape'){if(st==='play'){drag0=null;tx=null;st='pause';showMenu('pause');}else if(st==='pause'){st='play';menu.style.display='none';}}
  else if((k==='Enter'||k===' ')&&(st==='menu'||(st==='over'&&endT>.5)))start();else if((st==='intro'||st==='finish')&&(k==='Enter'||k===' '))endIntro();};
 const ku=e=>{keys[e.key.length===1?e.key.toLowerCase():e.key]=0;};
-const pd=e=>{if(st==='play'&&!drag0){drag0={x:e.clientX,px:P.x,id:e.pointerId};tx=P.x;try{box0.setPointerCapture(e.pointerId)}catch(_){}}};
+const pd=e=>{if(st==='play'&&(!drag0||e.isPrimary!==false)){drag0={x:e.clientX,px:P.x,id:e.pointerId};tx=P.x;try{box0.setPointerCapture(e.pointerId)}catch(_){}}};
 /* точка отсчёта «переезжает» вместе с пальцем, когда цель упёрлась в край дороги — иначе после заезда за обочину палец надо долго возвращать, и машина «прилипает» и поворачивает с задержкой */
 const pm=e=>{if(!drag0||st!=='play'||e.pointerId!==drag0.id)return;const k=20/box0.clientWidth,raw=drag0.px+(e.clientX-drag0.x)*k,c=cl(raw,-7,7);if(c!==raw){drag0.x=e.clientX;drag0.px=c;}tx=c;};
 const pu=e=>{if(drag0&&e&&e.pointerId!==drag0.id)return;drag0=null;tx=null;};
@@ -1338,14 +1338,14 @@ if(opts.showroom){
   destroy(){alive=false;cancelAnimationFrame(raf);ro.disconnect();try{R.dispose();R.forceContextLoss&&R.forceContextLoss()}catch(e){}box0.remove();sty.remove();}};
 }
 addEventListener('keydown',kd);addEventListener('keyup',ku);document.addEventListener('visibilitychange',vis);
-box0.addEventListener('pointerdown',pd);box0.addEventListener('pointermove',pm);box0.addEventListener('pointerup',pu);box0.addEventListener('pointercancel',pu);
+box0.addEventListener('pointerdown',pd);box0.addEventListener('pointermove',pm);box0.addEventListener('pointerup',pu);box0.addEventListener('pointercancel',pu);box0.addEventListener('lostpointercapture',pu);
 buildPlayer();hearts();
 /* прогрев: компилируем шейдеры и заливаем текстуры в видеопамять заранее, чтобы не было подвисаний при первом появлении объектов */
 try{const tmp=[];try{if(typeof mkGantry==='function'){const g=mkGantry();g.position.set(0,0,-60);scene.add(g);tmp.push(g);}if(typeof mkSign==='function'){const g=mkSign(1);g.position.set(0,0,-70);scene.add(g);tmp.push(g);}}catch(_){}
 const seen=new Set();scene.traverse(o=>{const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];for(const m of ms)for(const k in m){const t=m[k];if(t&&t.isTexture&&!seen.has(t)){seen.add(t);try{R.initTexture&&R.initTexture(t);}catch(_){}}}});
 R.compile(scene,cam);for(const g of tmp)scene.remove(g);}catch(_){}
 showMenu('menu');raf=requestAnimationFrame(loop);if(opts.autostart)start();
-return{start,pause(){if(st==='play'){st='pause';showMenu('pause');}},destroy(){alive=false;try{AC&&AC.close()}catch(e){}cancelAnimationFrame(raf);ro.disconnect();removeEventListener('keydown',kd);removeEventListener('keyup',ku);document.removeEventListener('visibilitychange',vis);R.dispose();box0.remove();sty.remove();}};
+return{start,pause(){if(st==='play'){drag0=null;tx=null;st='pause';showMenu('pause');}},destroy(){alive=false;try{AC&&AC.close()}catch(e){}cancelAnimationFrame(raf);ro.disconnect();removeEventListener('keydown',kd);removeEventListener('keyup',ku);document.removeEventListener('visibilitychange',vis);R.dispose();box0.remove();sty.remove();}};
 }
 window.RoadWorks={mount};
 })();
