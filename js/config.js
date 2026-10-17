@@ -92,7 +92,7 @@ export const marketFee=ask=>Math.floor(ask*MARKET.fee/100);                // с
 export const BANK={usdBuy:250000,usdSell:150000,exMax:100000,maxDep:3,
  cancel:{pct:10,graceMin:5},   // досрочное закрытие вклада: штраф % от вложенного, первые graceMin минут без штрафа (зеркало bank_deposit_cancel)
  depRub:{min:100000,max:1e10,pct:{1:2,3:8,7:20}},depUsd:{min:10,max:1000000,pct:{1:4,3:12,7:30}},
- luck:{cost:15,rolls:10,cap:100,best:3},lots:{cost:40,step:5,max:20},
+ luck:{cost:15,rolls:10,cap:5000,best:3,bulk:10},lots:{cost:40,step:5,max:20},
  cases:[
   {id:'vip',n:'VIP',usd:25,w:[0,10,50,40,0],col:'#4ade80',d:'Редкие и эпические машины'},
   {id:'royal',n:'Королевский',usd:120,w:[0,0,20,60,20],col:'#f5b82e',d:'Эпики почти всегда, 20% на легендарную'}],
