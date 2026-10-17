@@ -41,7 +41,7 @@ export const EQUIP_SLOTS=['skin','title','drop','nick','bg'];   // надева�
 export const SHOWCASE_MAX=3;
 // Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
 export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1},ev_d_dust:{pal:['#b08a5a','#d9b98a','#8c6b3f'],flash:'#d9b98a'},ev_d_siren:{pal:['#d63a3a','#3a6ad6','#ffffff'],flash:'#ffffff'},ev_d_weld:{pal:['#fff3b0','#ffb347','#ff7a1a'],flash:'#ffb347',dir:'up',rad:.8,n:1.2},ev_d_ticket:{pal:['#f4f1e6','#ffe9a8','#d9d4c0'],flash:'#f4f1e6',sq:1,dir:'down',rad:.7},ev_d_smoke:{pal:['#8d8d93','#b4b4ba','#62626a'],flash:'#b4b4ba',big:1,rad:.55,n:.6},ev_d_cones:{pal:['#ef6a1a','#ffffff','#ff8a3a'],flash:'#ef6a1a',sq:1,dir:'up',rad:.9},ev_d_radar:{pal:['#ffffff','#9ad0ff','#2f6bff'],flash:'#ffffff',star:1,rad:1.3},ev_d_salute:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1,rad:1.45,n:1.5}};
-export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};const pt=PATRON.titles.find(x=>x.id==id);if(pt)return {id:pt.id,n:pt.n,c:pt.c,slot:'title'};const ev=EVENT.titles.find(x=>x.id==id);if(ev)return {id:ev.id,n:ev.n,c:ev.c,slot:'title'};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
+export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};const pt=PATRON.titles.find(x=>x.id==id);if(pt)return {id:pt.id,n:pt.n,c:pt.c,slot:'title'};const dt=DONATE.tiers.find(x=>x.id==id);if(dt)return {id:dt.id,n:dt.t,c:dt.c,slot:'title'};const di=DONATE.items.find(x=>x.id==id);if(di)return {...di};const ev=EVENT.titles.find(x=>x.id==id);if(ev)return {id:ev.id,n:ev.n,c:ev.c,slot:'title'};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
 
 // Кейсы с машинами. Шансы, цены и выдачу считает ТОЛЬКО сервер (supabase/cases.sql: open_case); здесь данные для показа.
 // Должны совпадать с cases.sql, это сверяет tests/cases.test.mjs.
@@ -146,3 +146,36 @@ export const LAB={
 // id и слот должны совпадать с patron.sql, это сверяет tests/patron.test.mjs.
 export const PATRON={titles:[{id:'sponsor',n:'Спонсор',c:'#2dd4bf',d:'Выдаётся тем, кто оплатил хостинг проекта'},{id:'patron',n:'Меценат',c:'#ff4fa3',d:'Выдаётся тем, кто поддержал проект'}]};
 export const TRIPLE={usd:30,hours:24,max:3};
+
+// Донат-шоп и «Поддержать проект» (Telegram Stars ⭐). Цены, составы и пороги выдаёт ТОЛЬКО сервер (supabase/donate.sql);
+// здесь данные для показа. Совпадение с donate.sql сверяет tests/donate.test.mjs.
+// k — вкладка, st — цена в ⭐, g — что выдаётся (usd, rub, luck, pass_days, items), x2 — первая покупка даёт вдвое больше валюты, max — сколько раз можно купить.
+export const DONATE={
+ tip:{min:10,max:10000,amounts:[25,50,100,250,500,1000]},
+ // Именной номер: любой текст такой длины (зеркало NAMED_MIN и NAMED_MAX в supabase/functions/_shared/moderation.ts)
+ named:{min:2,max:10},
+ tabs:[['named','Номер'],['boost','Бусты'],['bundle','Наборы'],['item','Стиль']],
+ // Роли (титулы благодарности): выдаются автоматически за сумму ⭐ и вручную через grant_role (donate.sql). id patron и sponsor совпадают с уже выданными в базе
+ tiers:[{n:1,need:100,id:'sup1',t:'Друг проекта',c:'#4ade80'},{n:2,need:500,id:'patron',t:'Меценат',c:'#ec4899'},{n:3,need:1000,id:'sponsor',t:'Спонсор',c:'#2dd4bf'},{n:4,need:3000,id:'sup3',t:'Покровитель',c:'#a855f7'},{n:5,need:10000,id:'sup4',t:'Легенда проекта',c:'#f5b82e'}],
+ packs:[
+  {id:'named',k:'named',ic:'🪪',t:'Именной номер',st:149,g:{},max:3,d:'Любой текст на плашке: имя, ник, слово. Навсегда в вашей коллекции'},
+  {id:'pass7',k:'boost',ic:'🎟️',t:'Тройной пасс на 7 дней',st:90,g:{pass_days:7},d:'Каждая прокрутка даёт три номера на выбор. Время добавляется к текущему пассу'},
+  {id:'luck2x',k:'boost',ic:'🍀',t:'Удача ×2 навсегда',st:399,g:{luck2:1},max:1,d:'Шанс редких номеров и типов (такси, полиция, военные, дипломаты, ретро) вдвое выше на каждой прокрутке. Навсегда, один раз на игрока'},
+  {id:'starter',k:'bundle',ic:'🎁',t:'Стартовый набор',st:49,g:{pass_days:3,luck:20},max:1,d:'Один раз на игрока'},
+  {id:'founder',k:'bundle',ic:'👑',t:'Набор Основателя',st:349,g:{pass_days:7,luck:50,items:['dn_obsidian','dn_prism','ndn_plasma','ndn_void','bgdn_nebula','dn_nova']},max:1,d:'Вся эксклюзивная косметика со скидкой 33% и бусты. Один раз на игрока'},
+  {id:'it_obsidian',k:'item',ic:'🖤',t:'Рамка «Обсидиан»',st:99,g:{items:['dn_obsidian']},max:1},
+  {id:'it_prism',k:'item',ic:'🔮',t:'Рамка «Призма»',st:149,g:{items:['dn_prism']},max:1},
+  {id:'it_plasma',k:'item',ic:'🟣',t:'Ник «Плазма»',st:49,g:{items:['ndn_plasma']},max:1},
+  {id:'it_void',k:'item',ic:'🌌',t:'Ник «Бездна»',st:79,g:{items:['ndn_void']},max:1},
+  {id:'it_nebula',k:'item',ic:'🪐',t:'Фон «Туманность»',st:79,g:{items:['bgdn_nebula']},max:1},
+  {id:'it_nova',k:'item',ic:'💥',t:'Эффект «Сверхновая»',st:69,g:{items:['dn_nova']},max:1}],
+ // Эксклюзивная косметика: продаётся только за ⭐, надевается через общие слоты (equip_item). Вид — css/donate.css
+ items:[
+  {id:'dn_obsidian',slot:'skin',n:'Обсидиан',d:'Чёрное стекло с алым свечением'},
+  {id:'dn_prism',slot:'skin',n:'Призма',d:'Переливающаяся рамка, меняющая цвет'},
+  {id:'ndn_plasma',slot:'nick',n:'Плазма',d:'Фиолетово-розовый перелив с бирюзой'},
+  {id:'ndn_void',slot:'nick',n:'Бездна',d:'Тёмное фиолетовое свечение'},
+  {id:'bgdn_nebula',slot:'bg',n:'Туманность',d:'Космические облака на главном экране'},
+  {id:'dn_nova',slot:'drop',n:'Сверхновая',d:'Звёздные частицы фиолетового, розового и бирюзового'}]};
+export const donateTier=total=>DONATE.tiers.filter(x=>total>=x.need).pop()||null;
+export const donateVal=(p,x2)=>{const m=x2?2:1,g=p.g;return {usd:(g.usd||0)*m,rub:(g.rub||0)*m,luck:g.luck||0,luck2:g.luck2||0,days:g.pass_days||0,items:g.items||[]}};

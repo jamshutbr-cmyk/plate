@@ -23,6 +23,7 @@ import './views/bank.js';
 import './views/gen.js';
 import './views/shop.js';
 import './views/cases.js';
+import './views/donate.js';
 import './views/prestige.js';
 import './views/multi.js';
 import './ui/scene.js';

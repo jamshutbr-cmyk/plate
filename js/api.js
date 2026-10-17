@@ -3,6 +3,7 @@ import {genCost, trackSession} from './engine.js';
 import {handleBan, loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
 import {S, SESS, applyPlayer, flags} from './state.js';
 import {fmt} from './util.js';
+import {TG} from './platform.js';
 
 // Слой действий: ВСЁ, что меняет состояние игры, живёт здесь. Каждое действие — запрос к серверу (async),
 // после ответа обновляется кэш S. Сетевые и серверные ошибки бросаются как исключения: их ловит main.js.
@@ -30,6 +31,24 @@ async function clanCall(f,money){
  if(money)await loadPlayer();return {ok:1,res}}
 
 export const api={
+ // Донат (supabase/donate.sql, функции donate-invoice и tg-webhook). Деньги принимает Telegram: клиент только открывает счёт и ждёт, пока сервер зачислит покупку.
+ async donateState(){return rpc('donate_state')},
+ async donateWall(){return rpc('donate_wall')},
+ async donatePublic(v){await rpc('donate_set_public',{v});S.dpub=!!v;return v},
+ async namedQuote(text,reg){const {data,error}=await sb.functions.invoke('named-plate',{body:{text,reg}});if(error)throw error;return data},
+ async donateBuy(pack,amount,plate){
+  if(!TG||!TG.openInvoice)return {err:'unsupported'};
+  const {data,error}=await sb.functions.invoke('donate-invoice',{body:{pack,amount,...(plate||{})}});
+  if(error)return {err:await errCode(error)};
+  const status=await new Promise(res=>{try{TG.openInvoice(data.link,res)}catch(e){res('failed')}});
+  if(status=='cancelled')return {err:'cancelled'};
+  if(status!='paid'&&status!='pending')return {err:'failed'};
+  // Зачисляет вебхук, обычно за секунду-две: ждём до ~30 с
+  for(let i=0;i<16;i++){
+   const r=await rpc('donate_order_status',{p_order:data.order}).catch(()=>null);
+   if(r&&r.status=='paid'){await loadPlayer();if(pack=='named')await loadPlates();return {ok:1,res:r.result}}
+   await new Promise(f=>setTimeout(f,i<4?1000:2000))}
+  await loadPlayer().catch(()=>{});return {wait:1}},
  // Тройная прокрутка (supabase/triple_roll.sql): покупка пасса, бросок пакета, решение по номерам
  async buyPass(){const {error}=await sb.functions.invoke('buy-pass');if(error){const err=await errCode(error);await loadAll().catch(()=>{});return {err}}await loadAll();return {ok:1}},
  // При любой ошибке (в т.ч. обрыв связи, когда сервер мог успеть выполнить запрос) сверяем кэш с сервером: баланс и пакет не должны оставаться устаревшими
