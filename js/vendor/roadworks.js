@@ -44,7 +44,7 @@ const CSS=`.rw-ped{position:absolute;bottom:max(18px,env(safe-area-inset-bottom)
 .rw-plate{display:inline-flex;align-items:center;gap:8px;background:#f4f4ee;color:#111;border:3px solid #111;border-radius:9px;padding:3px 12px;font:700 36px Arial,sans-serif;letter-spacing:2px;box-shadow:0 6px 24px rgba(0,0,0,.6)}
 .rw-plate i{font-style:normal;border-left:3px solid #111;padding-left:9px;font-size:26px;line-height:1;position:relative}
 .rw-plate i:after{content:"RUS";display:block;font-size:9px;letter-spacing:1px;margin-top:2px}
-.rw-btn{border:1px solid rgba(255,220,170,.45);border-radius:16px;padding:15px 44px;font-size:19px;font-weight:800;letter-spacing:1px;color:#fff;background:linear-gradient(#ff8a2c,#e04a0a);box-shadow:0 8px 28px rgba(255,90,10,.5),inset 0 1px 0 rgba(255,255,255,.35);cursor:pointer;transition:transform .12s,filter .12s}.rw-btn:hover{filter:brightness(1.1)}
+.rw-row{display:flex;gap:36px;justify-content:center}.rw-btn{border:1px solid rgba(255,220,170,.45);border-radius:16px;padding:15px 44px;font-size:19px;font-weight:800;letter-spacing:1px;color:#fff;background:linear-gradient(#ff8a2c,#e04a0a);box-shadow:0 8px 28px rgba(255,90,10,.5),inset 0 1px 0 rgba(255,255,255,.35);cursor:pointer;transition:transform .12s,filter .12s}.rw-btn:hover{filter:brightness(1.1)}
 .rw-btn:active{transform:scale(.97)}.rw-stat{font-size:20px;font-weight:700}.rw-stat span{opacity:.6;font-size:13px;display:block;letter-spacing:2px}.rw.m .rw-hud>div{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(20,10,16,.7)}.rw.m:after{display:none}.rw-bar{position:absolute;left:0;right:0;height:0;background:#000;z-index:3;pointer-events:none;transition:height .6s ease}.rw-bar.t{top:0}.rw-bar.b{bottom:0}.rw.intro .rw-bar{height:11%}.rw-skip{position:absolute;right:14px;bottom:calc(11% + 14px);z-index:4;display:none;border:1px solid rgba(255,220,170,.4);border-radius:12px;padding:8px 16px;font-size:13px;font-weight:700;letter-spacing:1px;color:#fff;background:rgba(20,10,16,.6);cursor:pointer}.rw.intro .rw-skip{display:block}
 .rw-flash,.rw-spd{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0}
 .rw.cops .rw-flash{opacity:1;animation:rwfl .36s steps(1) infinite}
@@ -1117,7 +1117,7 @@ function sfx(k,pan,vol){if(!AC||AC.state!=='running'||!MG)return;const T=AC.curr
  else if(k==='start'){tn(55,160,.7,'sawtooth',.08,.1,o);ns(.5,.06,400,200,o);}
  else if(k==='over'){tn(180,35,1.3,'sawtooth',.15,0,o);ns(1,.2,1000,60,o);tn(392,392,.25,'triangle',.08,.5,o);tn(330,330,.25,'triangle',.08,.75,o);tn(262,262,.5,'triangle',.08,1,o);}}
 function whEnd(){if(P.wd>1){const b=Math.round(P.wd*P.wd*30);bonus+=b;say('ДЫБЫ '+P.wd.toFixed(1)+'с! +'+b,'#ffd54a');sfx('coin');if(P.wd>2.2)rad('wend',1);}P.wh=0;P.wd=0;P.wk=1;P.wc=2.5;if(st==='play')box0.classList.remove('nitro');}
-function reset(){for(const e of E)kill(e);for(const s of SC)scene.remove(s.g);E=[];SC=[];t=0;v=26;dist=0;bonus=0;ST={cd:0,clean:0,near:0,ramps:0};lastStars=0;hStar.textContent='';for(const m of TRS)m.visible=false;if(FG){scene.remove(FG);FG=null;}FC=null;for(const m of ext)scene.remove(m);ext=[];box0.classList.remove('intro','cops','nitro');lives=3;HB.x=0;HB.j=0;copWarn=0;inv=0;shake=0;rowT=70;rampCD=50;zCD=14;onT=0;onCD=40;copCD=CHASE?8:28;gT=300;sT=160;P.x=0;P.vx=0;P.y=0;P.vy=0;P.jr=0;P.pt=0;P.ptV=0;P.rl=0;P.rlV=0;P.yaw=0;P.yawV=0;P.pv=null;P.ice=0;P.slip=0;P.wh=0;P.wd=0;P.wk=1;P.sk=0;rdClr();P.hu=0;P.hn=0;P.wc=0;heartCD=20;shT=0;shCD=60;LS=[0,1,2,3].map(()=>rnd(10,18));buildPlayer();hearts();}
+function reset(){drag0=null;tx=null;for(const e of E)kill(e);for(const s of SC)scene.remove(s.g);E=[];SC=[];t=0;v=26;dist=0;bonus=0;ST={cd:0,clean:0,near:0,ramps:0};lastStars=0;hStar.textContent='';for(const m of TRS)m.visible=false;if(FG){scene.remove(FG);FG=null;}FC=null;for(const m of ext)scene.remove(m);ext=[];box0.classList.remove('intro','cops','nitro');lives=3;HB.x=0;HB.j=0;copWarn=0;inv=0;shake=0;rowT=70;rampCD=50;zCD=14;onT=0;onCD=40;copCD=CHASE?8:28;gT=300;sT=160;P.x=0;P.vx=0;P.y=0;P.vy=0;P.jr=0;P.pt=0;P.ptV=0;P.rl=0;P.rlV=0;P.yaw=0;P.yawV=0;P.pv=null;P.ice=0;P.slip=0;P.wh=0;P.wd=0;P.wk=1;P.sk=0;rdClr();P.hu=0;P.hn=0;P.wc=0;heartCD=20;shT=0;shCD=60;LS=[0,1,2,3].map(()=>rnd(10,18));buildPlayer();hearts();}
 function over(){st='over';endT=0;sfx('over');const s=score();if(s>best){best=s;try{localStorage.setItem('rw_best',String(best))}catch(e){}}
  showMenu('over');opts.onGameOver&&opts.onGameOver({score:s,distance:Math.round(dist),best,plate:P.plate,stats:runStats(),mode:CHASE?'chase':'road'});}
 const es=k=>k*k*(3-2*k),TT=8.2;
@@ -1209,8 +1209,8 @@ function start(){sirenInit();setTimeout(()=>sfx('start'),150);reset();if(!opts.n
 function showMenu(k){sirenTick(null);engTick(0);menu.style.display='flex';const[m,r]=P.plate.split(' ');const pl=`<div class=rw-plate${FRAME_C?` style="border-color:${FRAME_C}"`:''}>${m}<i>${r}</i></div>`;
  menu.innerHTML=k==='menu'?`<h1>${CHASE?'УЙТИ ОТ ПОЛИЦИИ':'ДОРОЖНЫЕ РАБОТЫ'}</h1>${pl}<p>${CHASE?'Погоня без финиша: чем дольше едете, тем больше звёзд розыска и жетонов за дистанцию. ':''}Асфальт свежий, разметка ещё сохнет.<br>Объезжайте технику, не сбивайте ограждения и ловите номера «777». А грузовик-трамплин — шанс взлететь над пробкой! Берегитесь ДПС: догонит, прижмёт и подрежет.</p><p style="opacity:.55">← → руль · ↑ ↓ газ/тормоз · P пауза · M звук<br>на телефоне: ведите пальцем по экрану</p><div class=rw-stat><span>РЕКОРД</span>${best}</div><button class=rw-btn>ПОЕХАЛИ</button>`
  :k==='pause'?`<h1>ПАУЗА</h1><p>Дорога подождёт</p><button class=rw-btn>ДАЛЬШЕ</button>`
- :k==='win'?`<h1>🏁 ФИНИШ!</h1>${pl}<p>5000 очков — вы оторвались от ДПС!<br>Трасса закончилась, впереди только свобода.</p><div class=rw-stat><span>ОЧКИ</span>${score()}</div><div class=rw-stat><span>РЕКОРД</span>${best}</div><button class=rw-btn>ЕЩЁ РАЗ</button>`
- :`<h1>ЗАЕЗД ОКОНЧЕН</h1>${pl}<div class=rw-stat><span>ОЧКИ</span>${score()}</div><div class=rw-stat><span>РЕКОРД</span>${best}</div><button class=rw-btn>ЕЩЁ РАЗ</button>`;
+ :k==='win'?`<h1>🏁 ФИНИШ!</h1>${pl}<p>5000 очков — вы оторвались от ДПС!<br>Трасса закончилась, впереди только свобода.</p><div class=rw-row><div class=rw-stat><span>ОЧКИ</span>${score()}</div><div class=rw-stat><span>РЕКОРД</span>${best}</div></div><button class=rw-btn>ЕЩЁ РАЗ</button>`
+ :`<h1>ЗАЕЗД ОКОНЧЕН</h1>${pl}<div class=rw-row><div class=rw-stat><span>ОЧКИ</span>${score()}</div><div class=rw-stat><span>РЕКОРД</span>${best}</div></div><button class=rw-btn>ЕЩЁ РАЗ</button>`;
  menu.querySelector('button').onclick=()=>{if(st==='pause'){st='play';menu.style.display='none';}else if(st!=='over'||endT>.5)start();};}
 
 function update(dt){
@@ -1218,7 +1218,7 @@ function update(dt){
  v+=(base*m-v)*Math.min(1,dt*2.2);
  let ax=0;if(keys.ArrowLeft||keys.a)ax--;if(keys.ArrowRight||keys.d)ax++;
  const ctl=(P.ice>0?.1:P.slip>0?.35:1)*(P.wh>0||P.sk>0?.6:1);P.ice=Math.max(0,(P.ice||0)-dt);P.slip=Math.max(0,(P.slip||0)-dt);
- if(tx!=null)P.vx+=(cl((tx-P.x)*6,-14,14)-P.vx)*Math.min(1,dt*10*ctl);else P.vx+=(ax*11-P.vx)*Math.min(1,dt*9*ctl);
+ if(tx!=null)P.vx+=(cl((tx-P.x)*9,-18,18)-P.vx)*Math.min(1,dt*16*ctl);else P.vx+=(ax*11-P.vx)*Math.min(1,dt*9*ctl);
  P.x=cl(P.x+P.vx*dt,-7,7);dist+=v*dt;if(st==='play'){ST.cd+=v*dt;if(ST.cd>ST.clean)ST.clean=ST.cd;}if(CHASE){const n=stars();if(n!==lastStars){lastStars=n;hStar.textContent='★'.repeat(n)+'☆'.repeat(5-n)+' РОЗЫСК';if(n>1)say('★ Розыск: '+n,'#ffd54a');}}
  if(st==='play'){const up=!!(keys.ArrowUp||keys.w),dn=!!(keys.ArrowDown||keys.s),can=false;P.wc=Math.max(0,(P.wc||0)-dt);
   if(!(P.wh>0)&&!(P.sk>0)){P.hu=up&&!dn&&can&&P.wc<=0?(P.hu||0)+dt:0;P.hn=dn&&!up&&can&&P.wc<=0?(P.hn||0)+dt:0;
@@ -1305,10 +1305,11 @@ const kd=e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;if(k.startsWith(
  if(k==='p'||k==='Escape'){if(st==='play'){st='pause';showMenu('pause');}else if(st==='pause'){st='play';menu.style.display='none';}}
  else if((k==='Enter'||k===' ')&&(st==='menu'||(st==='over'&&endT>.5)))start();else if((st==='intro'||st==='finish')&&(k==='Enter'||k===' '))endIntro();};
 const ku=e=>{keys[e.key.length===1?e.key.toLowerCase():e.key]=0;};
-const pd=e=>{if(st==='play'){drag0={x:e.clientX,px:P.x};tx=P.x;try{box0.setPointerCapture(e.pointerId)}catch(_){}}};
-const pm=e=>{if(drag0&&st==='play')tx=cl(drag0.px+(e.clientX-drag0.x)/box0.clientWidth*20,-7,7);};
-const pu=()=>{drag0=null;tx=null;};
-const vis=()=>{if(document.hidden&&st==='play'){st='pause';showMenu('pause');}};
+const pd=e=>{if(st==='play'&&!drag0){drag0={x:e.clientX,px:P.x,id:e.pointerId};tx=P.x;try{box0.setPointerCapture(e.pointerId)}catch(_){}}};
+/* точка отсчёта «переезжает» вместе с пальцем, когда цель упёрлась в край дороги — иначе после заезда за обочину палец надо долго возвращать, и машина «прилипает» и поворачивает с задержкой */
+const pm=e=>{if(!drag0||st!=='play'||e.pointerId!==drag0.id)return;const k=20/box0.clientWidth,raw=drag0.px+(e.clientX-drag0.x)*k,c=cl(raw,-7,7);if(c!==raw){drag0.x=e.clientX;drag0.px=c;}tx=c;};
+const pu=e=>{if(drag0&&e&&e.pointerId!==drag0.id)return;drag0=null;tx=null;};
+const vis=()=>{if(document.hidden&&st==='play'){drag0=null;tx=null;st='pause';showMenu('pause');}};
 /* Шоурум (магазин ивента): та же сцена и та же машина, но без меню, дороги-игры и трафика.
    opts.showroom:true → mount возвращает {setSkin,setTrail,setFrame,destroy}; машину можно вращать пальцем/мышью, без касания она медленно крутится сама. */
 if(opts.showroom){
