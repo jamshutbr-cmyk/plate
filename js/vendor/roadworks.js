@@ -1080,7 +1080,11 @@ function sirenInit(){try{AC=AC||new(window.AudioContext||window.webkitAudioConte
   /* сирена */
   S1=osc('sawtooth');S2=osc('square');SB=bq('bandpass',1500,.7);SG2=gn(0);SB.connect(SG2);S1.connect(SB);const s2g=gn(.5,SB);S2.connect(s2g);
   SP=mkPan();SG2.disconnect();SG2.connect(SP);SP.connect(MG);const sr=gn(.3,RV);SP.connect(sr);}
- if(AC.state==='suspended')AC.resume();}catch(e){}}
+ AC.onstatechange=()=>{if(AC&&AC.state!=='running')audioWake();};
+ audioWake();}catch(e){}}
+/* Звук пропадал и возвращался сам: AudioContext уходит в suspended/interrupted (звонок, уведомление, сворачивание, чужой звук на телефоне), а resume() звали один раз при старте.
+   sfx() при этом молча выходит, двигатель и сирена тоже молчат. Теперь будим контекст при смене состояния, при касании, при возврате на вкладку и раз в секунду в цикле. */
+function audioWake(){if(!AC||AC.state==='running'||AC.state==='closed')return;try{const r=AC.resume();r&&r.catch&&r.catch(()=>{});}catch(e){}}
 function engTick(on){if(!EG)return;const T=AC.currentTime,dt=cl(T-PT,.005,.05);PT=T;const thr=!!(keys.ArrowUp||keys.w)&&on,brk=!!(keys.ArrowDown||keys.s)&&on;
  if(!on){for(const g of[EG,WG,RR,SK,TG,IG])g.gain.setTargetAtTime(0,T,.08);thP=false;RPM=900;GR=-1;PV=v;DV=0;return;}
  const g=v<31?0:v<40?1:v<49?2:v<58?3:4;
@@ -1297,7 +1301,7 @@ function render(dt){trailTick(dt);rdVis();
  const a=rg.attributes.position.array;for(let i=0;i<RN;i++){a[i*6+1]-=38*dt;a[i*6+4]-=38*dt;if(a[i*6+1]<0){a[i*6+1]+=14;a[i*6+4]+=14;}}rg.attributes.position.needsUpdate=true;
  for(let k=0;k<SN;k++){if(sl[k]>0){sl[k]-=dt;sv[k*3+1]-=20*dt;sp[k*3]+=sv[k*3]*dt;sp[k*3+1]=Math.max(.05,sp[k*3+1]+sv[k*3+1]*dt);sp[k*3+2]+=(sv[k*3+2]+(st==='play'||st==='intro'||st==='finish'?v:0))*dt;if(sl[k]<=0)sp[k*3+1]=-999;}}sg.attributes.position.needsUpdate=true;
  R.render(scene,cam);}
-function loop(ts){if(!alive)return;raf=requestAnimationFrame(loop);let raw=(ts-last)/1000||0;if(half&&raw<.028)return;const dt=Math.min(half?.05:.033,raw);last=ts;frames++;
+function loop(ts){if(!alive)return;raf=requestAnimationFrame(loop);let raw=(ts-last)/1000||0;if(half&&raw<.028)return;const dt=Math.min(half?.05:.033,raw);last=ts;frames++;if(!(frames&63))audioWake();
 if(MOBILE&&raw<.25&&st==='play'){fAcc+=raw;if(++fN>=24){const a=fAcc/fN;fAcc=0;fN=0;
  if(!half){
   if(a>.0195){if(PR>PRfloor+.01){if(frames-upAt<900)PRceil=Math.max(PRfloor,PR-.15);PR=Math.max(PRfloor,PR-.15);fit();}else if(a>.026){half=true;}}
@@ -1315,7 +1319,7 @@ const pd=e=>{if(st==='play'&&(!drag0||e.isPrimary!==false)){drag0={x:e.clientX,p
 /* точка отсчёта «переезжает» вместе с пальцем, когда цель упёрлась в край дороги — иначе после заезда за обочину палец надо долго возвращать, и машина «прилипает» и поворачивает с задержкой */
 const pm=e=>{if(!drag0||st!=='play'||e.pointerId!==drag0.id)return;const k=20/box0.clientWidth,raw=drag0.px+(e.clientX-drag0.x)*k,c=cl(raw,-7,7);if(c!==raw){drag0.x=e.clientX;drag0.px=c;}tx=c;};
 const pu=e=>{if(drag0&&e&&e.pointerId!==drag0.id)return;drag0=null;tx=null;};
-const vis=()=>{if(document.hidden&&st==='play'){drag0=null;tx=null;st='pause';showMenu('pause');}};
+const vis=()=>{if(document.hidden&&st==='play'){drag0=null;tx=null;st='pause';showMenu('pause');}else if(!document.hidden)audioWake();};
 /* Шоурум (магазин ивента): та же сцена и та же машина, но без меню, дороги-игры и трафика.
    opts.showroom:true → mount возвращает {setSkin,setTrail,setFrame,destroy}; машину можно вращать пальцем/мышью, без касания она медленно крутится сама. */
 if(opts.showroom){
@@ -1344,7 +1348,7 @@ if(opts.showroom){
   destroy(){alive=false;cancelAnimationFrame(raf);ro.disconnect();try{R.dispose();R.forceContextLoss&&R.forceContextLoss()}catch(e){}box0.remove();sty.remove();}};
 }
 addEventListener('keydown',kd);addEventListener('keyup',ku);document.addEventListener('visibilitychange',vis);
-box0.addEventListener('pointerdown',pd);box0.addEventListener('pointermove',pm);box0.addEventListener('pointerup',pu);box0.addEventListener('pointercancel',pu);box0.addEventListener('lostpointercapture',pu);
+box0.addEventListener('pointerdown',pd);box0.addEventListener('pointerdown',audioWake,{passive:true});box0.addEventListener('pointermove',pm);box0.addEventListener('pointerup',pu);box0.addEventListener('pointercancel',pu);box0.addEventListener('lostpointercapture',pu);
 buildPlayer();hearts();
 /* прогрев: компилируем шейдеры и заливаем текстуры в видеопамять заранее, чтобы не было подвисаний при первом появлении объектов */
 try{const tmp=[];try{if(typeof mkGantry==='function'){const g=mkGantry();g.position.set(0,0,-60);scene.add(g);tmp.push(g);}if(typeof mkSign==='function'){const g=mkSign(1);g.position.set(0,0,-70);scene.add(g);tmp.push(g);}}catch(_){}
