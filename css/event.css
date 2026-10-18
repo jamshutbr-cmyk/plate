@@ -329,3 +329,9 @@ html body .plate.sk-ev_f_king::before{border-color:#7b1530}
 @media(max-width:360px){#evC .ev-slots{grid-template-columns:1fr}}
 #evC .ev-slot-t span:last-child{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.2}
 #evC .ev-blat{display:block;margin-top:3px;color:#f1d98a;font-weight:700}#evC .ev-blat.out{color:var(--mut)}
+
+/* Нижняя панель: 7 разделов в одну строку */
+#evC .evn{gap:0;padding:6px 4px}
+#evC .evn button{font-size:10.5px;letter-spacing:-.1px}
+#evC .ev-ni{width:40px}
+@media (min-width:400px){#evC .evn button{font-size:11px}#evC .ev-ni{width:44px}}

@@ -8,6 +8,7 @@ import {banner} from '../ui/modal.js';
 import {plateHTML, titleHTML} from '../ui/plate.js';
 import {S} from '../state.js';
 import {$, esc, fmt} from '../util.js';
+import {bindParts, partsReset, partsSync, partsTab} from './parts.js';
 import {setRoadMode} from './road.js';
 
 // Экран ивента «Полицейский беспредел»: игра, магазин за жетоны, карта сезона, задания, кейс, лидерборд.
@@ -16,7 +17,7 @@ import {setRoadMode} from './road.js';
 let ST=null,TAB='play',SHOP_KIND='title',TOP_KIND='pts',TOP=null,STY={},TRY={},BUSY=false,LOADING=false,LAST=null;
 const ERR={season:'Сейчас нет активного сезона',tokens:'Не хватает жетонов',owned:'Уже куплено',limit:'Лимит на сезон исчерпан',day_limit:'Лимит на сегодня исчерпан',time:'Сейчас недоступно',
   full:'Нет места под номер: освободите коллекцию или сейф',sold_out:'Блат-номера закончились: все выпущены на весь проект',item:'Товар недоступен',progress:'Задание ещё не выполнено',claimed:'Уже получено',pts:'Не хватает очков карты',level:'Нет такого уровня'};
-const TABS={play:'Играть',shop:'Магазин',pass:'Карта',quests:'Задания',case:'Кейс',top:'Топ'};
+const TABS={play:'Играть',shop:'Магазин',parts:'Детали',pass:'Карта',quests:'Задания',case:'Кейс',top:'Топ'};
 const PERIODS={season:'Сезон',week:'Неделя',day:'Сегодня'};
 let PERIOD='season';
 const TOPS={pts:'Очки карты',score:'Работы',chase:'Погоня'};
@@ -36,6 +37,7 @@ const P={
   shop:'M6 8h12l-1 12H7L6 8zM9 8V6.5a3 3 0 016 0V8',
   pass:'M6 20.5a2 2 0 100-4 2 2 0 000 4zM18 7.5a2 2 0 100-4 2 2 0 000 4zM8 18.5h6.5a3 3 0 000-6h-5a3 3 0 010-6H16',
   quests:'M9 4h6v3H9zM7 5.5H5.5v15h13v-15H17M9.5 14l2 2 3.5-4',
+  parts:'M12 2.8l7.4 4.3v8.6L12 20l-7.4-4.3V7.1L12 2.8zM12 9a3 3 0 100 6 3 3 0 000-6z',
   case:'M3.5 8L12 3.5 20.5 8v8L12 20.5 3.5 16V8zM3.5 8L12 12.5 20.5 8M12 12.5v8',
   top:'M8 4h8v5a4 4 0 01-8 0V4zM8 6H4.5v1a3 3 0 003 3M16 6h3.5v1a3 3 0 01-3 3M12 13v4M8.5 20h7',
   title:'M12 3l7.5 3v5.5c0 4.2-3.2 7.4-7.5 9-4.3-1.6-7.5-4.8-7.5-9V6L12 3z',
@@ -303,8 +305,10 @@ function paint(){
   const box=$('evC');if(!box)return;
   if(!ST){box.innerHTML=LOADING?skeleton():fail();return}
   if(!ST.season){box.innerHTML=idle();return}
-  box.innerHTML=SPRITE+head()+`<section class="ev-tab" data-tab="${TAB}">${({play:tabPlay,shop:tabShop,pass:tabPass,quests:tabQuests,case:tabCase,top:tabTop}[TAB])()}</section>`+nav();syncShow()}
+  box.innerHTML=SPRITE+head()+`<section class="ev-tab" data-tab="${TAB}">${({play:tabPlay,shop:tabShop,parts:partsTab,pass:tabPass,quests:tabQuests,case:tabCase,top:tabTop}[TAB])()}</section>`+nav();syncShow();partsSync(TAB=='parts')}
 const top=()=>{try{window.scrollTo({top:0})}catch(e){}};
+// Вкладка «Детали» живёт в parts.js, но данные ивента и перерисовку берёт отсюда
+bindParts({st:()=>ST,paint:()=>paint(),reload:()=>load()});
 
 // Серверный отказ → короткий текст; true, если действие прошло
 function check(r){if(r&&r.ok)return true;banner('Не вышло',ERR[r&&r.err]||'Ошибка сервера');haptic&&haptic('error');return false}
@@ -334,4 +338,4 @@ on({
 // Перерисовка на каждом render() дешёвая (без сети); данные грузим при входе на экран и после каждого действия
 DRAW.evshop=()=>{if(ST)paint()};
 let was=false;
-new MutationObserver(()=>{const now=$('v-evshop').classList.contains('on');if(now&&!was){LAST=null;load()}if(!now&&was)killShow();was=now}).observe($('v-evshop'),{attributes:true,attributeFilter:['class']});
+new MutationObserver(()=>{const now=$('v-evshop').classList.contains('on');if(now&&!was){LAST=null;partsReset();load()}if(!now&&was){killShow();partsSync(false)}was=now}).observe($('v-evshop'),{attributes:true,attributeFilter:['class']});
