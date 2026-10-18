@@ -29,7 +29,11 @@ const left=ms=>{const m=Math.max(0,Math.floor(ms/60000)),d=Math.floor(m/1440),h=
 const tt=iso=>new Date(iso).getTime();
 const day=iso=>new Date(iso).toLocaleDateString('ru-RU');
 const item=id=>ST.items.find(i=>i.id==id);
-const rewardText=rw=>[rw.tokens?fmt(rw.tokens)+' '+plr(rw.tokens,['жетон','жетона','жетонов']):'',...(rw.items||[]).map(id=>{const i=item(id);return i?i.n:id})].filter(Boolean).join(' + ');
+// Блат-номер в награде карты: конкретный номер выдаётся при получении (занятый сервер заменяет свободным), поэтому на карте показываем только тип
+const rwName=i=>i.kind=='plate'&&i.pl&&i.pl.type=='blat'?'Блат-номер':i.n;
+// Реально выданный номер из ответа сервера (ev_grant: main, alt), регион берём из описания приза
+const gotPlate=x=>{const i=item(x.id);return x&&x.kind=='plate'&&x.main?'Блат-номер '+x.main+(i&&i.pl&&i.pl.reg?' '+i.pl.reg:''):null};
+const rewardText=rw=>[rw.tokens?fmt(rw.tokens)+' '+plr(rw.tokens,['жетон','жетона','жетонов']):'',...(rw.items||[]).map(id=>{const i=item(id);return i?rwName(i):id})].filter(Boolean).join(' + ');
 
 // ---------- Иконки (одна линия 1.8, сетка 24) ----------
 const P={
@@ -209,13 +213,13 @@ function tabShop(){
   return (COSM.includes(SHOP_KIND)?look():'')+seg+(KNOTE[SHOP_KIND]?`<p class="ev-note">${KNOTE[SHOP_KIND]}</p>`:'')+(body||'<div class="ev-empty">В этом разделе пока ничего нет</div>')}
 
 // ---------- Карта сезона ----------
-const rewardHTML=rw=>[rw.tokens?`<span class="ev-r">${tok()}${fmt(rw.tokens)}</span>`:'',...(rw.items||[]).map(id=>{const i=item(id);return `<span class="ev-r item">${esc(i?i.n:id)}</span>`})].filter(Boolean).join('');
+const rewardHTML=rw=>[rw.tokens?`<span class="ev-r">${tok()}${fmt(rw.tokens)}</span>`:'',...(rw.items||[]).map(id=>{const i=item(id);return `<span class="ev-r item">${esc(i?rwName(i):id)}</span>`})].filter(Boolean).join('');
 function tabPass(){
   const pts=ST.wallet.pts,p=ST.pass,next=p.find(z=>z.need>pts),prev=[...p].reverse().find(z=>z.need<=pts),last=p[p.length-1];
   const from=prev?prev.need:0,pr=next?Math.min(100,Math.round((pts-from)/(next.need-from)*100)):100;
   return `<div class="ev-card"><div class="ev-sum"><div><span class="ev-lbl">Очки карты за сезон</span><b>${fmt(pts)}</b></div><span class="ev-sum-r">${next?`До уровня ${next.l}: ${fmt(next.need-pts)}`:'Все уровни открыты'}</span></div>
    <div class="ev-bar"><i style="width:${pr}%"></i></div>
-   <p class="ev-note l">Очки дают заезды обоих режимов, не больше ${fmt(ST.limits.pts_cap)} в сутки. Сегодня набрано ${fmt(ST.limits.pts_today)}.</p></div>
+   <p class="ev-note l">Очки дают заезды обоих режимов, не больше ${fmt(ST.limits.pts_cap)} в сутки. Сегодня набрано ${fmt(ST.limits.pts_today)}.${p.some(z=>(z.rw.items||[]).some(id=>{const i=item(id);return i&&isBlat(i)}))?' Блат-номер выдаётся свободный на момент получения.':''}</p></div>
    <div class="ev-rail">`+p.map(z=>{
     const ok=pts>=z.need,st=z.got?'got':ok?'rdy':'lock';
     return `<div class="lv ev-lv ${st}"><span class="ev-node">${z.got?ic('check'):z.l}</span>
@@ -325,9 +329,14 @@ on({
   evTopP:async p=>{PERIOD=p;await loadTop();paint()},
   evReload:()=>load(),
   evPlay:m=>{setRoadMode(m);go('road')},
-  evBuy:id=>act(async()=>{const r=await api.evBuy(id);if(check(r)){TRY={};const i=item(id);banner('Куплено',i?i.n:'');haptic&&haptic('success');await load()}}),
+  evBuy:id=>act(async()=>{const r=await api.evBuy(id);if(check(r)){TRY={};const i=item(id),gp=r.grant&&gotPlate(r.grant);banner('Куплено',gp||(i?i.n:''));haptic&&haptic('success');await load()}}),
   evEquip:a=>act(async()=>{const [slot,id]=a.split('|');const r=await api.evEquip(slot,id);if(check(r)){TRY={};await load()}}),
-  evPass:l=>act(async()=>{const r=await api.evPassClaim(+l);if(check(r)){banner('Награда получена',rewardText({tokens:r.reward_tokens,items:r.items.map(x=>x.id)}));haptic&&haptic('success');await load()}}),
+  evPass:l=>act(async()=>{const r=await api.evPassClaim(+l);if(check(r)){
+    // Сервер мог засчитать уровень, но не выдать приз (например, блат-номера уже разобраны): сверяем с тем, что обещала карта, и говорим прямо.
+    const got=(r.items||[]).map(x=>x.id),z=(ST.pass||[]).find(q=>q.l==+l),miss=((z&&z.rw&&z.rw.items)||[]).filter(id=>!got.includes(id)).map(id=>{const i=item(id);return i?i.n:id});
+    const txt=[r.reward_tokens?rewardText({tokens:r.reward_tokens,items:[]}):'',...(r.items||[]).map(x=>gotPlate(x)||(item(x.id)?rwName(item(x.id)):x.id))].filter(Boolean).join(' + ');
+    banner(miss.length?'Награда получена не полностью':'Награда получена',txt+(miss.length?(txt?' · ':'')+'не выдано: '+miss.join(', '):''));
+    haptic&&haptic(miss.length?'warning':'success');await load()}}),
   evQuest:id=>act(async()=>{const r=await api.evQuestClaim(id);if(check(r)){banner('Задание выполнено','+'+fmt(r.reward)+' '+plr(r.reward,['жетон','жетона','жетонов']));haptic&&haptic('success');await load()}}),
   evCase:()=>act(async()=>{
     const r=await api.evCase();if(!check(r))return;
