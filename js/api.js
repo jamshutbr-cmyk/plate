@@ -192,15 +192,19 @@ export const api={
   return {ok:1,bid:+r.bid,ends:+r.ends_at,extended:!!r.extended}},
  async auctionAck(upto){await rpc('auction_ack',{p_upto:upto})},
  // Ивент «Полицейский беспредел» (event.sql): жетоны, магазин, карта, задания, кейс. Всё считает сервер, клиент только показывает ответ.
- // Бизнес-отказы приходят как {err:'...'}: season, tokens (+need), owned, limit, day_limit, time, full, item, progress, claimed, pts, run, cheat.
+ // Бизнес-отказы приходят как {err:'...'}: season, tokens (+need), owned, limit, day_limit, time, full, sold_out, item, progress, claimed, pts, run, cheat.
  async evState(){return await rpc('ev_state')},
- async evStart(mode){return await rpc('ev_start',{p_mode:mode})},
+ async evStart(mode,car){return await rpc('ev_start',{p_mode:mode,p_car:car||null})},
  async evFinish(run,score,dist,stats){return await rpc('ev_finish',{p_run:run,p_score:Math.floor(score)||0,p_dist:Math.floor(dist)||0,p_stats:stats||{}})},
  async evBuy(id){const r=await rpc('ev_buy',{p_item:id});if(r&&r.ok)await loadPlayer();return r},
  async evEquip(slot,id){const r=await rpc('ev_equip',{p_slot:slot,p_item:id||''});await loadPlayer();return r},
  async evPassClaim(l){const r=await rpc('ev_pass_claim',{p_level:l});if(r&&r.ok)await loadPlayer();return r},
  async evQuestClaim(id){return await rpc('ev_quest_claim',{p_quest:id})},
  async evCase(){return await rpc('ev_case_open')},
+ async evBlat(){return await rpc('ev_blat_left')},   // {left, cap}: сколько блат-номеров осталось на весь проект
+ async cpState(){return await rpc('cp_state')},
+ async cpEquip(car,slot,part){return await rpc('cp_equip',{p_car:car,p_slot:slot,p_part:part||''})},
+ async cpUpgrade(part){return await rpc('cp_upgrade',{p_part:part})},
  // Топ ивента. Период (season|week|day) понимает новая версия ev_top с параметром p_period; со старой сервер ответит ошибкой, тогда
  // молча берём топ за сезон и сообщаем экрану (periods:false), чтобы он спрятал переключатель периодов.
  async evTop(kind,period='season'){

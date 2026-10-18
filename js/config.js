@@ -179,3 +179,14 @@ export const DONATE={
   {id:'dn_nova',slot:'drop',n:'Сверхновая',d:'Звёздные частицы фиолетового, розового и бирюзового'}]};
 export const donateTier=total=>DONATE.tiers.filter(x=>total>=x.need).pop()||null;
 export const donateVal=(p,x2)=>{const m=x2?2:1,g=p.g;return {usd:(g.usd||0)*m,rub:(g.rub||0)*m,luck:g.luck||0,luck2:g.luck2||0,days:g.pass_days||0,items:g.items||[]}};
+
+// Детали машины (ивент). Зеркало supabase/car_parts.sql, совпадение проверяет tests/carparts.test.mjs.
+// Бонус в промилле (20 = +2%): base × rar% × lvl%; цена улучшения жетонами: upBase × (редкость+1) × upStep[уровень-1].
+export const CARPARTS={base:20,cap:200,rar:[100,150,220,320,450],lvlStep:25,maxLvl:5,upBase:100,upStep:[1,2,4,8],
+  run:3,day:8,chance:35,gap:10,pickW:[60,28,10,2],
+  rarN:['Обычная','Необычная','Редкая','Эпическая','Легендарная'],
+  slots:[{k:'engine',n:'Двигатель',st:'acc',ic:'⚙️'},{k:'tires',n:'Шины',st:'grip',ic:'🛞'},{k:'susp',n:'Подвеска',st:'hand',ic:'🔧'},
+         {k:'brakes',n:'Тормоза',st:'brk',ic:'🛑'},{k:'turbo',n:'Турбо',st:'tb',ic:'🌀'},{k:'body',n:'Кузов',st:'dur',ic:'🛡️'}],
+  stats:{acc:'Разгон',grip:'Сцепление',hand:'Управление',brk:'Торможение',tb:'Турбо',dur:'Прочность'}};
+export const cpPm=(rar,lvl)=>{const c=CARPARTS,r=c.rar[Math.min(Math.max(rar|0,0),4)],l=100+c.lvlStep*(Math.min(Math.max(lvl|0||1,1),c.maxLvl)-1);return Math.min(c.cap,Math.floor(c.base*r*l/10000))};
+export const cpCost=(rar,lvl)=>lvl>=1&&lvl<=4?CARPARTS.upBase*(Math.min(Math.max(rar|0,0),4)+1)*CARPARTS.upStep[lvl-1]:null;

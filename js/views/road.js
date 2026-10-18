@@ -4,7 +4,7 @@ import {TG} from '../platform.js';
 import {DRAW, go, render} from '../router.js';
 import {S} from '../state.js';
 import {on} from '../ui/actions.js';
-import {$, fmt} from '../util.js';
+import {$, esc, fmt} from '../util.js';
 import {garageCar} from './garage.js';
 
 // Дорожные работы 3D: готовая игра на three.js (js/vendor/roadworks.js). Она сама рисует меню, HUD и считает очки.
@@ -25,10 +25,13 @@ function myPlate(){
   const g=garageCar(),p=g&&g.plate||S.col.concat(S.safe).sort((a,b)=>b.price-a.price)[0];
   return p&&p.main&&p.reg?p.main+' '+p.reg:null}
 
+const carId=()=>{const g=garageCar();return g&&g.car?g.car.id:null};
 const bar=v=>{$('roadBar').style.display=v?'flex':'none'};
 function result(html){const e=$('roadRes');e.innerHTML=html;e.classList.toggle('on',!!html)}
 function failMsg(){result('<b>Нет связи с сервером</b><span>Награда за этот заезд не начислена</span>')}
 
+// Деталь с трассы: выдаёт сервер по результату заезда (ev_finish), здесь только показ
+const partsLine=res=>{const l=(res.parts||[]).map(x=>x.dup?`${esc(x.n)} (дубль, +${fmt(x.refund)} 🚧)`:esc(x.n));return l.length?`<span>🔧 Деталь: ${l.join(', ')}</span>`:res.pk_plan>0&&res.pk_left===0?'<span>🔧 Суточный лимит деталей достигнут</span>':''};
 async function onGameOver(r){
   bar(true);
   const my=++SEQ,p=RUNP,mode=MODE;
@@ -39,7 +42,7 @@ async function onGameOver(r){
   if(my!==SEQ)return;
   if(res.err){result(res.err=='cheat'?'<b>Заезд не засчитан</b><span>Показатели выше возможных</span>':res.err=='season'?'<b>Сезон закончился</b><span>Жетоны за этот заезд не начислены</span>':r.score>=10?'<b>Жетонов нет</b><span>Заезд слишком короткий</span>':'');return}
   const ex=mode=='chase'?` (дистанция +${fmt(res.bonus)})`:'';
-  result(`<b>+${fmt(res.tokens)} 🚧${res.boosted?' ×2':''}</b><span>${res.capped?'Суточный лимит жетонов достигнут':'Сегодня '+fmt(res.today)+' из '+fmt(res.cap)}${ex} · очки карты +${fmt(res.pts_gain)} · уровень ${res.level}</span>`);
+  result(`<b>+${fmt(res.tokens)} 🚧${res.boosted?' ×2':''}</b><span>${res.capped?'Суточный лимит жетонов достигнут':'Сегодня '+fmt(res.today)+' из '+fmt(res.cap)}${ex} · очки карты +${fmt(res.pts_gain)} · уровень ${res.level}</span>${partsLine(res)}`);
   render(true)}
 
 async function open(){
@@ -54,7 +57,7 @@ async function open(){
     if(!$('v-road').classList.contains('on'))return;               // успели уйти с экрана, пока грузилось
     box.innerHTML='';
     G=window.RoadWorks.mount(box,{plate:myPlate(),best:BEST,mode:MODE,skin:eq.car,trail:eq.trail,frame:eq.frame,
-      onStart:()=>{bar(false);result('');RUNP=api.evStart(MODE).then(r=>r.run||null).catch(e=>{console.error(e);return null})},
+      onStart:()=>{bar(false);result('');RUNP=api.evStart(MODE,carId()).then(r=>{if(r&&r.run&&G&&G.setRun){try{G.setRun({fx:r.fx||null,pk:r.pk|0})}catch(e){console.error(e)}}return r&&r.run||null}).catch(e=>{console.error(e);return null})},
       onGameOver});
     if(TG){try{TG.disableVerticalSwipes&&TG.disableVerticalSwipes();TG.BackButton&&TG.BackButton.show()}catch(e){}}}
   catch(e){console.error(e);box.innerHTML='<div class="rd-load">Не удалось загрузить 3D-игру.<br>Проверьте интернет и попробуйте ещё раз.<button class="btn" data-click="roadRetry">Повторить</button></div>'}

@@ -328,3 +328,4 @@ html body .plate.sk-ev_f_king::before{border-color:#7b1530}
 #evC .ev-slot-t small{font-size:11px}
 @media(max-width:360px){#evC .ev-slots{grid-template-columns:1fr}}
 #evC .ev-slot-t span:last-child{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.2}
+#evC .ev-blat{display:block;margin-top:3px;color:#f1d98a;font-weight:700}#evC .ev-blat.out{color:var(--mut)}

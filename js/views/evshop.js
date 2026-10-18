@@ -15,7 +15,7 @@ import {setRoadMode} from './road.js';
 // Вёрстка: css/event.css (блок «Экран ивента»). Все классы с префиксом ev-, чтобы не пересекаться с остальной игрой.
 let ST=null,TAB='play',SHOP_KIND='title',TOP_KIND='pts',TOP=null,STY={},TRY={},BUSY=false,LOADING=false,LAST=null;
 const ERR={season:'Сейчас нет активного сезона',tokens:'Не хватает жетонов',owned:'Уже куплено',limit:'Лимит на сезон исчерпан',day_limit:'Лимит на сегодня исчерпан',time:'Сейчас недоступно',
-  full:'Нет места под номер: освободите коллекцию или сейф',item:'Товар недоступен',progress:'Задание ещё не выполнено',claimed:'Уже получено',pts:'Не хватает очков карты',level:'Нет такого уровня'};
+  full:'Нет места под номер: освободите коллекцию или сейф',sold_out:'Блат-номера закончились: все выпущены на весь проект',item:'Товар недоступен',progress:'Задание ещё не выполнено',claimed:'Уже получено',pts:'Не хватает очков карты',level:'Нет такого уровня'};
 const TABS={play:'Играть',shop:'Магазин',pass:'Карта',quests:'Задания',case:'Кейс',top:'Топ'};
 const PERIODS={season:'Сезон',week:'Неделя',day:'Сегодня'};
 let PERIOD='season';
@@ -65,9 +65,14 @@ const ART_ROAD='<svg class="ev-art" viewBox="0 0 72 72" aria-hidden="true"><rect
 const ART_CHASE='<svg class="ev-art" viewBox="0 0 72 72" aria-hidden="true"><path d="M12 40a12 12 0 0 1 24 0z" fill="#e5484d"/><path d="M36 40a12 12 0 0 1 24 0z" fill="#2f6bff"/><rect x="8" y="40" width="56" height="10" rx="3" fill="#3a3e4b"/><rect x="8" y="50" width="56" height="3" rx="1.5" fill="#0e0f13"/><path d="M24 22v-6M12 27l-4-4M60 27l4-4M48 22v-6" stroke="#ffffff66" stroke-width="2.5" stroke-linecap="round"/></svg>';
 const ART_CRATE='<svg class="ev-crate" viewBox="0 0 96 84" aria-hidden="true"><rect x="12" y="30" width="72" height="46" rx="6" fill="#23262e" stroke="#0e0f13" stroke-width="3"/><rect x="7" y="16" width="82" height="16" rx="5" fill="#f5b400" stroke="#0e0f13" stroke-width="3"/><rect x="7" y="16" width="82" height="16" rx="5" fill="url(#ev-haz)" opacity=".9"/><rect x="42" y="28" width="12" height="15" rx="2.5" fill="#f5b400" stroke="#0e0f13" stroke-width="2.5"/><text x="48" y="66" text-anchor="middle" font-size="24" font-weight="800" fill="#f5b400" font-family="inherit">?</text></svg>';
 
+let BLAT=null;   // {left, cap}: остаток блат-номеров на весь проект
+const isBlat=i=>i.kind=='plate'&&i.pl&&i.pl.type=='blat';
+const blatOut=i=>isBlat(i)&&BLAT&&BLAT.left<=0;
+const blatLine=i=>isBlat(i)&&BLAT?`<small class="ev-blat${BLAT.left<=0?' out':''}">${BLAT.left>0?'Осталось '+BLAT.left+' из '+BLAT.cap+' на весь проект':'Все '+BLAT.cap+' блат-номеров разобраны'}</small>`:'';
 async function load(){
   LOADING=true;if(!ST)paint();
   try{ST=await api.evState()}catch(e){console.error(e);ST=null}
+  try{BLAT=await api.evBlat()}catch(e){BLAT=null}   // нет функции на сервере или нет связи: просто не показываем остаток
   if(TAB=='top'&&ST)await loadTop();
   LOADING=false;paint()}
 async function loadTop(){
@@ -171,7 +176,7 @@ function look(){
    <div class="ev-slots">${chips}</div></div>`}
 function shopBtns(i){
   const w=ST.wallet,own=i.own&&SLOT_OF[i.kind],eq=equipped(i),soon=i.from&&tt(i.from)>tt(ST.season.now),short=w.tokens<i.p;
-  const main=soon&&!own?`<button type="button" class="ev-btn" disabled>С ${day(i.from)}</button>`:own?`<button type="button" class="ev-btn ghost" data-click="evEquip" data-arg="${i.kind}|${eq?'':i.id}">${eq?'Снять':'Надеть'}</button>`
+  const main=blatOut(i)?`<button type="button" class="ev-btn" disabled>Распродано</button>`:soon&&!own?`<button type="button" class="ev-btn" disabled>С ${day(i.from)}</button>`:own?`<button type="button" class="ev-btn ghost" data-click="evEquip" data-arg="${i.kind}|${eq?'':i.id}">${eq?'Снять':'Надеть'}</button>`
     :`<button type="button" class="ev-btn${short?' short':''}" data-click="evBuy" data-arg="${i.id}">${tok()}${fmt(i.p)}</button>`;
   const side=i.kind=='drop'?`<button type="button" class="ev-eye txt" data-click="fxTest" data-arg="${i.id}" aria-label="Показать эффект">${ic('playb')}</button>`
     :TRYABLE.includes(i.kind)?`<button type="button" class="ev-eye${TRY[i.kind]==i.id?' on':''}" data-click="evTry" data-arg="${i.kind}|${i.id}" aria-label="Примерить">${ic('eye')}</button>`:'';
@@ -190,7 +195,7 @@ function icard(i){
   const b=shopBtns(i);
   return `<div class="ev-it" style="--rl:${rc(i.r)}"><span class="ev-ico">${ic(i.kind)}</span>
     <div class="ev-it-b"><strong class="ev-name">${i.kind=='title'?titleHTML(i.id):esc(i.n)}</strong>
-    <div class="ev-meta"><span class="ev-rar">${rar(i.r).n}</span>${tag(b)}</div>${i.d?`<small>${esc(i.d)}</small>`:''}<div class="ev-pills">${pills(i)}</div></div>
+    <div class="ev-meta"><span class="ev-rar">${rar(i.r).n}</span>${tag(b)}</div>${i.d?`<small>${esc(i.d)}</small>`:''}${blatLine(i)}<div class="ev-pills">${pills(i)}</div></div>
     <div class="ev-it-a">${b.side?`<div class="ev-row2">${b.side}${b.main}</div>`:b.main}${b.need}</div></div>`}
 function tabShop(){
   const kinds=Object.keys(EVENT.kinds).filter(k=>ST.items.some(i=>i.kind==k&&(i.shop||i.own)));
