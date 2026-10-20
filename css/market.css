@@ -86,3 +86,27 @@
 
 /* ряд редкостей листается вбок: правый край плавно гаснет, чтобы было видно продолжение */
 #auC .chips:not(.seg),#mkC .chips:not(.seg){-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent)}
+
+/* поиск игрока на экране «Обмены» */
+.ps{margin-bottom:22px}
+.ps-f{display:flex;align-items:center;gap:10px;padding:0 8px 0 16px;height:56px;border-radius:18px;background:linear-gradient(var(--b1,#242433),var(--card));border:1.5px solid color-mix(in srgb,var(--tx) 12%,transparent);box-shadow:0 6px 22px #0004;transition:border-color .2s,box-shadow .2s}
+.ps-f:focus-within{border-color:var(--ac,#ff7a2f);box-shadow:0 0 0 4px color-mix(in srgb,var(--ac,#ff7a2f) 22%,transparent),0 6px 22px #0004}
+.ps-f i{display:grid;place-items:center;color:var(--mut);flex:none}.ps-f:focus-within i{color:var(--ac,#ff7a2f)}
+.ps-f input{flex:1;min-width:0;height:100%;border:0;outline:0;background:none;color:var(--tx);font:inherit;font-size:17px;font-weight:600}
+.ps-f input::placeholder{color:var(--mut);font-weight:500}
+.ps-x{flex:none;width:36px;height:36px;border:0;border-radius:50%;background:color-mix(in srgb,var(--tx) 10%,transparent);color:var(--mut);font-size:14px;cursor:pointer}.ps-x[hidden]{display:none}
+.ps-r{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.ps-note{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);padding:0 4px}
+.ps-i{display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;border-radius:20px;background:linear-gradient(var(--b1,#242433),var(--card));border:1px solid #ffffff10;cursor:pointer;animation:psin .35s both;transition:transform .12s,border-color .2s}
+.ps-i:hover{border-color:color-mix(in srgb,var(--ac,#ff7a2f) 55%,transparent)}.ps-i:active{transform:scale(.98)}
+.ps-av{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:21px;font-weight:800;color:#fff;background:linear-gradient(135deg,hsl(var(--h) 70% 55%),hsl(calc(var(--h) + 40) 70% 38%));box-shadow:inset 0 0 0 2px #ffffff26}
+.ps-n{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.ps-n b{color:var(--tx);font-size:18px;line-height:1.2;overflow-wrap:anywhere}.ps-n span{font-size:13.5px;color:var(--mut)}
+.ps-n mark{background:none;color:var(--ac,#ff7a2f)}
+.ps-i em{flex:none;display:inline-flex;align-items:center;gap:2px;font-style:normal;font-weight:800;font-size:14px;padding:8px 8px 8px 14px;border-radius:999px;background:color-mix(in srgb,var(--ac,#ff7a2f) 18%,transparent);color:var(--ac,#ff7a2f)}
+.ps-st{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:30px 18px;color:var(--mut)}
+.ps-st i{font-style:normal;font-size:30px;display:grid;place-items:center;width:68px;height:68px;border-radius:50%;background:color-mix(in srgb,var(--tx) 7%,transparent);margin-bottom:6px}.ps-st i svg{width:28px;height:28px}
+.ps-st b{font-size:18px;color:var(--tx)}.ps-st span{font-size:14.5px;line-height:1.4;max-width:290px}.ps-st .btn{margin-top:10px}
+.ps-sk{height:74px;border-radius:20px;background:linear-gradient(90deg,color-mix(in srgb,var(--tx) 5%,transparent),color-mix(in srgb,var(--tx) 11%,transparent),color-mix(in srgb,var(--tx) 5%,transparent)) 0 0/200% 100%;animation:pssk 1.2s linear infinite}
+@keyframes psin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes pssk{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.ps-i,.ps-sk{animation:none}}
