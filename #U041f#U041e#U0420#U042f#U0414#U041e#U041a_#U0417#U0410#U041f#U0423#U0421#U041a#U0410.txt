@@ -1,0 +1,9 @@
+Если referral.sql и media.sql у вас УЖЕ выполнялись:
+ 1) supabase/ref_scale.sql  (новые награды «Друзей»)
+ 2) supabase/referral.sql   (обновит лестницу)
+ 3) supabase/media.sql      (исправленный, кейс «Медиа» удалён)
+Если нет: referral.sql, затем media.sql. После schema, bank, auction, bans.
+Edge Functions: tg-auth (--no-verify-jwt), media-proof, ref-cron (--no-verify-jwt), media-named (--no-verify-jwt).
+Storage: закрытый бакет media-proofs. Секреты: BOT_TOKEN, CHANNEL, CRON_SECRET, STAFF_CHAT_ID.
+Фронт: залить index.html, css/, js/. В js/env.js вписать REF_LINK_BASE.
+Подробно: docs/REFERRAL_MEDIA.md

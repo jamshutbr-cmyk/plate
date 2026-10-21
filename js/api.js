@@ -262,6 +262,8 @@ export const api={
  // Медиа (media.sql). МК и обмен считает сервер; после операций с деньгами сверяем игрока.
  async mediaState(){return await rpc('media_state')},
  async mediaAccountAdd(platform,url){return await rpc('media_account_add',{p_platform:platform,p_url:url})},
+ // Автопроверка аккаунта (сейчас YouTube): Edge Function media-verify ищет код в описании канала или в комментарии канала. Ответ {ok,status,via} или {ok:false,reason}
+ async mediaVerify(id){const {data,error}=await sb.functions.invoke('media-verify',{body:{id}});if(error)return {ok:false,reason:await errCode(error)};return data},
  async mediaPostAdd(url){return await rpc('media_post_add',{p_url:url})},
  async mediaPostContest(id,on){return await rpc('media_post_contest',{p_post:id,p_on:!!on})},
  async mediaViewsClaim(post,views,proof){return await rpc('media_views_claim',{p_post:post,p_views:views,p_proof:proof})},

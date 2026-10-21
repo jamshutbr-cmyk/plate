@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Штаб · Медиа</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:var(--tg-theme-bg-color,#0f1115);--card:var(--tg-theme-secondary-bg-color,#181b22);--tx:var(--tg-theme-text-color,#e8eaf0);--hint:var(--tg-theme-hint-color,#8b93a7);
+  --acc:var(--tg-theme-button-color,#3b82f6);--acct:var(--tg-theme-button-text-color,#fff);--ok:#22c55e;--bad:#ef4444;--warn:#f59e0b;--line:rgba(127,127,127,.22);color-scheme:light dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top,0) 0 calc(24px + env(safe-area-inset-bottom,0))}
+header{display:flex;align-items:center;gap:10px;padding:12px 14px 4px}
+header h1{font-size:18px;margin:0;flex:1}
+.role{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--card);color:var(--hint);border:1px solid var(--line)}
+nav{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;scrollbar-width:none;position:sticky;top:0;background:var(--bg);z-index:5}
+nav::-webkit-scrollbar{display:none}
+nav button,.chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:99px;padding:7px 13px;font:inherit;cursor:pointer}
+nav button.a,.chip.a{background:var(--acc);color:var(--acct);border-color:transparent}
+nav .n{display:inline-block;min-width:18px;margin-left:5px;padding:0 5px;border-radius:99px;background:var(--bad);color:#fff;font-size:11px;text-align:center}
+main{padding:6px 14px;max-width:760px;margin:0 auto}
+.chips{display:flex;gap:6px;margin:6px 0 10px;flex-wrap:wrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.card h3{margin:0 0 6px;font-size:15px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.sub{color:var(--hint);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-size:20px}
+.code{font:600 15px ui-monospace,Menlo,monospace;background:var(--bg);border:1px dashed var(--line);border-radius:8px;padding:3px 8px;display:inline-block;user-select:all}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.btn{border:0;border-radius:10px;padding:8px 13px;font:inherit;font-weight:600;cursor:pointer;background:var(--acc);color:var(--acct)}
+.btn.ok{background:var(--ok);color:#fff}.btn.bad{background:var(--bad);color:#fff}.btn.ghost{background:transparent;color:var(--tx);border:1px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:default}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--hint);white-space:nowrap}
+.tag.ok{color:var(--ok);border-color:var(--ok)}.tag.bad{color:var(--bad);border-color:var(--bad)}.tag.warn{color:var(--warn);border-color:var(--warn)}
+a{color:var(--acc);word-break:break-all}
+input,select{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin:4px 0}
+label{display:block;font-size:13px;color:var(--hint);margin-top:8px}
+.empty{text-align:center;color:var(--hint);padding:30px 0}
+.bar{height:8px;border-radius:99px;background:var(--bg);border:1px solid var(--line);overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--acc)}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--bg);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0));max-height:90vh;overflow:auto}
+.sheet img{width:100%;border-radius:10px}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 15px;border-radius:99px;z-index:30;font-size:14px;max-width:90vw}
+.deny{padding:60px 20px;text-align:center}
+</style>
+</head>
+<body>
+<div id="app"><div class="empty">Загрузка…</div></div>
+<script type="module">
+import {SUPABASE_URL} from '../js/env.js';
+const TG = window.Telegram && Telegram.WebApp;
+if (TG) { try { TG.ready(); TG.expand(); } catch (_) {} }
+const API = SUPABASE_URL + '/functions/v1/media-admin';
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const fmt = n => new Intl.NumberFormat('ru-RU').format(Number(n || 0));
+const when = ms => ms ? new Date(Number(ms)).toLocaleString('ru-RU', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'}) : '';
+const safeUrl = u => /^https:\/\//i.test(u || '') ? u : '#';
+const ROLE = ['', 'стажёр', 'модератор', 'старший модератор', 'админ', 'главный админ'];
+const PT = {'19.1': 'Мультиаккаунты', '19.2': 'Самореферал', '19.3': 'Накрутка', '19.4': 'Подмена скриншота', '19.5': 'Чужой контент', '19.6': 'Нарушение правил', '19.7': 'Раннее удаление', '19.8': 'Продажа МК/аккаунтов', '19.9': 'Спам реф-ссылкой', '19.10': 'Ложные обещания', '19.11': 'Давление на проверяющих', '19.12': 'Обход лимитов'};
+const ERR = {role: 'Недостаточно прав', state: 'Уже обработано', point: 'Нужен пункт правил', account: 'Аккаунт игрока не подтверждён', bad: 'Недопустимое значение', auth: 'Сессия устарела: закройте и откройте админку заново', no_access: 'Нет доступа', server: 'Ошибка сервера', manual: 'Автопроверка для этого аккаунта недоступна', nofile: 'Файл не найден', taken: 'Этот канал уже подтверждён другим игроком', notfound: 'Канал не найден', nocode: 'Код не найден ни в описании, ни в комментариях канала', unsupported: 'Ссылка вида /c/…: проверьте вручную', api: 'YouTube не ответил', nokey: 'На сервере нет YOUTUBE_API_KEY'};
+const LAST = {nocode: 'кода не нашли', notfound: 'канал не найден', unsupported: 'ссылка /c/… только вручную', api: 'ошибка YouTube', nokey: 'нет ключа API', taken: 'канал занят', ok: 'код найден'};
+const VIA = {auto_description: 'авто · описание', auto_comment: 'авто · комментарий', staff: 'вручную'};
+const PLAT = {youtube: 'YouTube', tiktok: 'TikTok', instagram: 'Instagram', vk: 'VK'};
+const ST = {pending: 'ждёт', needs_fix: 'доработка', verified: 'подтверждён', rejected: 'отклонён', revoked: 'отозван', approved: 'одобрен', removed: 'снят', issued: 'выдан'};
+
+const S = {me: null, tab: 'home', st: 'pending', data: null, rows: [], busy: false, q: '', counts: null};
+
+async function call(action, body = {}) {
+  const r = await fetch(API, {method: 'POST', headers: {'Content-Type': 'application/json', 'x-init-data': (TG && TG.initData) || ''}, body: JSON.stringify({action, ...body})});
+  const j = await r.json().catch(() => ({error: 'server'}));
+  if (!r.ok) throw Object.assign(new Error(j.error || 'server'), {code: j.error || 'server'});
+  return j;
+}
+const errText = e => ERR[e && (e.code || e.err)] || 'Не получилось, попробуйте ещё раз';
+function toast(t) { const el = document.createElement('div'); el.className = 'toast'; el.textContent = t; document.body.append(el); setTimeout(() => el.remove(), 2600); }
+// Результат действия: сервер отвечает { ok } или { err }
+function done(r, okText) { if (r && r.err) { toast(ERR[r.err] || 'Ошибка: ' + r.err); return false; } toast(okText || 'Готово'); return true; }
+
+// Свой диалог: prompt() в Telegram работает не везде
+function dialog({title, fields = [], ok = 'Подтвердить', danger = false, html = ''}) {
+  return new Promise(res => {
+    const m = document.createElement('div'); m.className = 'mask';
+    m.innerHTML = `<div class="sheet"><h3 style="margin:0 0 6px">${esc(title)}</h3>${html}${fields.map((f, i) => `<label>${esc(f.label)}${f.type === 'select'
+      ? `<select data-f="${i}">${f.options.map(([v, t]) => `<option value="${esc(v)}">${esc(t)}</option>`).join('')}</select>`
+      : f.type === 'check' ? `<input type="checkbox" data-f="${i}" style="width:auto;margin-left:8px">`
+      : `<input data-f="${i}" type="${f.type || 'text'}" value="${esc(f.value ?? '')}" placeholder="${esc(f.ph || '')}" maxlength="${f.max || 200}">`}</label>`).join('')}
+      <div class="acts"><button class="btn ${danger ? 'bad' : ''}" data-ok>${esc(ok)}</button><button class="btn ghost" data-no>Отмена</button></div></div>`;
+    const close = v => { m.remove(); res(v); };
+    m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-no]')) close(null); if (e.target.closest('[data-ok]')) close(fields.map((f, i) => { const el = m.querySelector(`[data-f="${i}"]`); return f.type === 'check' ? el.checked : el.value; })); });
+    document.body.append(m);
+  });
+}
+
+async function guard(fn) {
+  if (S.busy) return; S.busy = true;
+  try { await fn(); } catch (e) { toast(errText(e)); } finally { S.busy = false; }
+}
+
+// ---------- Вкладки ----------
+const TABS = [['home', 'Обзор', 1], ['accounts', 'Аккаунты', 2], ['posts', 'Ролики', 2], ['views', 'Просмотры', 2], ['named', 'Именные', 4], ['players', 'Игроки', 2], ['settings', 'Настройки', 4], ['audit', 'Журнал', 3]];
+function shell(body) {
+  const lv = S.me.level, c = S.counts || {};
+  const badge = k => c[k] ? `<span class="n">${c[k]}</span>` : '';
+  $('#app').innerHTML = `<header><h1>Штаб · Медиа</h1><span class="role">${esc(S.me.name)} · ${ROLE[lv]}</span></header>
+   <nav>${TABS.filter(t => lv >= t[2]).map(([k, n]) => `<button class="${S.tab === k ? 'a' : ''}" data-tab="${k}">${n}${badge(k)}</button>`).join('')}</nav><main>${body}</main>`;
+}
+async function go(tab) {
+  S.tab = tab; S.st = 'pending'; S.q = '';
+  await guard(async () => { await refreshCounts(); await load(); });
+}
+async function refreshCounts() {
+  try { const r = await call('stats'); const q = r.stats || {}; S.stats = q; S.counts = {accounts: q.queue_accounts, posts: q.queue_posts, views: q.queue_views}; } catch (_) {}
+}
+async function load() {
+  const t = S.tab;
+  if (t === 'home') { render(); return; }
+  if (['accounts', 'posts', 'views', 'named'].includes(t)) { const r = await call('list', {kind: t, status: S.st}); S.rows = r.rows || []; if (r.err) toast(ERR[r.err]); }
+  else if (t === 'settings') S.data = await call('settings');
+  else if (t === 'audit') S.rows = (await call('audit')).rows || [];
+  else if (t === 'players') S.rows = S.q.length >= 2 ? (await call('players', {q: S.q})).rows || [] : [];
+  render();
+}
+function render() {
+  const t = S.tab;
+  if (t === 'home') return shell(home());
+  if (t === 'accounts') return shell(chips() + (S.rows.map(accountCard).join('') || empty()));
+  if (t === 'posts') return shell(chips() + (S.rows.map(postCard).join('') || empty()));
+  if (t === 'views') return shell(chips() + (S.rows.map(viewCard).join('') || empty()));
+  if (t === 'named') return shell(chips() + (S.rows.map(namedCard).join('') || empty()));
+  if (t === 'players') return shell(playersView());
+  if (t === 'settings') return shell(settingsView());
+  if (t === 'audit') return shell(S.rows.map(a => `<div class="card"><div class="row"><b>${esc(a.what)}</b><span class="sub">${when(a.at)}</span></div><div class="sub">${a.who ? 'tg ' + esc(a.who) : 'система'}${a.ref ? ' · ' + esc(a.ref) : ''}</div>${a.data && Object.keys(a.data).length ? `<div class="sub">${esc(JSON.stringify(a.data))}</div>` : ''}</div>`).join('') || empty());
+}
+const empty = () => '<div class="empty">Пусто</div>';
+const chips = () => `<div class="chips">${[['pending', 'Ждут'], ['needs_fix', 'Доработка'], ['done', 'Обработано']].filter(c => !(S.tab === 'named' && c[0] === 'needs_fix')).map(([k, n]) => `<button class="chip ${S.st === k ? 'a' : ''}" data-st="${k}">${n}</button>`).join('')}</div>`;
+
+// ---------- Обзор ----------
+function home() {
+  const s = S.stats || {}, used = Number(s.pool_used || 0), pool = Number(s.pool || 0);
+  return `<div class="grid"><div class="stat"><b>${fmt(s.queue_accounts)}</b><span class="sub">аккаунтов ждут</span></div><div class="stat"><b>${fmt(s.queue_posts)}</b><span class="sub">роликов ждут</span></div>
+    <div class="stat"><b>${fmt(s.queue_views)}</b><span class="sub">заявок на просмотры</span></div><div class="stat"><b>${fmt(s.authors)}</b><span class="sub">авторов</span></div></div>
+   <div class="card" style="margin-top:10px"><h3>Выплаты за месяц</h3><b>${fmt(s.paid_month)} МК</b><div class="sub">Пул: ${fmt(used)} из ${fmt(pool)} МК · заморожено выплат: ${fmt(s.queued_payouts)}</div><div class="bar"><i style="width:${pool ? Math.min(100, used / pool * 100) : 0}%"></i></div></div>
+   <div class="card"><h3>Как это работает</h3><div class="sub">Аккаунты YouTube проверяются автоматически: игрок кладёт код в описание канала или пишет его комментарием от имени канала под своим видео и жмёт «Проверить». Сюда попадают только те, у кого не получилось, и аккаунты других платформ.</div></div>`;
+}
+
+// ---------- Карточки очередей ----------
+function accountCard(a) {
+  const open = ['pending', 'needs_fix'].includes(a.status), yt = a.platform === 'youtube';
+  const cls = a.status === 'verified' ? 'ok' : a.status === 'rejected' || a.status === 'revoked' ? 'bad' : 'warn';
+  return `<div class="card"><div class="row"><div><b>${PLAT[a.platform] || esc(a.platform)} · <a href="${esc(safeUrl(a.url))}" target="_blank" rel="noopener noreferrer">${esc(a.handle)}</a></b><div class="sub">${esc(a.nick)} · tg ${esc(a.tg_id)} · ${when(a.at)}</div></div><span class="tag ${cls}">${ST[a.status] || esc(a.status)}</span></div>
+   <div style="margin-top:8px">Код: <span class="code">${esc(a.code)}</span></div>
+   <div class="sub" style="margin-top:6px">${a.verified_via ? 'Подтверждён: ' + (VIA[a.verified_via] || esc(a.verified_via)) + '. ' : ''}${yt ? `Попыток автопроверки: ${a.tries}${a.last_result ? ' · итог: ' + (LAST[a.last_result] || esc(a.last_result)) : ''}` : 'Автопроверки для этой платформы нет: откройте профиль и найдите код'}</div>
+   ${open ? `<div class="acts">${yt ? `<button class="btn" data-act="recheck" data-id="${a.id}">Проверить сам</button>` : ''}<button class="btn ok" data-act="rv" data-kind="account" data-d="ok" data-id="${a.id}">Принять</button><button class="btn ghost" data-act="rv" data-kind="account" data-d="fix" data-id="${a.id}">Доработка</button><button class="btn bad" data-act="rv" data-kind="account" data-d="no" data-id="${a.id}">Отклонить</button></div>` : ''}</div>`;
+}
+function postCard(p) {
+  const open = ['pending', 'needs_fix'].includes(p.status);
+  return `<div class="card"><div class="row"><div><b><a href="${esc(safeUrl(p.url))}" target="_blank" rel="noopener noreferrer">${esc(String(p.url).replace('https://', ''))}</a></b><div class="sub">${esc(p.nick)} · ${PLAT[p.platform] || ''} ${esc(p.handle || '')} · ${when(p.at)}</div></div><span class="tag ${p.status === 'approved' ? 'ok' : p.status === 'rejected' || p.status === 'removed' ? 'bad' : 'warn'}">${ST[p.status] || esc(p.status)}</span></div>
+   ${p.point ? `<div class="sub">Причина: п. ${esc(p.point)}</div>` : ''}${p.status === 'approved' ? `<div class="sub">Подтверждено просмотров: ${fmt(p.views)}</div>` : ''}
+   ${open ? `<div class="acts"><button class="btn ok" data-act="rv" data-kind="post" data-d="ok" data-id="${p.id}">Принять</button><button class="btn ghost" data-act="rv" data-kind="post" data-d="fix" data-id="${p.id}">Доработка</button><button class="btn bad" data-act="rv" data-kind="post" data-d="no" data-id="${p.id}">Отклонить</button></div>` : ''}
+   ${p.status === 'approved' ? `<div class="acts"><button class="btn bad" data-act="remove" data-id="${p.id}">Снять ролик</button></div>` : ''}</div>`;
+}
+function viewCard(c) {
+  const open = ['pending', 'needs_fix'].includes(c.status);
+  return `<div class="card"><div class="row"><div><b>${fmt(c.views)} просмотров</b> <span class="sub">(подтверждено ${fmt(c.ok_views)})</span><div class="sub">${esc(c.nick)} · ${when(c.at)}</div><div class="sub"><a href="${esc(safeUrl(c.post))}" target="_blank" rel="noopener noreferrer">${esc(String(c.post).replace('https://', ''))}</a></div></div><span class="tag ${c.senior ? 'warn' : ''}">${c.senior ? 'старший' : ST[c.status] || esc(c.status)}</span></div>
+   <div class="acts"><button class="btn ghost" data-act="proof" data-path="${esc(c.proof)}">Скриншот</button>${open ? `<button class="btn ok" data-act="rv" data-kind="views" data-d="ok" data-id="${c.id}">Принять</button><button class="btn ghost" data-act="rv" data-kind="views" data-d="fix" data-id="${c.id}">Доработка</button><button class="btn bad" data-act="rv" data-kind="views" data-d="no" data-id="${c.id}">Отклонить</button>` : ''}</div></div>`;
+}
+function namedCard(q) {
+  return `<div class="card"><div class="row"><div><b>${esc(q.body)}</b><div class="sub">${esc(q.nick)} · ${q.src === 'media' ? 'Топ-медиа' : '500 друзей'}${q.reg ? ' · регион ' + esc(q.reg) : ''} · ${when(q.at)}</div></div><span class="tag">${ST[q.status] || esc(q.status)}</span></div>
+   ${q.status === 'pending' ? `<div class="acts"><button class="btn ok" data-act="named" data-d="ok" data-id="${q.id}">Одобрить и выдать</button><button class="btn bad" data-act="named" data-d="no" data-id="${q.id}">Отклонить</button></div>` : ''}</div>`;
+}
+
+// ---------- Игроки ----------
+function playersView() {
+  return `<div class="card"><input id="q" placeholder="Ник или tg id" value="${esc(S.q)}" maxlength="60"><div class="acts"><button class="btn" data-act="search">Найти</button></div></div>` +
+    (S.rows.map(p => `<div class="card"><div class="row"><div><b>${esc(p.nick)}</b><div class="sub">tg ${esc(p.tg_id)} · уровень ${p.level ?? '—'} · ${fmt(p.coins)} МК${p.debt > 0 ? ' · долг ' + fmt(p.debt) : ''} · роликов ${p.posts}</div></div></div>
+     ${(p.accounts || []).map(a => `<div class="sub">${PLAT[a.platform] || esc(a.platform)} ${esc(a.handle)} — ${ST[a.status] || esc(a.status)}${a.via ? ' (' + (VIA[a.via] || esc(a.via)) + ')' : ''}</div>`).join('')}
+     <div class="acts"><button class="btn ghost" data-act="level" data-id="${esc(p.id)}">Уровень</button><button class="btn bad" data-act="annul" data-id="${esc(p.id)}">Аннулировать награды</button></div></div>`).join('') || (S.q.length >= 2 ? empty() : '<div class="empty">Введите ник или tg id</div>'));
+}
+
+// ---------- Настройки ----------
+function settingsView() {
+  const d = S.data || {}, r = d.rates || {}, p = d.pool || {};
+  if (d.err) return `<div class="empty">${esc(ERR[d.err] || 'Нет доступа')}</div>`;
+  return `<div class="card"><div class="row"><div><b>Программа «Медиа»</b><div class="sub">Выключение останавливает подачу и выплаты для всех</div></div><button class="btn ${d.on ? 'bad' : 'ok'}" data-act="program" data-on="${d.on ? 0 : 1}">${d.on ? 'Выключить' : 'Включить'}</button></div></div>
+   <div class="card"><div class="row"><div><b>Автопроверка YouTube</b><div class="sub">Выключено — все аккаунты идут штабу вручную</div></div><button class="btn ${d.auto_verify ? 'bad' : 'ok'}" data-act="auto" data-on="${d.auto_verify ? 0 : 1}">${d.auto_verify ? 'Выключить' : 'Включить'}</button></div></div>
+   <div class="card"><b>Месячный пул</b><div class="sub">Использовано ${fmt(p.used)} из ${fmt(p.total)} МК</div><div class="bar"><i style="width:${p.total ? Math.min(100, p.used / p.total * 100) : 0}%"></i></div><div class="acts"><button class="btn ghost" data-act="pool">Изменить пул</button></div></div>
+   <div class="card"><b>Курс и лимиты</b><div class="sub">1 МК = ${esc(r.rub)} ₽ · ${esc(r.usd)} $ · комиссия ${esc(r.fee)}% · лимит обмена ${fmt(r.conv)} МК · потолок в месяц ${fmt(r.cap)} МК</div>
+   ${r.pending ? `<div class="sub" style="color:var(--warn)">Ожидает с ${when(r.pending_at)}: ${esc(JSON.stringify(r.pending))}</div>` : ''}<div class="acts"><button class="btn ghost" data-act="rates">Изменить</button></div><div class="sub">Новый курс вступает в силу со следующих суток.</div></div>`;
+}
+
+// ---------- Действия ----------
+async function review(kind, id, d) {
+  let point = null;
+  if (d === 'no') {
+    const v = await dialog({title: 'Причина отказа', fields: [{label: 'Пункт правил', type: 'select', options: Object.entries(PT).map(([k, t]) => [k, k + ' ' + t])}], ok: 'Отклонить', danger: true});
+    if (!v) return; point = v[0];
+  }
+  const r = await call('review', {kind, id: Number(id), decision: d, point});
+  if (done(r, d === 'ok' ? 'Принято' : d === 'fix' ? 'Отправлено на доработку' : 'Отклонено')) await load();
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab],[data-st],[data-act]'); if (!t) return;
+  if (t.dataset.tab) return void go(t.dataset.tab);
+  if (t.dataset.st) { S.st = t.dataset.st; return void guard(load); }
+  const a = t.dataset.act, id = t.dataset.id;
+  guard(async () => {
+    if (a === 'rv') return review(t.dataset.kind, id, t.dataset.d);
+    if (a === 'recheck') {
+      toast('Проверяем…');
+      const r = await call('recheck', {id: Number(id)});
+      if (r.ok) { toast('Код найден, аккаунт подтверждён'); await refreshCounts(); await load(); } else toast(ERR[r.reason || r.err] || 'Не подтвердилось');
+      return;
+    }
+    if (a === 'proof') { const r = await call('proof', {path: t.dataset.path}); if (r.err) return void toast(ERR[r.err] || 'Нет файла'); const m = document.createElement('div'); m.className = 'mask'; m.innerHTML = `<div class="sheet"><img alt="Скриншот статистики" src="${esc(r.url)}"><div class="acts"><button class="btn ghost" data-close>Закрыть</button></div><div class="sub">Ссылка действует 5 минут.</div></div>`; m.addEventListener('click', ev => { if (ev.target === m || ev.target.closest('[data-close]')) m.remove(); }); document.body.append(m); return; }
+    if (a === 'named') { const r = await call('named', {id: Number(id), decision: t.dataset.d}); if (done(r, r.issued === false ? 'Одобрено, но номер не выдан: ' + (r.detail || '') : 'Готово')) await load(); return; }
+    if (a === 'remove') {
+      const v = await dialog({title: 'Снять ролик', fields: [{label: 'Причина (увидит игрок)', max: 120}, {label: 'Мошенничество: отозвать и уже выплаченное', type: 'check'}], ok: 'Снять', danger: true}); if (!v) return;
+      const r = await call('post_remove', {id: Number(id), reason: v[0], fraud: v[1]}); if (done(r, 'Ролик снят')) await load(); return;
+    }
+    if (a === 'search') { S.q = ($('#q').value || '').trim(); return load(); }
+    if (a === 'level') {
+      const v = await dialog({title: 'Изменить уровень', fields: [{label: 'Уровень', type: 'select', options: [[1, '1 · Автор'], [2, '2 · Блогер'], [3, '3 · Топ-медиа']]}, {label: 'Причина', max: 120}], ok: 'Сохранить'}); if (!v) return;
+      done(await call('set_level', {player: id, level: Number(v[0]), reason: v[1]}), 'Уровень изменён'); return load();
+    }
+    if (a === 'annul') {
+      const v = await dialog({title: 'Аннулировать награды', html: '<div class="sub">Пункты 19.1–19.5, 19.8. Нужна роль старшего модератора.</div>', fields: [{label: 'За сколько последних дней', type: 'number', value: 90}, {label: 'Причина', max: 120}], ok: 'Аннулировать', danger: true}); if (!v) return;
+      const r = await call('annul', {player: id, days: Number(v[0]), reason: v[1]}); done(r, 'Отозвано записей: ' + (r.rows ?? 0)); return;
+    }
+    if (a === 'program' || a === 'auto') { const on = t.dataset.on === '1'; if (done(await call(a, {on}), on ? 'Включено' : 'Выключено')) return load(); return; }
+    if (a === 'pool') {
+      const v = await dialog({title: 'Месячный пул, МК', fields: [{label: 'Новый размер', type: 'number', value: S.data.pool.total}], ok: 'Сохранить'}); if (!v) return;
+      if (done(await call('pool', {pool: Number(v[0])}))) return load(); return;
+    }
+    if (a === 'rates') {
+      const r0 = S.data.rates;
+      const v = await dialog({title: 'Курс и лимиты', fields: [{label: '₽ за 1 МК', type: 'number', value: r0.rub}, {label: '$ за 1 МК', type: 'number', value: r0.usd}, {label: 'Комиссия, %', type: 'number', value: r0.fee}, {label: 'Лимит обмена на игрока, МК', type: 'number', value: r0.conv}, {label: 'Потолок начислений в месяц, МК', type: 'number', value: r0.cap}], ok: 'Сохранить'}); if (!v) return;
+      if (done(await call('rates', {rub: v[0], usd: v[1], fee: v[2], conv: v[3], cap: v[4]}), 'Вступит в силу со следующих суток')) return load();
+    }
+  });
+});
+
+(async () => {
+  try {
+    if (!TG || !TG.initData) { $('#app').innerHTML = '<div class="deny"><h2>Откройте из Telegram</h2><div class="sub">Админка работает как Mini App бота: вход по подписи Telegram.</div></div>'; return; }
+    S.me = await call('me');
+    await refreshCounts();
+    render();
+  } catch (e) {
+    $('#app').innerHTML = `<div class="deny"><h2>${e.code === 'no_access' ? 'Нет доступа' : 'Не удалось войти'}</h2><div class="sub">${esc(ERR[e.code] || 'Попробуйте открыть заново')}</div></div>`;
+  }
+})();
+// Обновляем счётчики очереди, когда окно возвращается на экран
+document.addEventListener('visibilitychange', () => { if (!document.hidden && S.me && !S.busy) guard(async () => { await refreshCounts(); if (['home', 'accounts', 'posts', 'views', 'named'].includes(S.tab)) await load(); }); });
+</script>
+</body>
+</html>
