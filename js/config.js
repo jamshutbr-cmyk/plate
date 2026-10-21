@@ -195,12 +195,12 @@ export const cpCost=(rar,lvl)=>lvl>=1&&lvl<=4?CARPARTS.upBase*(Math.min(Math.max
 // Зеркало нужно только для показа прогресса, сверяет tests/referral.test.mjs. Клиент ничего не начисляет.
 export const REF={alphabet:'ABCDEFGHJKMNPQRSTUVWXYZ23456789',codeLen:8,bindHours:24,page:20,ledger:30,
  stages:[{code:0,t:'Пришёл'},{code:1,t:'Освоился',rolls:30},{code:2,t:'Играет',rolls:100,days:3,window:10},{code:3,t:'Свой',ageDays:14}],
- welcome:{rub:5000,luck:10},
- reward:{stage1:2000,stage2:10000,stage2Luck:10,stage2Ref:15000,stage3:20000},
+ welcome:{rub:500000,luck:30},
+ reward:{stage1:200000,stage1Luck:10,stage2:1000000,stage2Luck:30,stage2Ref:1500000,stage3:2000000,stage3Luck:50},
  hold:{stage1:24,stage2:72,stage3:72,ladder:72},
- limits:{bindDay:30,actDay:15,playerCapRub:300000,speedHours:6,ringRub:100000,clusterN:5},revokeDays:30,
- ladder:[{n:1,rub:10000},{n:3,luck:15,item:'ref_f_own',t:'Рамка «Свой человек»'},{n:5,rub:50000},{n:10,luck:100,item:'ref_t_recruiter',t:'Титул «Вербовщик»'},{n:25,t:'Номер серии «Друзья»'},
-  {n:50,rub:500000,item:'ref_d_column',t:'Эффект «Колонна»'},{n:100,item:'ref_t_leader',t:'Редкий номер серии и титул «Лидер сети»'},{n:250,t:'Машина из гаража'},{n:500,t:'Именной номер по заявке'}],
+ limits:{bindDay:30,actDay:15,playerCapRub:30000000,speedHours:6,ringRub:10000000,clusterN:5},revokeDays:30,
+ ladder:[{n:1,rub:1000000,luck:20},{n:3,luck:30,item:'ref_f_own',t:'Рамка «Свой человек»'},{n:5,rub:5000000,luck:50},{n:10,luck:100,item:'ref_t_recruiter',t:'Титул «Вербовщик»'},{n:25,rub:10000000,t:'Номер серии «Друзья»'},
+  {n:50,rub:50000000,luck:200,item:'ref_d_column',t:'Эффект «Колонна»'},{n:100,rub:100000000,item:'ref_t_leader',t:'Редкий номер серии и титул «Лидер сети»'},{n:250,rub:250000000,t:'Редкий номер серии и 250 млн'},{n:500,t:'Именной номер по заявке'}],
  items:[{id:'ref_t_invited',n:'По приглашению',slot:'title',c:'#9aa3b8'},{id:'ref_t_recruiter',n:'Вербовщик',slot:'title',c:'#f0b429'},{id:'ref_t_leader',n:'Лидер сети',slot:'title',c:'#ececf1'},
   {id:'ref_f_own',n:'Свой человек',slot:'skin',d:'Графитовая рамка с жёлтой кромкой'},{id:'ref_d_column',n:'Колонна',slot:'drop',d:'Серые и жёлтые частицы колонной'}]};
 // Медиа-программа (supabase/media.sql). МК нельзя купить, продать или передать. Зеркало для показа, сверяет tests/media.test.mjs.
@@ -212,7 +212,7 @@ export const MEDIA={platforms:[['tiktok','TikTok'],['youtube','YouTube Shorts'],
  plate:{base:3000,round:8000,top:25000,popRegs:['77','99','177','777','78','178','97'],popPct:20},
  // eq — во сколько ₽ оценивается такой же предмет у нас в магазине за рубли (SHOP): нужен только тесту «магазин выгоднее обмена»
  shop:[{id:'med_frame',t:'Рамка «Эфир»',p:1500,eq:2500000},{id:'med_title',t:'Титул «Медиа»',p:800,eq:2000000},{id:'med_drop',t:'Эффект «Запись»',p:2500,eq:2500000},{id:'med_bg',t:'Фон «Студия»',p:1200,eq:1500000},
-  {id:'med_case',t:'Кейс «Медиа»',p:500,perMonth:10,eq:600000},{id:'med_luck',t:'Прокруты удачи ×10',p:200,perMonth:10,eq:30000}],
+  {id:'med_luck',t:'Прокруты удачи ×10',p:200,perMonth:10,eq:30000}],
  series:['КЕК','МЕМ','ТОК','РЕК','ВАУ','ХАХ'],seriesLetters:'АВЕКМНОРСТУХ',
  points:{'19.3':'Накрутка','19.4':'Подмена скриншота','19.5':'Чужой контент','19.6':'Нарушение правил','19.12':'Обход лимитов'},
  items:[{id:'med_t_media',n:'Медиа',slot:'title',c:'#e5484d'},{id:'med_t_blogger',n:'Блогер',slot:'title',c:'#f0b429'},{id:'med_t_top',n:'Топ-медиа',slot:'title',c:'#ececf1'},

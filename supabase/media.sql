@@ -141,9 +141,9 @@ insert into public.media_shop (id, kind, name, price, stock, per_month, min_leve
   ('med_title', 'cosm', 'Титул «Медиа»',    800, null, null, 1, '{"item": "med_t_media"}'),
   ('med_drop',  'cosm', 'Эффект «Запись»', 2500, null, null, 1, '{"item": "med_d_rec"}'),
   ('med_bg',    'cosm', 'Фон «Студия»',    1200, null, null, 1, '{"item": "med_b_studio"}'),
-  ('med_case',  'case', 'Кейс «Медиа»',     500, null, 10,   1, '{"w": [0, 15, 45, 32, 8]}'),
   ('med_luck',  'luck', 'Прокруты удачи ×10', 200, null, 10, 1, '{"rolls": 10}')
 on conflict (id) do nothing;
+delete from public.media_shop where id = 'med_case';   -- кейс с машинами убран из программы
 
 -- ---------- Хелперы ----------
 create or replace function public.media_key_month() returns text language sql stable as $$ select to_char(now() at time zone 'Europe/Moscow', 'YYYY-MM') $$;
@@ -462,28 +462,6 @@ begin
 end $$;
 
 -- ---------- Магазин «Медиа» (B5) ----------
--- Кейс «Медиа»: свои веса классов 0..4. Класс без машин пропускается. Дубликат возвращает долю стоимости класса в ₽ (как open_case, 50%).
-create or replace function public.media_case_open(p_uid uuid, p_w jsonb) returns jsonb
-language plpgsql security definer set search_path = public as $$
-declare tot numeric := 0; x numeric; acc numeric := 0; cls int := -1; i int; pick text; mine text[]; dup boolean; refund bigint := 0; w numeric[] := array[0, 0, 0, 0, 0];
-begin
-  for i in 0..4 loop
-    w[i + 1] := case when exists (select 1 from car_defs where r = i) then coalesce((p_w ->> i)::numeric, 0) else 0 end;
-    tot := tot + w[i + 1];
-  end loop;
-  x := random() * tot;
-  for i in 0..4 loop acc := acc + w[i + 1]; if x < acc and w[i + 1] > 0 then cls := i; exit; end if; end loop;
-  if cls < 0 then for i in reverse 4..0 loop if w[i + 1] > 0 then cls := i; exit; end if; end loop; end if;
-  select id into pick from car_defs where r = cls order by random() limit 1;
-  select coalesce(cars, '{}') into mine from players where id = p_uid;
-  dup := pick = any(mine);
-  if dup then
-    select val * 50 / 100 into refund from car_classes where r = cls;
-    update players set balance = balance + coalesce(refund, 0) where id = p_uid;
-  else update players set cars = cars || pick where id = p_uid; end if;
-  return jsonb_build_object('car_id', pick, 'dup', dup, 'refund', coalesce(refund, 0), 'cls', cls);
-end $$;
-
 create or replace function public.media_shop_buy(p_id text) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare uid uuid := auth.uid(); g text := media_gate(uid); w media_wallet%rowtype; s media_shop%rowtype; bought int; res jsonb := '{}'; it text; p players%rowtype; cap int := coalesce((media_cfg_get('shop_luck_cap') #>> '{}')::int, 5000);
@@ -512,7 +490,7 @@ begin
   if s.stock is not null then update media_shop set stock = stock - 1 where id = s.id; end if;
   if s.kind = 'cosm' then update players set owned = owned || it where id = uid;
   elsif s.kind = 'luck' then update players set luck = luck + (s.payload->>'rolls')::int where id = uid;
-  elsif s.kind = 'case' then res := media_case_open(uid, s.payload->'w'); end if;
+  end if;
   return jsonb_build_object('ok', true, 'res', res, 'coins', w.coins - s.price);
 end $$;
 
@@ -780,7 +758,7 @@ revoke execute on function
   public.media_account_add(text, text), public.media_post_add(text), public.media_post_contest(bigint, boolean), public.media_views_claim(bigint, bigint, text), public.media_state(),
   public.media_shop_buy(text), public.media_plate_buy(text, text, text), public.media_convert(text, bigint), public.named_request(text, text, text),
   public.media_review(text, bigint, text, text, bigint), public.media_release_row(bigint), public.media_release(int), public.media_revoke_ledger(media_ledger, text),
-  public.media_post_remove(bigint, text, boolean, bigint), public.media_annul(uuid, int, text, bigint), public.media_case_open(uuid, jsonb), public.media_plate_price(text, text),
+  public.media_post_remove(bigint, text, boolean, bigint), public.media_annul(uuid, int, text, bigint), public.media_plate_price(text, text),
   public.named_review(bigint, text, bigint), public.named_done(bigint), public.media_rates_set(numeric, numeric, int, bigint, bigint, bigint), public.media_pool_set(bigint, bigint),
   public.media_shop_set(text, int, boolean, bigint), public.media_series_add(text, int, boolean, bigint), public.media_program_set(boolean, bigint),
   public.media_set_level(uuid, int, text, bigint), public.media_week_award(bigint[], bigint), public.media_month_top(text, bigint), public.media_queue_take(int),
