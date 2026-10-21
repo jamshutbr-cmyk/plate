@@ -3,7 +3,7 @@
 // Секреты (supabase secrets set): BOT_TOKEN, PASSWORD_PEPPER, CHANNEL (например @plategen_news; пусто — подписка не требуется; бот должен быть админом канала). SUPABASE_URL / SUPABASE_ANON_KEY / SUPABASE_SERVICE_ROLE_KEY задаёт сама платформа.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { cors, json } from '../_shared/cors.ts';
-import { playerPassword, verifyInitData } from '../_shared/tg.ts';
+import { playerPassword, refCodeOf, verifyInitData } from '../_shared/tg.ts';
 import { banActive, bannedBody } from '../_shared/ban.ts';
 
 Deno.serve(async (req) => {
@@ -37,6 +37,7 @@ Deno.serve(async (req) => {
   // Игрок уже есть?
   const { data: existing } = await admin.from('players').select('id, banned_until, ban_reason').eq('tg_id', user.id).maybeSingle();
   if (existing && banActive(existing.banned_until)) return json(bannedBody(existing.ban_reason, existing.banned_until), 403);
+  let refNew = false;   // true, если новый игрок привязан к пригласившему (start_param вида r_<код>)
   if (!existing) {
     const { data: created, error } = await admin.auth.admin.createUser({
       email, password, email_confirm: true, user_metadata: { tg_id: user.id },
@@ -44,6 +45,13 @@ Deno.serve(async (req) => {
     // Гонка двух первых запросов: пользователь мог уже появиться — тогда просто логинимся ниже
     if (created?.user) {
       await admin.from('players').upsert({ id: created.user.id, tg_id: user.id }, { onConflict: 'tg_id', ignoreDuplicates: true });
+      // Привязка к пригласившему: только при создании игрока и только из подписанного start_param. У существующих игроков параметр игнорируется.
+      const code = refCodeOf(initData);
+      if (code) {
+        const { data: b, error: be } = await admin.rpc('ref_bind_new', { p_uid: created.user.id, p_code: code });
+        if (be) console.error('ref_bind_new', be.message);   // рефералка не должна ломать вход
+        refNew = !!(b && b.ok);
+      }
     } else if (error && !/already|exists|registered/i.test(error.message)) {
       return json({ error: 'create failed' }, 500);
     }
@@ -52,5 +60,5 @@ Deno.serve(async (req) => {
   const { data, error } = await anon.auth.signInWithPassword({ email, password });
   if (error || !data.session) return json({ error: 'login failed' }, 500);
   const s = data.session;
-  return json({ access_token: s.access_token, refresh_token: s.refresh_token, expires_at: s.expires_at });
+  return json({ access_token: s.access_token, refresh_token: s.refresh_token, expires_at: s.expires_at, ref_new: refNew });
 });

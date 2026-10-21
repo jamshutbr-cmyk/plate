@@ -250,6 +250,27 @@ export const api={
  async clanDescr(t){return await clanCall(()=>rpc('clan_set_descr',{p_text:t||''}))},
  async clanMotd(t){return await clanCall(()=>rpc('clan_set_motd',{p_text:t||''}))},
  async clanSettings(mode,minLvl,tg){return await clanCall(()=>rpc('clan_settings',{p_mode:mode,p_min_lvl:minLvl,p_tg:tg||''}))},
+
+ // Рефералка «Друзья» (referral.sql): всё считает сервер. Бизнес-отказы приходят как {err:'код'}.
+ async refTouch(){try{await rpc('ref_touch')}catch(e){}},
+ async refState(off){return await rpc('ref_state',{p_off:off||0})},
+ async refBind(code){const r=await rpc('ref_bind',{p_code:String(code||'')});if(r&&r.ok)await loadPlayer();return r},
+ async refClaim(n){const r=await rpc('ref_claim',{p_n:n});if(r&&r.ok)await loadAll();return r},
+ async refTop(period){return await rpc('ref_top',{p_period:period||'week'})},
+ async refDm(ok){await rpc('ref_set_dm',{p_ok:!!ok})},
+ async refDebtPay(){const r=await rpc('ref_debt_pay');if(r&&r.ok)await loadPlayer();return r},
+ // Медиа (media.sql). МК и обмен считает сервер; после операций с деньгами сверяем игрока.
+ async mediaState(){return await rpc('media_state')},
+ async mediaAccountAdd(platform,url){return await rpc('media_account_add',{p_platform:platform,p_url:url})},
+ async mediaPostAdd(url){return await rpc('media_post_add',{p_url:url})},
+ async mediaPostContest(id,on){return await rpc('media_post_contest',{p_post:id,p_on:!!on})},
+ async mediaViewsClaim(post,views,proof){return await rpc('media_views_claim',{p_post:post,p_views:views,p_proof:proof})},
+ async mediaShopBuy(id){const r=await rpc('media_shop_buy',{p_id:id});if(r&&r.ok)await loadAll();return r},
+ async mediaPlateBuy(series,digits,reg){const r=await rpc('media_plate_buy',{p_series:series,p_digits:digits,p_reg:reg});if(r&&r.ok)await loadAll();return r},
+ async mediaConvert(to,amount){const r=await rpc('media_convert',{p_to:to,p_amount:amount});if(r&&r.ok)await loadPlayer();return r},
+ async namedRequest(src,body,reg){return await rpc('named_request',{p_src:src,p_body:body,p_reg:reg||''})},
+ // Скриншот статистики: Edge Function media-proof кладёт файл в закрытый бакет и возвращает имя файла
+ async mediaProof(file){const fd=new FormData();fd.append('file',file);const {data,error}=await sb.functions.invoke('media-proof',{body:fd});if(error)return {err:await errCode(error)};return data},
  // Страна и регион генерации: set_gen_prefs (schema.sql). Сервер сам сбросит регион, если его нет в стране.
  async setGenPrefs(c,r){await rpc('set_gen_prefs',{c,r:r||''});await loadPlayer()},
  async syncPlayer(){await loadPlayer()},   // сверить кэш с сервером (например, после обрыва связи во время открытия)

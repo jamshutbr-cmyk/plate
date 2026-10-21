@@ -27,8 +27,10 @@ import './views/cases.js';
 import './views/donate.js';
 import './views/prestige.js';
 import './views/multi.js';
+import {initFriends} from './views/friends.js';
+import './views/media.js';
 import './ui/scene.js';
-import {login, loadAll, serverDown} from './server.js';
+import {LOGIN, login, loadAll, serverDown} from './server.js';
 import {render} from './router.js';
 import {bind, on} from './ui/actions.js';
 import {banner} from './ui/modal.js';
@@ -39,7 +41,7 @@ import {initAuction} from './views/auction.js';
 import {$} from './util.js';
 import {api} from './api.js';
 import {S} from './state.js';
-import {tgUser} from './platform.js';
+import {askWriteAccess, tgUser} from './platform.js';
 import {showGate} from './gate.js';
 import {showBan} from './ban.js';
 import {checkPending} from './views/multi.js';
@@ -54,7 +56,10 @@ async function boot(){
   catch(e){if(e&&e.code==='not_subscribed'){showGate(boot);return}if(e&&e.code==='banned'){showBan({reason:e.reason,until:e.until});return}console.error(e);$('boot').innerHTML=`<div class="bootmsg"><b>Не удалось войти</b><span>${(e&&e.message)||'Ошибка'}</span><button class="btn" data-click="retry">Повторить</button></div>`;return}
   // Ник по умолчанию — имя из Telegram, чтобы в рейтинге были имена, а не «Игрок»
   if(!S.nick){const u=tgUser(),n=u&&(u.first_name||u.username);if(n)try{await api.setNick(n)}catch(e){console.error(e)}}
-  document.getElementById('gate')?.remove();$('boot').remove();render();daily();initTrades();initMarket();initAuction();checkPending();
+  document.getElementById('gate')?.remove();$('boot').remove();render();daily();initTrades();initMarket();initAuction();checkPending();api.refTouch().then(initFriends);
+  // Разрешение на уведомления бота: один раз на устройстве. Без него бот не напишет, а вместо сообщений в приложении будет бейдж.
+  try{if(!localStorage.getItem('dmAsked')){localStorage.setItem('dmAsked','1');askWriteAccess(ok=>{if(ok)api.refDm(true).catch(()=>{})})}}catch(e){}
+  if(LOGIN.refNew)setTimeout(()=>banner('Стартовый набор','5 000 ₽ и 10 прокрутов удачи от друга'),900);
   // Клан считает главу «живым», пока он заходит: пинг при запуске и при возвращении в приложение (сервер пишет не чаще раза в минуту)
   let cpAt=0;const cp=()=>{if(serverDown()||Date.now()-cpAt<300000)return;cpAt=Date.now();api.clanPing()};cp();document.addEventListener('visibilitychange',()=>{if(!document.hidden)cp()});
 }

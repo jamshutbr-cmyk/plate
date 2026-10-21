@@ -1,0 +1,200 @@
+/* ==========================================================================
+   Экран «Медиа»
+   Язык: телестудия. Графит, латунь для кромок и цен, красный только как сигнал записи (лампа REC).
+   Всё оформление экрана и номеров серии лежит здесь; общий вид плашки остаётся в plates.css.
+   ========================================================================== */
+#mediaC{
+  --md-ink:#0c0d11;--md-panel:#17181e;--md-raise:#1e1f27;--md-line:#ffffff14;--md-line2:#ffffff24;
+  --md-brass:#d9b25a;--md-brass-d:#9b7a2e;--md-amber:#f0b429;--md-ivory:#f1ead4;--md-rec:#ff4a43;--md-ok:#3ddc97;
+  padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}
+
+/* --- общие блоки -------------------------------------------------------- */
+.md-card{background:var(--md-panel);border:1px solid var(--md-line);border-radius:20px;padding:18px 16px 16px;margin-bottom:12px}
+.md-card h3{margin:0 0 12px;font-size:19px;font-weight:800;letter-spacing:-.01em}
+.md-card .gq{width:100%;box-sizing:border-box;margin:6px 0;min-height:48px;border-radius:14px}
+.md-coins{text-align:center;margin-bottom:12px}.md-coins small{display:block;color:var(--mut)}.md-coins b{font-size:34px}
+.md-row2{display:flex;gap:10px}.md-row2 .gq{flex:1}
+.md-acts{display:flex;gap:8px;width:100%}.md-acts .btn{flex:1}
+.md-code{width:100%;background:var(--md-raise);border-radius:12px;padding:10px;font-size:14px}.md-code b{letter-spacing:.08em;color:var(--md-brass)}
+.md-note{margin:10px 0;padding:11px 14px;border-radius:14px;background:var(--md-raise);font-size:14px;line-height:1.4;border-left:3px solid var(--md-brass)}.md-note.r{border-left-color:var(--md-rec)}
+.md-card .tl{font-size:14px;margin:6px 0}
+.md-h{margin:22px 2px 10px;font-size:15px;font-weight:800;letter-spacing:-.005em;color:var(--tx)}
+.md-lbl{margin:14px 2px 8px;font-size:13px;font-weight:600;color:var(--mut)}
+.md-coin{width:18px;height:18px;flex:none;vertical-align:-3px}
+
+/* --- баланс ------------------------------------------------------------- */
+.md-wal{display:flex;align-items:center;gap:14px;padding:16px;margin-bottom:4px;border-radius:20px;border:1px solid #d9b25a38;
+  background:radial-gradient(110% 160% at 0 0,#d9b25a24,transparent 58%),var(--md-panel)}
+.md-wal-ic .md-coin{width:42px;height:42px;filter:drop-shadow(0 3px 10px #f0b42955)}
+.md-wal small{display:block;color:var(--mut);font-size:13px}
+.md-wal b{display:block;margin-top:1px;font-size:27px;line-height:1.1;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.md-wal b em{font-style:normal;font-size:15px;font-weight:800;color:var(--md-brass);letter-spacing:0}
+.md-wal-lv{margin-left:auto;padding:6px 11px;border-radius:999px;background:#d9b25a1c;border:1px solid #d9b25a40;color:var(--md-ivory);font-size:12.5px;font-weight:700;white-space:nowrap}
+
+/* --- карточка товара ---------------------------------------------------- */
+.md-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.md-grid.one{grid-template-columns:1fr}
+@media (max-width:339px){.md-grid{grid-template-columns:1fr}}
+.md-it{position:relative;display:flex;flex-direction:column;gap:12px;min-width:0;padding:8px 8px 12px;border-radius:20px;border:1px solid var(--md-line);background:var(--md-panel);transition:border-color .2s}
+.md-it.ok:hover{border-color:var(--md-line2)}
+.md-it.wide{flex-direction:row;align-items:stretch;padding:8px 12px 8px 8px;gap:14px}
+.md-it.wide .md-pv{width:128px;height:auto;min-height:176px;flex:none}
+.md-col{display:flex;flex-direction:column;gap:12px;flex:1;min-width:0;justify-content:space-between;padding:0 6px}
+.md-it.wide .md-col{padding:6px 0}
+.md-in b{display:block;font-size:16px;font-weight:800;line-height:1.2;letter-spacing:-.01em}
+.md-in small{display:block;margin-top:5px;color:var(--mut);font-size:12.5px;line-height:1.4}
+.md-stk{display:block;margin-top:6px;font-size:12px;font-style:normal;color:var(--mut)}
+
+/* --- сцена превью (общая рамка для всех видов) -------------------------- */
+.md-pv{position:relative;height:124px;border-radius:14px;overflow:hidden;display:grid;place-items:center;
+  background:radial-gradient(90% 80% at 50% 0,#2a2c38,#13141a 75%);box-shadow:inset 0 0 0 1px #ffffff10}
+.md-pv .plate{width:144px;margin:0;flex:none}
+/* на мелких плашках винты съедают буквы: в превью их не рисуем */
+html body .md-pv .plate::before{background:none}
+html body .md-pv .plate:not(.nr) .pm{font-size:14cqw;padding:0 1.5cqw 0 2.5cqw}
+.md-tag{position:absolute;left:8px;top:8px;z-index:2;padding:3px 9px;border-radius:999px;background:#0009;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  box-shadow:inset 0 0 0 1px #ffffff1c;color:var(--md-ivory);font-size:11.5px;font-weight:700}
+.md-bdg{position:absolute;right:8px;top:8px;z-index:2;width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#0009;box-shadow:inset 0 0 0 1px #ffffff22;font-size:11px}
+.md-bdg.g{background:var(--md-ok);box-shadow:none;color:#052a1b;font-weight:900;font-size:13px}
+.md-it.lock .md-pv>*:not(.md-tag):not(.md-bdg){filter:grayscale(.55) brightness(.62)}
+.md-it.out .md-pv>*:not(.md-tag):not(.md-bdg){opacity:.55}
+
+/* превью рамки: подсвеченная витрина, чтобы борт читался на тёмном */
+.md-pv.frm{background:radial-gradient(60% 70% at 50% 54%,#ffffff1f,transparent 72%),radial-gradient(90% 80% at 50% 0,#2a2c38,#13141a 75%)}
+.md-pv.frm::after{content:'';position:absolute;left:18%;right:18%;bottom:14px;height:10px;border-radius:50%;background:radial-gradient(closest-side,#0009,transparent);z-index:0}
+.md-pv.frm .plate{position:relative;z-index:1}
+
+/* превью фона: плашка стоит на полу сцены, а не висит в пустоте */
+.md-pv.bgv{background:var(--scn)}
+.md-pv.bgv .md-mini{position:relative;z-index:1;margin-top:34px}
+.md-pv.bgv .plate{width:112px;box-shadow:0 0 0 1px #000a,0 0 0 2px #ffffff22,0 10px 16px #000b}
+
+/* превью титула */
+.md-pv.tt{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px}
+.md-pv.tt b{font-size:17px;font-weight:800;max-width:88%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.md-pv.tt .ttl{margin:0;font-size:13px;padding:3px 12px}
+
+/* превью эффекта */
+.md-pv.fxd{cursor:pointer;background:radial-gradient(70% 90% at 50% 50%,#ff4a432b,transparent 70%),radial-gradient(90% 80% at 50% 0,#2a2c38,#13141a 75%)}
+.md-pv.fxd i{position:absolute;border-radius:50%;transform:translate(-50%,-50%);animation:md-puff 1.9s ease-in-out infinite}.md-pv.fxd i.sq{border-radius:2px}
+.md-pv.fxd i.st{clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+@keyframes md-puff{0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(.7)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}}
+.md-play{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);padding:5px 12px;border-radius:999px;background:#000b;box-shadow:inset 0 0 0 1px #ffffff26;font-size:12px;font-weight:700;white-space:nowrap;color:#fff}
+
+/* превью кейса и бонуса */
+.md-pv.case{background:radial-gradient(60% 50% at 50% 54%,#6b86d65c,transparent 72%),radial-gradient(90% 80% at 50% 0,#2b3350,#12131a 75%)}
+.md-car{position:absolute;left:50%;top:50%;bottom:auto;width:70px;height:auto;transform:translate(calc(-50% + var(--x)),-30%) rotate(var(--r));filter:drop-shadow(0 6px 8px #000a)}
+.md-car[style*="z-index:2"]{width:84px}
+.md-it.wide .md-car{width:70px}.md-it.wide .md-car[style*="z-index:2"]{width:88px}
+.md-pv:not(.case) .md-car{display:none}
+.md-pv.luck{background:radial-gradient(70% 70% at 50% 60%,#19c37d33,transparent 70%),radial-gradient(90% 80% at 50% 0,#1f3a33,#12131a 75%)}
+.md-clv{width:62px;height:62px;filter:drop-shadow(0 4px 10px #19c37d66)}
+.md-x{position:absolute;right:12px;bottom:10px;font-size:22px;font-weight:800;color:#ffe27a;text-shadow:0 2px 6px #000a}
+.md-gift{font-size:38px}
+
+/* --- цена и кнопка ------------------------------------------------------ */
+.md-buy{display:flex;flex-direction:column;gap:10px}
+.md-price{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.md-price b{font-size:19px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.md-price em{font-style:normal;color:var(--md-brass);font-weight:800;font-size:13px}
+.md-price.big{justify-content:flex-end;row-gap:4px}.md-price.big b{font-size:26px}
+.md-price .md-pop{margin-left:6px;padding:3px 9px;border-radius:999px;background:#d9b25a1c;color:var(--md-ivory);font-size:12px;font-weight:700}
+.md-dash{color:var(--mut);font-size:18px}
+.md-it .btn,.md-ser .btn{width:100%;min-height:44px;padding:10px 12px;border-radius:13px;font-size:14px;font-weight:800;line-height:1.2;text-wrap:balance}
+.md-y{background:linear-gradient(180deg,#f6c445,#e9a914)!important;border:0!important;color:#1b1405!important;box-shadow:0 1px 0 #fff6 inset,0 6px 14px #e9a91433}
+.md-y:active{transform:scale(.98)}
+.md-it .btn[disabled],.md-ser .btn[disabled]{opacity:1;background:var(--md-raise)!important;color:var(--mut)!important;box-shadow:inset 0 0 0 1px var(--md-line)}
+.md-it.own .btn[disabled]{background:#3ddc9718!important;color:var(--md-ok)!important;box-shadow:inset 0 0 0 1px #3ddc9755}
+.md-it .btn:focus-visible,.md-sc:focus-visible,.md-ser .btn:focus-visible{outline:2px solid var(--md-amber);outline-offset:2px}
+.md-lim{display:flex;align-items:center;gap:8px;margin-top:10px}.md-lim em{font-style:normal;font-size:12px;color:var(--mut);white-space:nowrap}
+.md-pips{display:flex;gap:3px;flex-wrap:wrap}.md-pips i{width:8px;height:8px;border-radius:50%;background:#ffffff1f}.md-pips i.on{background:var(--md-amber)}
+
+/* --- шансы кейса -------------------------------------------------------- */
+.md-odds{display:flex;height:8px;border-radius:99px;overflow:hidden;gap:2px;margin:10px 0 8px}.md-odds i{display:block;min-width:4px}
+.md-oddl{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11.5px;color:var(--mut)}.md-oddl span{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.md-oddl i{width:7px;height:7px;border-radius:50%}
+
+/* ==========================================================================
+   Номер серии «Медиа»: прямоугольный, но не плашка. Чёрное поле, сверху полоса хлопушки (как у киносъёмки),
+   справа сплошной красный блок региона, слева лампа REC. Ни цвета, ни посадки текста обычного номера.
+   ========================================================================== */
+html body .plate.t-media{--cb:3.6cqw;border-radius:5px;aspect-ratio:4.9/1;align-items:stretch;
+  background:background:repeating-linear-gradient(0deg,#ffffff06 0 1px,transparent 1px 3px),linear-gradient(180deg,#1b1b20,#09090b 70%);
+  box-shadow:0 0 0 1px #000,0 0 0 2px #ffffff38,0 0 0 3px #00000080,inset 0 -1px 0 #ffffff14,0 12px 26px #000b}
+/* полоса хлопушки */
+html body .plate.t-media::before{inset:0 0 auto 0;height:var(--cb);border:0;border-radius:0;opacity:1;
+  background:linear-gradient(180deg,#ffffff38,#fff0 45%,#0000004d),repeating-linear-gradient(-55deg,#f4f4f4 0 2.6cqw,#0b0b0d 2.6cqw 5.2cqw);box-shadow:0 1px 0 #ff3b36,0 .6cqw 1.2cqw #0008}
+/* стеклянный блик по диагонали */
+html body .plate.t-media::after{content:'';position:absolute;inset:0;pointer-events:none;animation:none;transform:none;background:linear-gradient(112deg,#ffffff1c 0 22%,#ffffff08 22% 38%,transparent 38%)}
+html body .plate.t-media .pm{position:relative;margin:calc(var(--cb) + 1px) 0 0;padding:0 2cqw 0 9cqw;border:0;font-size:14cqw;font-weight:800;letter-spacing:.05em;
+  color:#fff;text-shadow:0 .5cqw 0 #000,0 0 3cqw #ffffff30;
+  background:repeating-linear-gradient(90deg,#ffffff30 0 1.7cqw,transparent 1.7cqw 3.4cqw) 1.4cqw calc(100% - 1.1cqw)/calc(100% - 2.8cqw) .9cqw no-repeat}
+html body .plate.t-media .pr{margin:calc(var(--cb) + 1px) 0 0;width:24%;padding:0;border-radius:0;color:#fff;font-size:9.5cqw;gap:.6cqw;
+  background:linear-gradient(180deg,#ff5b54,#e0302a 45%,#b4180f);box-shadow:inset 1px 0 0 #ffffff80,inset 0 1px 0 #ffffff55,inset 0 -1px 0 #0000004d;text-shadow:0 .4cqw 0 #6b0b08;font-weight:800}
+html body .plate.t-media small{color:#ffe3e1;text-shadow:none;font-size:3cqw;margin-top:0}
+html body .plate.t-media small .flag{width:4.6cqw;height:3cqw;border-color:#fff;box-shadow:none}
+/* рамка видоискателя вокруг символов */
+html body .plate.t-media .pm::after{content:'';position:absolute;left:8.2cqw;right:1.2cqw;top:1.6cqw;bottom:3.4cqw;pointer-events:none;
+  background:linear-gradient(#ffffffa6,#ffffffa6) 0 0/2.2cqw .45cqw no-repeat,
+  linear-gradient(#ffffffa6,#ffffffa6) 0 0/.45cqw 2.2cqw no-repeat,
+  linear-gradient(#ffffffa6,#ffffffa6) 100% 0/2.2cqw .45cqw no-repeat,
+  linear-gradient(#ffffffa6,#ffffffa6) 100% 0/.45cqw 2.2cqw no-repeat,
+  linear-gradient(#ffffffa6,#ffffffa6) 0 100%/2.2cqw .45cqw no-repeat,
+  linear-gradient(#ffffffa6,#ffffffa6) 0 100%/.45cqw 2.2cqw no-repeat,
+  linear-gradient(#ffffffa6,#ffffffa6) 100% 100%/2.2cqw .45cqw no-repeat,
+  linear-gradient(#ffffffa6,#ffffffa6) 100% 100%/.45cqw 2.2cqw no-repeat}
+/* лампа REC слева; единственное движение номера */
+html body .plate.t-media .pm::before{content:'';position:absolute;left:3.6cqw;top:50%;width:3cqw;height:3cqw;margin-top:-1.5cqw;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ffb5b0,#ff3b36 55%,#b3140e);box-shadow:0 0 0 .5cqw #0b0b0d,0 0 0 .8cqw #ffffff40,0 0 2cqw .6cqw #ff3b36;animation:md-rec 2.4s ease-in-out infinite}
+@keyframes md-rec{0%,55%,100%{opacity:1}70%,90%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){html body .plate.t-media .pm::before{animation:none}}
+html body .plate.t-media.rz4{box-shadow:0 0 0 1px #000,0 0 0 2px #ffffff40,0 12px 26px #000b,0 0 3cqw -.5cqw #ff3b36aa}
+html body .row2 .plate.t-media,html body .at .plate.t-media{aspect-ratio:4.9/1}
+html body .md-pv .plate.t-media::before{background:repeating-linear-gradient(-55deg,#f4f4f4 0 2.6cqw,#0b0b0d 2.6cqw 5.2cqw)}
+
+/* ==========================================================================
+   Рамка «Эфир»: борт вокруг номера. Толщина в cqw, поэтому одинаково держится и в превью, и на большой плашке.
+   Содержимое номера сжимается внутрь борта (padding), а не перекрывается им.
+   ========================================================================== */
+html body .plate.sk-med_f_air{border-color:#0b0c0f;
+  box-shadow:0 0 0 1px #000,0 0 0 3px #1a1b20,0 0 0 4px #565963,0 10px 22px #000a}
+html body .plate.sk-med_f_air .xf{
+  background:linear-gradient(180deg,#52545e 0,#2c2d34 10%,#1a1b20 58%,#111216 100%);box-shadow:inset 0 1px 0 #ffffff3a}
+html body .plate.sk-med_f_air .xl{position:absolute;z-index:4;left:50%;bottom:calc(var(--bz)/2 - 1.4cqw);width:2.8cqw;height:2.8cqw;min-width:3px;min-height:3px;margin-left:-1.4cqw;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#ffc2bd,var(--md-rec,#ff4a43) 60%,#c42119);box-shadow:0 0 0 1px #000a,0 0 7px 1px #ff4a43aa;pointer-events:none}
+html body .plate.sk-med_f_air.rz4{box-shadow:0 0 0 1px #000,0 0 0 3px #1a1b20,0 0 0 4px #565963,0 10px 22px #000a,0 0 30px 0 #f5b82ecc}
+
+/* ==========================================================================
+   Фон «Студия»: акустические панели, софит сверху, глянцевый пол, лампа в углу
+   ========================================================================== */
+.scn-med_b_studio{--scn:
+  radial-gradient(circle at 68% 10%,#ff4a43 0 3px,#ff4a4366 4px 7px,transparent 8px),
+  radial-gradient(ellipse 52% 70% at 50% -8%,#fff2cf66,#ffd78a24 42%,transparent 74%),
+  repeating-linear-gradient(90deg,#ffffff0a 0 3px,#00000030 3px 4px,transparent 4px 22px),
+  linear-gradient(180deg,#22232b 0 64%,#3a3b44 64% 64.8%,#14151a 64.8% 100%)}
+
+/* ==========================================================================
+   Конструктор номера
+   ========================================================================== */
+.md-stage{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;padding:26px 14px 16px;border-radius:16px;box-shadow:inset 0 0 0 1px #ffffff12;
+  background:radial-gradient(70% 90% at 50% 0,#f0e6c428,transparent 70%),repeating-linear-gradient(90deg,#ffffff05 0 3px,transparent 3px 26px),linear-gradient(180deg,#1d1e25,#0f1014)}
+.md-stage .plate{width:min(100%,300px);margin:0}.md-stage small{color:var(--mut);font-size:13px}
+.md-stage.ghost .plate{opacity:.38;filter:grayscale(.7)}
+.md-stage.ghost{padding-bottom:56px}
+.md-lockb{position:absolute;inset:auto 0 20px;text-align:center;font-weight:800;font-size:14px;color:var(--md-ivory);text-shadow:0 2px 6px #000}
+.md-sers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.md-sc{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 4px 14px;border-radius:14px;border:0;background:var(--md-raise);box-shadow:inset 0 0 0 1px var(--md-line);color:var(--tx);font:inherit;cursor:pointer;overflow:hidden;transition:box-shadow .15s,background .15s}
+.md-sc b{font-size:19px;font-weight:800;letter-spacing:.07em}
+.md-sc small{font-size:11.5px;color:var(--mut)}
+/* остаток серии: тонкая шкала на нижней кромке плитки */
+.md-sc::after{content:'';position:absolute;left:0;bottom:0;height:3px;width:var(--left,0%);background:var(--md-brass);opacity:.55}
+.md-sc.a{background:#d9b25a1f;box-shadow:inset 0 0 0 1.5px var(--md-brass)}.md-sc.a b{color:var(--md-ivory)}.md-sc.a::after{opacity:1}
+.md-sc.off{opacity:.4}.md-sc.off b{text-decoration:line-through;text-decoration-thickness:1.5px}
+.md-f{flex:1;min-width:0;display:block}.md-f>span{display:block;margin:12px 2px 2px;font-size:13px;font-weight:600;color:var(--mut)}
+.md-tiers{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 4px}.md-tiers span{padding:5px 11px;border-radius:999px;background:var(--md-raise);box-shadow:inset 0 0 0 1px var(--md-line);font-size:12.5px;color:var(--mut)}.md-tiers b{color:var(--tx)}
+.md-total{display:flex;align-items:center;justify-content:space-between;margin:16px 2px 12px}.md-total>span{color:var(--mut);align-self:flex-start;padding-top:7px}
+.md-ser .btn{min-height:50px;font-size:15px}
+.md-ser .chips{flex-wrap:wrap;overflow:visible;gap:8px}
+.md-ser .chips button{flex:none;padding:10px 14px;border-radius:12px;font-size:15px;background:var(--md-raise);box-shadow:inset 0 0 0 1px var(--md-line)}
+.md-ser .chips button.a{background:#d9b25a1f;box-shadow:inset 0 0 0 1.5px var(--md-brass);color:var(--md-ivory)}
+.md-ser .chips button small{color:var(--mut);margin-left:4px}
+
+@media (prefers-reduced-motion:reduce){.md-pv.fxd i{animation:none}}

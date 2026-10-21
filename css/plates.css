@@ -12,7 +12,7 @@
 /* === плашки v3: объём, рельеф, редкости === */
 html .plate{border:3px solid #0b0b10;border-radius:15px;--rzc:transparent;
 box-shadow:0 14px 30px #000b,0 3px 0 #0006,inset 0 0 0 2px #ffffffb0,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040,0 0 0 1px #ffffff1c}
-html .plate:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat){background:
+html .plate:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.t-media){background:
 linear-gradient(180deg,#ffffffd9 0%,#ffffff00 38%,#00000000 62%,#00000030 100%),
 repeating-linear-gradient(90deg,#ffffff00 0 3px,#0000000a 3px 4px),
 linear-gradient(var(--pl1),var(--pl2))}
@@ -36,8 +36,8 @@ html .plate.rz2{box-shadow:0 12px 26px #000a,0 0 22px -3px #5b8cffaa,inset 0 0 0
 html .plate.rz3{box-shadow:0 12px 26px #000a,0 0 30px -2px #a855f7cc,inset 0 0 0 2px #ffffffb0,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040}
 html .plate.rz4{box-shadow:0 12px 26px #000a,0 0 38px 0 #f5b82ee0,inset 0 0 0 2px #fff0b8,inset 0 3px 3px #fff,inset 0 -10px 18px #00000040}
 html .plate.rz2::before{border-color:#1d3f9a}html .plate.rz3::before{border-color:#5a1d9a}html .plate.rz4::before{border-color:#8a5d00;border-width:2.5px}
-html .plate.rz3:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat){background:linear-gradient(180deg,#ffffffd9 0%,#fff0 38%,#0000 62%,#00000030 100%),linear-gradient(115deg,#f0e6ff,#d9c2ff 30%,#c4f0ff 55%,#ffd6f5 80%,#e6d4ff)}
-html .plate.rz4:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat){background:linear-gradient(180deg,#fff9 0%,#fff0 38%,#0000 62%,#0003 100%),linear-gradient(115deg,#fff1b8,#f5d160 28%,#ffe9a0 50%,#e0aa30 75%,#fbe28a)}
+html .plate.rz3:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.t-media){background:linear-gradient(180deg,#ffffffd9 0%,#fff0 38%,#0000 62%,#00000030 100%),linear-gradient(115deg,#f0e6ff,#d9c2ff 30%,#c4f0ff 55%,#ffd6f5 80%,#e6d4ff)}
+html .plate.rz4:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.t-media){background:linear-gradient(180deg,#fff9 0%,#fff0 38%,#0000 62%,#0003 100%),linear-gradient(115deg,#fff1b8,#f5d160 28%,#ffe9a0 50%,#e0aa30 75%,#fbe28a)}
 html .plate.rz3::after,html .plate.rz4::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,#ffffffb3 50%,transparent 60%);transform:translateX(-130%);animation:shine 3.4s 1s infinite}
 html .plate.rz4 .pm,html .plate.rz4 .pr{text-shadow:0 1px 0 #fff8,0 -1px 0 #5a3a0099,0 3px 3px #0005}
 html .grow.row2 .plate.rz3::after,html .grow.row2 .plate.rz4::after,html .row2 .plate.rz3::after,html .row2 .plate.rz4::after{animation-duration:4.5s}
@@ -59,7 +59,7 @@ html body .plate small{display:flex;align-items:center;justify-content:center;ga
 html body .plate small .flag{width:6.4cqw;height:4.2cqw;border:1px solid #1b1b20;border-radius:1px;box-shadow:none}
 html body .plate:has(.fl-BY) .pm{font-size:12cqw}
 /* такси и полиция */
-html body .plate.plate:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
+html body .plate.plate:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.t-media){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
 html body .plate.t-taxi{background:linear-gradient(180deg,#ffe55a,#f6c800 60%,#dcaa00)}
 html body .plate.t-police{background:linear-gradient(180deg,#5f93f7,#2858c9 60%,#1a449f);box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a}
 html body .plate.t-police::before{border-color:#fff}
@@ -71,7 +71,7 @@ html body .plate.rz1{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10
 html body .plate.rz2{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 24px -2px #5b8cffcc}
 html body .plate.rz3{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 32px 0 #a855f7dd}
 html body .plate.rz4{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #efeff1,0 10px 24px #000a,0 0 42px 2px #f5b82eee}
-html body .plate.rz3:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat),html body .plate.rz4:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
+html body .plate.rz3:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.t-media),html body .plate.rz4:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.t-media){background:linear-gradient(180deg,#e2e2e6 0%,#cfcfd4 55%,#bdbdc3 100%)}
 html body .plate.rz2::before,html body .plate.rz3::before,html body .plate.rz4::before{border-color:#17171b;border-width:2px}
 html body .plate.t-police.rz2::before,html body .plate.t-police.rz3::before,html body .plate.t-police.rz4::before{border-color:#fff}
 /* карточки каталога */
@@ -141,7 +141,7 @@ html body .at .plate:has(.fl-BY) .pm{font-size:10.5cqw}
 html .plate.rz5{--rzc:#ff4d6d}
 html body .plate.rz5{box-shadow:0 0 0 1.5px #8e8e95,inset 0 0 0 3px #ffd3dc,0 10px 24px #000a,0 0 48px 3px #ff4d6df0}
 html body .plate.t-police.rz5,html body .plate.t-transit.rz5{box-shadow:0 0 0 1.5px #fff8,inset 0 0 0 3px #ffffff40,0 10px 24px #000a,0 0 48px 3px #ff4d6df0}
-html body .plate.rz5:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat){background:linear-gradient(180deg,#fff9 0%,#fff0 38%,#0000 62%,#0003 100%),linear-gradient(115deg,#ffd1da,#ff6b86 28%,#ffc2cf 50%,#e0284a 75%,#ff9aae)}
+html body .plate.rz5:not(.t-police):not(.t-taxi):not(.t-transit):not(.t-military):not(.t-diplomat):not(.t-retro):not(.t-blat):not(.t-media){background:linear-gradient(180deg,#fff9 0%,#fff0 38%,#0000 62%,#0003 100%),linear-gradient(115deg,#ffd1da,#ff6b86 28%,#ffc2cf 50%,#e0284a 75%,#ff9aae)}
 html body .plate.rz5::before{border-color:#7a0f26;border-width:2.5px}
 html body .plate.t-police.rz5::before{border-color:#fff}
 html .plate.rz5::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 40%,#ffffffb3 50%,transparent 60%);transform:translateX(-130%);animation:shine 2.6s .6s infinite}

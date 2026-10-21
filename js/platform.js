@@ -25,3 +25,7 @@ export function hapticDrop(c){
   seq.forEach(([k,t])=>setTimeout(()=>haptic(k),t));
 }
 export function tgUser(){return TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user||null}
+// Разрешение боту писать игроку (уведомления рефералки). Спрашиваем один раз; результат сохраняем на сервере (players.can_dm).
+export function askWriteAccess(cb){
+  try{if(TG&&TG.requestWriteAccess){TG.requestWriteAccess(ok=>cb(!!ok));return true}}catch(e){}
+  return false}

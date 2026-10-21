@@ -5,3 +5,6 @@ export const SUPABASE_ANON_KEY = 'sb_publishable_3JWo4YhsSAl7ZEIN-JD1iQ_T-kGxt_7
 
 // Канал, на который нужно подписаться (без @). Бот должен быть администратором этого канала.
 export const TG_CHANNEL = 'plategen_news';
+
+// Реферальная ссылка: https://t.me/<бот>/<приложение>?startapp=r_<код>. Впишите основу до «r_» (или задайте ref_cfg.link_base на сервере, он важнее).
+export const REF_LINK_BASE = '';   // например 'https://t.me/plategen_bot/play?startapp=r_'

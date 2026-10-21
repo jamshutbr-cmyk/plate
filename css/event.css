@@ -6,8 +6,14 @@ html body .plate.t-blat::before{border-color:#c9a227}html body .plate.t-blat .pm
 
 /* === Рамки номера (кромка = кольца box-shadow; внутренняя линия ::before) === */
 /* === Рамки номера: каждая — отдельная конструкция. .xf — фаска внутри плашки (рисуется маской-кольцом), box-shadow — внешний борт, ::before — внутренняя линия === */
-html body .plate .xf{position:absolute;inset:0;z-index:3;box-sizing:border-box;padding:7px;border-radius:12px;pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
-html body .plate[class*="sk-ev_f_"]::before{inset:9px;border-width:1.5px;border-radius:7px}
+html body .plate .xf{position:absolute;inset:0;z-index:3;box-sizing:border-box;padding:var(--bz,3.6cqw);border-radius:7px;pointer-events:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+/* общая геометрия рамок: борт толщиной --bz (в cqw, масштабируется вместе с плашкой) лежит по краю, номер отступает внутрь.
+   Отступы только у детей: cqw на самой плашке считался бы от внешнего контейнера и борт вышел бы неравномерным. */
+html body .plate[class*="sk-ev_f_"],html body .plate[class*="sk-med_f_"]{--bz:3.6cqw}
+html body .plate[class*="sk-ev_f_"]::before,html body .plate[class*="sk-med_f_"]::before{inset:calc(var(--bz) + 1.5px);border-width:1.5px;border-radius:3px;background:none}
+html body .plate[class*="sk-ev_f_"] .pm,html body .plate[class*="sk-med_f_"] .pm{margin:calc(var(--bz)*2.3) 0 calc(var(--bz)*2.3) calc(var(--bz)*2.3)}
+html body .plate[class*="sk-ev_f_"] .pr,html body .plate[class*="sk-med_f_"] .pr{margin:calc(var(--bz)*2.3) calc(var(--bz)*2.3) calc(var(--bz)*2.3) 0}
+html body .plate.nr[class*="sk-ev_f_"] .pm,html body .plate.nr[class*="sk-med_f_"] .pm{margin:calc(var(--bz)*2.3)}
 /* Асфальт: зернистое покрытие и пунктир дорожной разметки */
 html body .plate.sk-ev_f_asphalt{border-color:#1b1d22;box-shadow:0 0 0 3px #1b1d22,0 0 0 5px #5a5f68,0 8px 18px #0008}
 html body .plate.sk-ev_f_asphalt .xf{background:radial-gradient(circle at 20% 30%,#ffffff26 0 .8px,transparent 1.3px) 0 0/5px 5px,radial-gradient(circle at 70% 65%,#00000059 0 .9px,transparent 1.4px) 0 0/4px 4px,linear-gradient(180deg,#4a4e57,#2b2e34)}

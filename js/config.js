@@ -3,7 +3,7 @@ export const COST=3000,START=50000;
 export const RAR=[{n:'Обычный',en:'Common',p:53.81,c:'#9a9aab',m:1},{n:'Необычный',en:'Uncommon',p:37.96,c:'#4ade80',m:11.55},{n:'Редкий',en:'Rare',p:7.98,c:'#5b8cff',m:661.2},{n:'Эпический',en:'Epic',p:.24,c:'#a855f7',m:9955},{n:'Легендарный',en:'Legendary',p:.01,c:'#f5b82e',m:242550},{n:'Мифический',en:'Mythic',p:0,ps:'до 0,005',c:'#ff4d6d',m:1500000}];
 // Типы номеров. k — тип, p — шанс в % (сумма 100), m — множитель цены, c — страны, где тип выпадает (в Беларуси только civil/taxi/police/transit).
 // Должны совпадать с TYPES в supabase/functions/_shared/engine.ts и check в SQL, это сверяет tests/types.test.mjs.
-export const TYPES=[{k:'civil',p:92.86,m:1,n:'Гражданский',c:['RU','BY']},{k:'taxi',p:4,m:24,n:'Такси',c:['RU','BY']},{k:'police',p:1,m:50,n:'Полиция',c:['RU','BY']},{k:'transit',p:2,m:.5,n:'Транзит',c:['RU','BY']},{k:'military',p:.07,m:80,n:'Военный',c:['RU']},{k:'diplomat',p:.06,m:120,n:'Дипломат',c:['RU']},{k:'retro',p:.01,m:200,n:'Ретро',c:['RU']},{k:'blat',p:0,m:150,n:'Блатной',c:['RU']}];   // blat — приз ивента (supabase/event.sql), из генератора не выпадает
+export const TYPES=[{k:'civil',p:92.86,m:1,n:'Гражданский',c:['RU','BY']},{k:'taxi',p:4,m:24,n:'Такси',c:['RU','BY']},{k:'police',p:1,m:50,n:'Полиция',c:['RU','BY']},{k:'transit',p:2,m:.5,n:'Транзит',c:['RU','BY']},{k:'military',p:.07,m:80,n:'Военный',c:['RU']},{k:'diplomat',p:.06,m:120,n:'Дипломат',c:['RU']},{k:'retro',p:.01,m:200,n:'Ретро',c:['RU']},{k:'blat',p:0,m:150,n:'Блатной',c:['RU']},{k:'media',p:0,m:150,n:'Медиа',c:['RU']},{k:'friends',p:0,m:150,n:'Друзья',c:['RU']}];   // blat — приз ивента (supabase/event.sql), из генератора не выпадает
 export const NOREG=['military','diplomat','retro'];   // у этих плашек нет блока региона (только отрисовка)
 export const CN={RU:{n:'Россия',cc:'RUS'},BY:{n:'Беларусь',cc:'BY'}};
 export const RU_L='АВЕКМНОРСТУХ',BY_L='ABEIKMHOPCTX';
@@ -14,7 +14,7 @@ light:{n:'Светлая',v:{bg:'#f2f3f7',card:'#ffffff',tx:'#1b1d27',mut:'#6c71
 pink:{n:'Розовая',v:{bg:'#fbeff5',card:'#ffffff',tx:'#3a1c2e',mut:'#94677f',b1:'#ffffff',b2:'#fde4ef',sheet:'#ffffff',m1:'#f08cb9',m2:'#d65b95',ac:'#e0488a',off:'#f0cfe0',pl1:'#ffd6e8',pl2:'#f09bc2'}},
 silver:{n:'Серебро',v:{bg:'#1c1f26',card:'#2a2e38',tx:'#eef1f6',mut:'#9ba3b4',b1:'#353a47',b2:'#2a2e38',sheet:'#2a2e38',m1:'#5d6a85',m2:'#2f3646',ac:'#9fb4de',off:'#444a58',pl1:'#eef0f4',pl2:'#a6adba'}}};
 export const XPV=[5,8,20,100,500,2500];
-export const FL=['Одинаковые цифры','Одинаковые буквы','Зеркальные цифры','Палиндром букв','Круглый номер','Цифры совпадают с регионом','Блатной номер','Малый номер','Гражданский','Такси','Полиция','Транзит','Военный','Дипломат','Ретро','Блатной'];
+export const FL=['Одинаковые цифры','Одинаковые буквы','Зеркальные цифры','Палиндром букв','Круглый номер','Цифры совпадают с регионом','Блатной номер','Малый номер','Гражданский','Такси','Полиция','Транзит','Военный','Дипломат','Ретро','Блатной','Медиа','Друзья'];
 // Автопродажа (supabase/autosell_v2.sql): один режим. cost — цена открытия ($), ceil — варианты потолка цены (0 = без лимита), cls — до какой редкости продаём.
 // autoMatch — то же правило, что в SQL autosell(): клиент им только считает «сколько продастся сейчас».
 export const AUTO={cost:300,ceil:[0,500,5000,50000,500000],cls:['Обычные','До необычных','До редких']};
@@ -40,8 +40,8 @@ export const SLOTS=[['skin','Рамки'],['nick','Ник'],['bg','Фон'],['sh
 export const EQUIP_SLOTS=['skin','title','drop','nick','bg'];   // надеваются; 'show' (витрина) только покупается
 export const SHOWCASE_MAX=3;
 // Эффекты выпадения: цвета частиц, цвет вспышки у легендарного, star — частицы-звёздочки
-export const FXE={sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1},dn_nova:{pal:['#7b2ff7','#ff5fa2','#00e5ff','#ffffff'],flash:'#c4b5fd',star:1},ev_d_dust:{pal:['#b08a5a','#d9b98a','#8c6b3f'],flash:'#d9b98a'},ev_d_siren:{pal:['#d63a3a','#3a6ad6','#ffffff'],flash:'#ffffff'},ev_d_weld:{pal:['#fff3b0','#ffb347','#ff7a1a'],flash:'#ffb347',dir:'up',rad:.8,n:1.2},ev_d_ticket:{pal:['#f4f1e6','#ffe9a8','#d9d4c0'],flash:'#f4f1e6',sq:1,dir:'down',rad:.7},ev_d_smoke:{pal:['#8d8d93','#b4b4ba','#62626a'],flash:'#b4b4ba',big:1,rad:.55,n:.6},ev_d_cones:{pal:['#ef6a1a','#ffffff','#ff8a3a'],flash:'#ef6a1a',sq:1,dir:'up',rad:.9},ev_d_radar:{pal:['#ffffff','#9ad0ff','#2f6bff'],flash:'#ffffff',star:1,rad:1.3},ev_d_salute:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1,rad:1.45,n:1.5}};
-export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};const pt=PATRON.titles.find(x=>x.id==id);if(pt)return {id:pt.id,n:pt.n,c:pt.c,slot:'title'};const dt=DONATE.tiers.find(x=>x.id==id);if(dt)return {id:dt.id,n:dt.t,c:dt.c,slot:'title'};const di=DONATE.items.find(x=>x.id==id);if(di)return {...di};const ev=EVENT.titles.find(x=>x.id==id);if(ev)return {id:ev.id,n:ev.n,c:ev.c,slot:'title'};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
+export const FXE={ref_d_column:{pal:['#9aa3b8','#ececf1','#f0b429'],flash:'#ececf1',sq:1,dir:'down',rad:.8},med_d_rec:{pal:['#e5484d','#ffffff','#f0b429'],flash:'#e5484d',rad:.7},sparks:{pal:['#ffd54a','#fff3b0','#ffb300'],flash:'#ffd54a',star:1},fire:{pal:['#ff3b1d','#ff8a1d','#ffd23a'],flash:'#ff6a1d'},ice:{pal:['#7fe7ff','#b8f3ff','#4aa8ff'],flash:'#7fe7ff'},rainbow:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1},dn_nova:{pal:['#7b2ff7','#ff5fa2','#00e5ff','#ffffff'],flash:'#c4b5fd',star:1},ev_d_dust:{pal:['#b08a5a','#d9b98a','#8c6b3f'],flash:'#d9b98a'},ev_d_siren:{pal:['#d63a3a','#3a6ad6','#ffffff'],flash:'#ffffff'},ev_d_weld:{pal:['#fff3b0','#ffb347','#ff7a1a'],flash:'#ffb347',dir:'up',rad:.8,n:1.2},ev_d_ticket:{pal:['#f4f1e6','#ffe9a8','#d9d4c0'],flash:'#f4f1e6',sq:1,dir:'down',rad:.7},ev_d_smoke:{pal:['#8d8d93','#b4b4ba','#62626a'],flash:'#b4b4ba',big:1,rad:.55,n:.6},ev_d_cones:{pal:['#ef6a1a','#ffffff','#ff8a3a'],flash:'#ef6a1a',sq:1,dir:'up',rad:.9},ev_d_radar:{pal:['#ffffff','#9ad0ff','#2f6bff'],flash:'#ffffff',star:1,rad:1.3},ev_d_salute:{pal:['#ff4d4d','#ffb84d','#fff04d','#4dff88','#4da6ff','#c04dff'],flash:'#ffffff',star:1,rad:1.45,n:1.5}};
+export const itemOf=id=>{for(const s in SHOP){const it=SHOP[s].find(x=>x.id==id);if(it)return {...it,slot:s}}const ct=CLAN_SHOP.find(x=>x.id==id&&x.slot=='title');if(ct)return {id:ct.id,n:ct.n,c:ct.c,slot:'title'};const b=BANK.items.find(x=>x.id==id);if(b)return {id:b.id,n:b.n,c:b.c,slot:'title'};const l=LAB.titles.find(x=>x.id==id);if(l)return {id:l.id,n:l.n,c:l.c,slot:'title'};const pt=PATRON.titles.find(x=>x.id==id);if(pt)return {id:pt.id,n:pt.n,c:pt.c,slot:'title'};const dt=DONATE.tiers.find(x=>x.id==id);if(dt)return {id:dt.id,n:dt.t,c:dt.c,slot:'title'};const di=DONATE.items.find(x=>x.id==id);if(di)return {...di};const ev=EVENT.titles.find(x=>x.id==id);if(ev)return {id:ev.id,n:ev.n,c:ev.c,slot:'title'};const rm=REF.items.concat(MEDIA.items).find(x=>x.id==id);if(rm)return {...rm};return id==LAB.skin.id?{id:id,n:LAB.skin.n,slot:'skin'}:null};
 
 // Кейсы с машинами. Шансы, цены и выдачу считает ТОЛЬКО сервер (supabase/cases.sql: open_case); здесь данные для показа.
 // Должны совпадать с cases.sql, это сверяет tests/cases.test.mjs.
@@ -190,3 +190,33 @@ export const CARPARTS={base:20,cap:200,rar:[100,150,220,320,450],lvlStep:25,maxL
   stats:{acc:'Разгон',grip:'Сцепление',hand:'Управление',brk:'Торможение',tb:'Турбо',dur:'Прочность'}};
 export const cpPm=(rar,lvl)=>{const c=CARPARTS,r=c.rar[Math.min(Math.max(rar|0,0),4)],l=100+c.lvlStep*(Math.min(Math.max(lvl|0||1,1),c.maxLvl)-1);return Math.min(c.cap,Math.floor(c.base*r*l/10000))};
 export const cpCost=(rar,lvl)=>lvl>=1&&lvl<=4?CARPARTS.upBase*(Math.min(Math.max(rar|0,0),4)+1)*CARPARTS.upStep[lvl-1]:null;
+
+// Реферальная система «Друзья» (supabase/referral.sql). Суммы и пороги стартовые; настоящие значения лежат в таблицах ref_stages, ref_ladder, ref_cfg.
+// Зеркало нужно только для показа прогресса, сверяет tests/referral.test.mjs. Клиент ничего не начисляет.
+export const REF={alphabet:'ABCDEFGHJKMNPQRSTUVWXYZ23456789',codeLen:8,bindHours:24,page:20,ledger:30,
+ stages:[{code:0,t:'Пришёл'},{code:1,t:'Освоился',rolls:30},{code:2,t:'Играет',rolls:100,days:3,window:10},{code:3,t:'Свой',ageDays:14}],
+ welcome:{rub:5000,luck:10},
+ reward:{stage1:2000,stage2:10000,stage2Luck:10,stage2Ref:15000,stage3:20000},
+ hold:{stage1:24,stage2:72,stage3:72,ladder:72},
+ limits:{bindDay:30,actDay:15,playerCapRub:300000,speedHours:6,ringRub:100000,clusterN:5},revokeDays:30,
+ ladder:[{n:1,rub:10000},{n:3,luck:15,item:'ref_f_own',t:'Рамка «Свой человек»'},{n:5,rub:50000},{n:10,luck:100,item:'ref_t_recruiter',t:'Титул «Вербовщик»'},{n:25,t:'Номер серии «Друзья»'},
+  {n:50,rub:500000,item:'ref_d_column',t:'Эффект «Колонна»'},{n:100,item:'ref_t_leader',t:'Редкий номер серии и титул «Лидер сети»'},{n:250,t:'Машина из гаража'},{n:500,t:'Именной номер по заявке'}],
+ items:[{id:'ref_t_invited',n:'По приглашению',slot:'title',c:'#9aa3b8'},{id:'ref_t_recruiter',n:'Вербовщик',slot:'title',c:'#f0b429'},{id:'ref_t_leader',n:'Лидер сети',slot:'title',c:'#ececf1'},
+  {id:'ref_f_own',n:'Свой человек',slot:'skin',d:'Графитовая рамка с жёлтой кромкой'},{id:'ref_d_column',n:'Колонна',slot:'drop',d:'Серые и жёлтые частицы колонной'}]};
+// Медиа-программа (supabase/media.sql). МК нельзя купить, продать или передать. Зеркало для показа, сверяет tests/media.test.mjs.
+export const MEDIA={platforms:[['tiktok','TikTok'],['youtube','YouTube Shorts'],['instagram','Instagram Reels'],['vk','VK Клипы']],
+ levels:[{level:1,t:'Автор',posts:1,views:0,mult:1},{level:2,t:'Блогер',posts:5,views:20000,mult:1.25},{level:3,t:'Топ-медиа',posts:20,views:250000,mult:1.5}],
+ rewardPost:50,rewardRef:25,tiers:[[1000,100],[5000,300],[10000,600],[50000,2500],[100000,6000],[500000,30000],[1000000,80000]],seniorViews:50000,
+ holdPostH:168,holdViewsH:72,keepDays:30,inactiveDays:60,monthCap:150000,minConvert:100,convLimit:20000,rubPerMc:25,usdPerMc:0.0001,feePct:20,
+ limits:{postDay:1,postWeek:3,youngDays:7,accounts:4,viewsEveryDays:7},weekPrizes:[1500,1000,500],sla:{account:24,post:48,views:72},
+ plate:{base:3000,round:8000,top:25000,popRegs:['77','99','177','777','78','178','97'],popPct:20},
+ // eq — во сколько ₽ оценивается такой же предмет у нас в магазине за рубли (SHOP): нужен только тесту «магазин выгоднее обмена»
+ shop:[{id:'med_frame',t:'Рамка «Эфир»',p:1500,eq:2500000},{id:'med_title',t:'Титул «Медиа»',p:800,eq:2000000},{id:'med_drop',t:'Эффект «Запись»',p:2500,eq:2500000},{id:'med_bg',t:'Фон «Студия»',p:1200,eq:1500000},
+  {id:'med_case',t:'Кейс «Медиа»',p:500,perMonth:10,eq:600000},{id:'med_luck',t:'Прокруты удачи ×10',p:200,perMonth:10,eq:30000}],
+ series:['КЕК','МЕМ','ТОК','РЕК','ВАУ','ХАХ'],seriesLetters:'АВЕКМНОРСТУХ',
+ points:{'19.3':'Накрутка','19.4':'Подмена скриншота','19.5':'Чужой контент','19.6':'Нарушение правил','19.12':'Обход лимитов'},
+ items:[{id:'med_t_media',n:'Медиа',slot:'title',c:'#e5484d'},{id:'med_t_blogger',n:'Блогер',slot:'title',c:'#f0b429'},{id:'med_t_top',n:'Топ-медиа',slot:'title',c:'#ececf1'},
+  {id:'med_f_air',n:'Эфир',slot:'skin',d:'Графитовая рамка с красной точкой записи'},{id:'med_d_rec',n:'Запись',slot:'drop',d:'Красные и жёлтые частицы'},{id:'med_b_studio',n:'Студия',slot:'bg',d:'Тёмная студия с софитом'}]};
+// Цена номера серии «Медиа» в МК и сумма обмена (зеркало media_plate_price и media_convert; округление всегда вниз)
+export const platePrice=(d,r)=>Math.ceil((['777','001','999'].includes(d)?MEDIA.plate.top:/^([1-9])\1\1$/.test(d)||/^00[1-9]$/.test(d)?MEDIA.plate.round:MEDIA.plate.base)*(MEDIA.plate.popRegs.includes(r)?1+MEDIA.plate.popPct/100:1));
+export const convOut=(mc,rate,fee)=>Math.floor(mc*rate*(100-fee)/100);

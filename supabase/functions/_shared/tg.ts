@@ -37,3 +37,11 @@ export async function verifyInitData(initData: string, botToken: string, maxAgeS
 export async function playerPassword(tgId: number, pepper: string): Promise<string> {
   return hex(await hmac(enc.encode(pepper), 'tg:' + tgId));
 }
+
+/** Реферальный код из start_param. Вызывать ТОЛЬКО после успешного verifyInitData: параметр входит в подписанные данные,
+ *  поэтому подделать его без бота нельзя. Формат ссылки: ?startapp=r_<8 символов>; алфавит как в ref_gen_code (supabase/referral.sql). */
+export function refCodeOf(initData: string): string | null {
+  const sp = new URLSearchParams(initData).get('start_param') || '';
+  const m = /^r_([ABCDEFGHJKMNPQRSTUVWXYZ2-9]{8})$/.exec(sp);
+  return m ? m[1] : null;
+}

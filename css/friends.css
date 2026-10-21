@@ -1,0 +1,32 @@
+/* Экран «Друзья»: графит и один жёлтый акцент, без неона и стеклянных градиентов. Кнопки от 44 px, safe-area учитывает base.css */
+#friendsC{padding-bottom:calc(env(safe-area-inset-bottom,0px) + 24px)}
+.fr-card{background:var(--card);border:1px solid var(--b1);border-radius:18px;padding:16px;margin-bottom:12px}
+.fr-card h3{margin:0 0 10px;font-size:19px}
+.fr-card .btn,.md-card .btn{min-height:44px;padding:10px 16px;font-size:16px;border-radius:14px}
+.fr-y,.md-y{background:#f0b429!important;color:#1a1204!important}
+.fr-main .fr-nums,.md-nums{display:flex;gap:10px;margin-bottom:12px}
+.fr-nums>div,.md-nums>div{flex:1;background:var(--b2);border-radius:14px;padding:12px;text-align:center}
+.fr-nums b,.md-nums b{display:block;font-size:24px}.fr-nums small,.md-nums small{color:var(--mut);font-size:13px}
+.fr-code{display:flex;justify-content:space-between;align-items:center;margin:6px 0}.fr-code b{font-size:24px;letter-spacing:.12em}.fr-code small{color:var(--mut)}
+.fr-link{word-break:break-all;font-size:13px;color:var(--mut);background:var(--b2);border-radius:12px;padding:10px;margin-bottom:10px}
+.fr-row{display:flex;gap:8px;margin-top:8px}.fr-row .gq{flex:1;margin:0}
+.fr-note{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--b2);font-size:14px}.fr-note.y{border-left:3px solid #f0b429}.fr-note.r{border-left:3px solid #e5484d}.fr-note .btn{margin-top:8px;width:100%}
+.fr-dm{margin-top:10px;width:100%}
+.fr-next{margin-bottom:12px}.fr-next small{color:var(--mut);display:block}.fr-next b{display:block;font-size:20px;margin:4px 0}.fr-next em{font-style:normal;color:var(--mut);font-size:13px}
+.fr-bar,.md-bar{height:6px;border-radius:3px;background:var(--b2);overflow:hidden;margin:6px 0}.fr-bar i,.md-bar i{display:block;height:100%;background:#f0b429}
+.fr-lad{display:flex;flex-direction:column;gap:6px}
+.fr-st{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;background:var(--b2);min-height:44px}.fr-st b{min-width:34px;font-size:18px}.fr-st span{flex:1;font-size:14px}.fr-st small{color:var(--mut)}
+.fr-st.claimed{opacity:.55}.fr-st.ready{box-shadow:inset 0 0 0 2px #f0b429}
+.fr-fr,.fr-lg,.md-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--b1);flex-wrap:wrap}
+.fr-fr:first-of-type,.fr-lg:first-of-type{border-top:0}
+.fr-fr small,.fr-lg small,.md-row small{display:block;color:var(--mut);font-size:13px}
+.fr-dots{display:flex;gap:4px}.fr-dots i{width:9px;height:9px;border-radius:50%;background:var(--off)}.fr-dots i.on{background:#f0b429}
+.fr-s{font-size:13px;color:var(--mut);text-align:right}.fr-s.paid,.fr-s.active{color:#4ade80}.fr-s.review{color:#f0b429}.fr-s.cancelled,.fr-s.revoked{color:#e5484d}
+.fr-tp{display:flex;gap:12px;align-items:center;padding:8px 0;border-top:1px solid var(--b1)}.fr-tp span{width:24px;color:var(--mut)}.fr-tp b{flex:1}.fr-tp.me{color:#f0b429}.fr-tp em{font-style:normal;font-weight:700}
+.fr-sk,.md-sk{height:120px;background:linear-gradient(90deg,var(--card),var(--b2),var(--card));background-size:200% 100%;animation:frsk 1.2s infinite}
+@keyframes frsk{to{background-position:-200% 0}}
+#frBadge{position:absolute;top:8px;right:8px;width:12px;height:12px;border-radius:50%;background:#e5484d}
+/* Номера серий «Друзья» и «Медиа»: сдержанная графитовая плашка, как у блатных */
+html body .plate.t-friends{background:linear-gradient(180deg,#2a2b31,#17181c 60%,#0f1013);box-shadow:0 0 0 1.5px #8d93a3,inset 0 0 0 3px #ffffff18,0 10px 24px #000a}
+html body .plate.t-friends::before{border-color:#8d93a3}html body .plate.t-friends .pm,html body .plate.t-friends .pr,html body .plate.t-friends small{color:#e6e8ee;text-shadow:0 1px 2px #000a}
+html body .plate.sk-ref_f_own{box-shadow:0 0 0 2px #1c1d22,0 0 0 4px #f0b429,0 8px 18px #0008}

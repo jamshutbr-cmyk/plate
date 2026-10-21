@@ -16,6 +16,7 @@ const markOk=()=>{DOWN.n=0;DOWN.until=0};
 const markBad=()=>{DOWN.n=Math.min(DOWN.n+1,5);DOWN.until=Date.now()+15000*2**(DOWN.n-1)};
 
 // Вход: initData из Telegram → Edge Function tg-auth → сессия Supabase (JWT). Вне Telegram войти нельзя.
+export const LOGIN={refNew:false};   // true, если при входе новый игрок привязался к пригласившему
 export async function login(){
   const initData=TG&&TG.initData;
   if(!initData)throw new Error('Откройте игру из Telegram');
@@ -25,7 +26,7 @@ export async function login(){
     if(j.error==='not_subscribed')throw Object.assign(new Error('not_subscribed'),{code:'not_subscribed'});
     if(j.error==='banned')throw Object.assign(new Error('banned'),{code:'banned',reason:j.reason,until:j.until,banned:true})}
   if(!res.ok)throw new Error('Не удалось войти ('+res.status+')');
-  const s=await res.json();
+  const s=await res.json();LOGIN.refNew=!!s.ref_new;
   const {error}=await sb.auth.setSession({access_token:s.access_token,refresh_token:s.refresh_token});
   if(error)throw error;
 }
