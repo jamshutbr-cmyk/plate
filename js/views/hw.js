@@ -32,7 +32,7 @@ const TABS=[
 const SORTS=[['date','Новые'],['price','Дорогие'],['curse','Сильные']];
 const ERR=[['season','Ивент сейчас не идёт'],['collection full','Коллекция полна: продайте номера'],['full','Коллекция полна: продайте номера'],
  ['not enough pumpkins','Не хватает тыковок'],['money','Не хватает тыковок'],['not enough rub','Не хватает рублей'],['limit','Лимит обмена на сегодня исчерпан'],
- ['claimed','Уже получено'],['not done','Условие ещё не выполнено'],['too many','Слишком много номеров сразу']];
+ ['claimed','Уже получено'],['not done','Условие ещё не выполнено'],['too many','Слишком много номеров сразу'],['not needed','Тыковок пока хватает']];
 const errMsg=e=>{const m=String(e&&e.message||e),f=ERR.find(x=>m.includes(x[0]));return f?f[1]:'Не удалось выполнить, попробуйте ещё раз'};
 const fail=e=>{if(e&&e.banned)return;console.error(e);banner('Не получилось',errMsg(e))};
 
@@ -124,6 +124,20 @@ function goBtn(){
   const t=ph=='soon'?'Скоро':ph=='over'?'Ночь закончилась':H.p.pumpkins<HW.cost?'Нужны тыковки':H.plates.length>=HW.cap?'Коллекция полна':'Прокрутить';
   return `<button class="hw-go${ok?'':' off'}" id="hwGo" data-click="hwGen"><span>${t}</span>${ph=='live'?`<b>🎃 ${HW.cost}</b>`:''}</button>`;
 }
+const RES_LIM=3;
+const rescueChip=()=>phase()=='live'&&H.p.pumpkins<HW.cost&&(H.p.rescue||0)>0?`<button class="hw-chip hot" id="hwRescue" data-click="hwRescue"><i>🕯</i><div><b>Огарок свечи</b><span>Добрать до ${HW.cost} 🎃 · осталось ${H.p.rescue} из ${RES_LIM} сегодня</span></div></button>`:'';
+function syncRescue(){
+  const ch=document.querySelector('.hw-chips');if(!ch)return;
+  const old=$('hwRescue');if(old)old.remove();
+  const h=rescueChip();if(h)ch.insertAdjacentHTML('afterbegin',h);
+}
+async function rescue(){
+  try{
+    const r=await rpc('hw_rescue');
+    H.p.pumpkins=+r.pumpkins;H.p.rescue=+r.rescue;
+    burst('#ffb454',12);haptic('light');banner('Огарок свечи','+🎃 '+fmt(r.gain)+' · осталось '+r.rescue);draw();
+  }catch(e){fail(e)}
+}
 function drawRoll(){
   const p=H.p,streak=p.streak;
   const candle=phase()=='live'?(p.candle?`<div class="hw-chip hot"><i class="hw-flame">🕯</i><div><b>Свеча дня горит</b><span>Первый прокрут сегодня будет проклятым</span></div></div>`
@@ -134,7 +148,7 @@ function drawRoll(){
     <div class="stage hw-stage" id="hwStage" data-click="hwGen">${H.last?resultHTML(H.last,false):phHTML()}</div>
     ${goBtn()}
     <div class="hw-stat">Выпало: ${fmt(p.n)} · Лучший: 🎃 ${fmt(p.best)}</div>
-    <div class="hw-chips">${candle}${gift}</div></div>`;
+    <div class="hw-chips">${rescueChip()}${candle}${gift}</div></div>`;
 }
 // Прокрут: 12 кадров по 75 мс. Не зависит от настройки S.reel (раньше при выключенной/неопределённой настройке кадров не было вообще),
 // а любой сбой при отрисовке кадра не может повесить промис: по ошибке показываем запасной кадр и всё равно завершаемся.
@@ -167,7 +181,7 @@ async function gen(){
   if(H.busy||!H.ok||H.tab!='roll')return;
   const ph=phase();
   if(ph!='live'){banner(ph=='soon'?'Ещё не началось':'Ивент закончился','Награды ждут в «Алтаре»');return}
-  if(H.p.pumpkins<HW.cost){banner('Не хватает тыковок','Подарок, задания и обмен — во вкладке «Задания»');return}
+  if(H.p.pumpkins<HW.cost){banner('Не хватает тыковок',(H.p.rescue||0)>0?'Возьмите «Огарок свечи» под кнопкой':'Подарок, задания и обмен — во вкладке «Задания»');return}
   if(H.plates.length>=HW.cap){banner('Коллекция полна','Продайте номера, чтобы освободить место');return}
   H.busy=true;haptic('light');
   const st=$('hwStage');
@@ -188,7 +202,7 @@ async function gen(){
   $('hwBal').innerHTML=`<span class="hw-pm">🎃</span>${fmt(H.p.pumpkins)}`;
   const gb=$('hwGo');if(gb)gb.outerHTML=goBtn();
   const s2=document.querySelector('.hw-stat');if(s2)s2.textContent=`Выпало: ${fmt(H.p.n)} · Лучший: 🎃 ${fmt(H.p.best)}`;
-  effects(r,p);
+  effects(r,p);syncRescue();
   if(r.candle){const c=document.querySelector('.hw-chip.hot');if(c)c.outerHTML=`<div class="hw-chip"><i class="hw-flame off">🕯</i><div><b>Свеча погасла</b><span id="hwCandle">Снова через ${left(toMidnight())}</span></div></div>`}
 }
 function effects(r,p){
@@ -401,7 +415,7 @@ setInterval(()=>{
 },30000);
 
 DRAW.hw=draw;
-on({hwOpen:openHW,hwReload:()=>{H.err=null;load();draw()},hwTab:a=>{H.tab=a;draw();scrollTo(0,0)},hwGen:gen,hwDaily:daily,hwQuest:a=>quest(a),hwExch:a=>exch(a),
+on({hwOpen:openHW,hwReload:()=>{H.err=null;load();draw()},hwTab:a=>{H.tab=a;draw();scrollTo(0,0)},hwGen:gen,hwDaily:daily,hwRescue:rescue,hwQuest:a=>quest(a),hwExch:a=>exch(a),
  hwClaim:a=>claim(a),hwSort:a=>{H.sort=a;draw()},hwFlt:a=>{H.flt=a;draw()},hwOpenP:a=>openPlate(+a),hwClose:cm,hwSell:a=>sellAsk(+a),hwSellOk:a=>sellDo(+a),
  hwJunk:junkAsk,hwJunkOk:junkDo,hwTitle:a=>equipTitle(a),hwKind:a=>{H.kind=a;draw()}});
 
