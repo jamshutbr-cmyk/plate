@@ -230,84 +230,93 @@ button.hw-chip{cursor:pointer}
 /* ======================================================================
    СКИНЫ ПРОКЛЯТЫХ НОМЕРОВ
    Хранитель задаёт материал плашки (hwg-*), сила проклятия — насколько она горит (hwc1..hwc4).
-   Применяется и на экране режима, и в окне номера (оно лежит в #md, поэтому :is(#v-hw,#md)).
+   Применяется и на экране режима, и в окне номера (оно лежит в #md, поэтому :is(#v-hw,#md,#v-pub,#v-profile)).
    ====================================================================== */
-:is(#v-hw,#md) .plate.hwp{--k:#a78bfa;--tx1:#0d0d10;transition:none}
-:is(#v-hw,#md) .plate.hwp.hwg-cat{--k:#a78bfa}:is(#v-hw,#md) .plate.hwp.hwg-pumpkin{--k:#ff8a1f}:is(#v-hw,#md) .plate.hwp.hwg-moon{--k:#f6e7b4}:is(#v-hw,#md) .plate.hwp.hwg-web{--k:#9fb4c7}:is(#v-hw,#md) .plate.hwp.hwg-fire{--k:#4ff0b7}
-:is(#v-hw,#md) .plate.hwp .pm,:is(#v-hw,#md) .plate.hwp .pr{color:var(--tx1);border-right-color:color-mix(in srgb,var(--tx1) 70%,transparent)}
-:is(#v-hw,#md) .plate.hwp::before{border-color:var(--k)}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp{--k:#a78bfa;--tx1:#0d0d10;transition:none}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-cat{--k:#a78bfa}:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-pumpkin{--k:#ff8a1f}:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-moon{--k:#f6e7b4}:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-web{--k:#9fb4c7}:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-fire{--k:#4ff0b7}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp .pm,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp .pr{color:var(--tx1);border-right-color:color-mix(in srgb,var(--tx1) 70%,transparent)}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp::before{border-color:var(--k)}
 
 /* Чёрный кот: ночная слива, следы лап, светящиеся глаза */
-:is(#v-hw,#md) .plate.hwp.hwg-cat{--tx1:#efe6ff;
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-cat{--tx1:#efe6ff;
   background:radial-gradient(circle at 12% 50%,#a78bfa44,transparent 40%),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'><g fill='%23a78bfa' fill-opacity='.14'><ellipse cx='20' cy='42' rx='6' ry='5'/><circle cx='11' cy='33' r='2.6'/><circle cx='17' cy='28' r='2.6'/><circle cx='24' cy='28' r='2.6'/><circle cx='30' cy='33' r='2.6'/><ellipse cx='50' cy='16' rx='4.5' ry='3.6'/><circle cx='43' cy='10' r='1.9'/><circle cx='48' cy='6' r='1.9'/><circle cx='53' cy='6' r='1.9'/><circle cx='58' cy='10' r='1.9'/></g></svg>"),linear-gradient(180deg,#2c1850,#170c2c 62%,#0e0620)}
-:is(#v-hw,#md) .plate.hwp.hwg-cat .pm,:is(#v-hw,#md) .plate.hwp.hwg-cat .pr{text-shadow:0 0 12px #a78bfa,0 2px 0 #000a}
-:is(#v-hw,#md) .plate.hwp.hwg-cat .pr small{color:#cdbcff}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-cat .pm,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-cat .pr{text-shadow:0 0 12px #a78bfa,0 2px 0 #000a}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-cat .pr small{color:#cdbcff}
 
 /* Тыква-фонарь: рёбра тыквы, стебель, вырезанный тёмный шрифт */
-:is(#v-hw,#md) .plate.hwp.hwg-pumpkin{--tx1:#3a1300;
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-pumpkin{--tx1:#3a1300;
   background:linear-gradient(#4a6b1f,#4a6b1f) 50% 0/8% 7% no-repeat,repeating-linear-gradient(90deg,#0000 0 9%,#7a2e0030 9.6% 10.4%,#0000 11% 20%),radial-gradient(ellipse at 50% 35%,#ffc266,#ff8a1f 55%,#c8560a)}
-:is(#v-hw,#md) .plate.hwp.hwg-pumpkin .pm,:is(#v-hw,#md) .plate.hwp.hwg-pumpkin .pr{text-shadow:0 1px 0 #ffd08a,0 -1px 0 #7a2e0066}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-pumpkin .pm,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-pumpkin .pr{text-shadow:0 1px 0 #ffd08a,0 -1px 0 #7a2e0066}
 
 /* Полнолуние: лунный камень с кратерами, тёмно-синие буквы */
-:is(#v-hw,#md) .plate.hwp.hwg-moon{--tx1:#1b1740;
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-moon{--tx1:#1b1740;
   background:radial-gradient(circle at 16% 30%,#b9a0601f 0 5%,transparent 5.5%),radial-gradient(circle at 44% 74%,#b9a06026 0 6%,transparent 6.5%),radial-gradient(circle at 70% 26%,#b9a0601c 0 4%,transparent 4.5%),radial-gradient(circle at 88% 70%,#b9a06024 0 5%,transparent 5.5%),linear-gradient(180deg,#fffbe9,#f6e7b4 55%,#d9c488)}
-:is(#v-hw,#md) .plate.hwp.hwg-moon .pm,:is(#v-hw,#md) .plate.hwp.hwg-moon .pr{text-shadow:0 1px 0 #fffbe9,0 0 10px #fff8}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-moon .pm,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-moon .pr{text-shadow:0 1px 0 #fffbe9,0 0 10px #fff8}
 
 /* Паутина: холодная сталь, паутинка в углах */
-:is(#v-hw,#md) .plate.hwp.hwg-web{--tx1:#eef4fa;
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-web{--tx1:#eef4fa;
   background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g stroke='%23d6e2ee' stroke-opacity='.5' stroke-width='.7' fill='none'><path d='M0 0L60 60M0 0L60 22M0 0L22 60M0 0L60 0M0 0L0 60'/><path d='M12 0Q10 10 0 12M24 0Q20 20 0 24M38 0Q30 30 0 38M52 0Q40 40 0 52'/></g></svg>") 0 0/44px 44px no-repeat,url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><g stroke='%23d6e2ee' stroke-opacity='.5' stroke-width='.7' fill='none' transform='rotate(180 30 30)'><path d='M0 0L60 60M0 0L60 22M0 0L22 60M0 0L60 0M0 0L0 60'/><path d='M12 0Q10 10 0 12M24 0Q20 20 0 24M38 0Q30 30 0 38M52 0Q40 40 0 52'/></g></svg>") 100% 100%/44px 44px no-repeat,linear-gradient(180deg,#43556a,#273341 60%,#18212c)}
-:is(#v-hw,#md) .plate.hwp.hwg-web .pm,:is(#v-hw,#md) .plate.hwp.hwg-web .pr{text-shadow:0 0 8px #9fb4c7aa,0 2px 0 #000a}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-web .pm,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-web .pr{text-shadow:0 0 8px #9fb4c7aa,0 2px 0 #000a}
 
 /* Могильный огонь: чёрно-зелёный фон, язычки пламени снизу, неоновые буквы */
-:is(#v-hw,#md) .plate.hwp.hwg-fire{--tx1:#8fffd9;
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-fire{--tx1:#8fffd9;
   background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 30' preserveAspectRatio='none'><g fill='%234ff0b7' fill-opacity='.38'><path d='M0 30Q4 12 8 30ZM10 30Q16 4 22 30ZM26 30Q30 14 34 30ZM40 30Q47 2 54 30ZM58 30Q62 12 66 30ZM70 30Q77 6 84 30ZM88 30Q92 14 96 30ZM100 30Q107 4 114 30Z'/></g></svg>") 0 100%/100% 62% no-repeat,radial-gradient(ellipse at 50% 130%,#4ff0b7aa,transparent 62%),linear-gradient(180deg,#08342a,#052018 55%,#03140f)}
-:is(#v-hw,#md) .plate.hwp.hwg-fire .pm,:is(#v-hw,#md) .plate.hwp.hwg-fire .pr{text-shadow:0 0 7px #4ff0b7aa,0 2px 0 #000c}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-fire .pm,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwg-fire .pr{text-shadow:0 0 7px #4ff0b7aa,0 2px 0 #000c}
 
 /* Размер букв: чтобы длинные номера (О001ОО, В999ВВ) не лезли на заклёпки и регион, на любой ширине и любом шрифте */
-:is(#v-hw,#md) .plate .pm{font-size:13.2cqw;letter-spacing:0;padding:0 2cqw 0 max(6cqw,13px);overflow:hidden;position:relative;z-index:1}
-:is(#v-hw,#md) .plate:has(.fl-BY) .pm{font-size:11.4cqw}
-:is(#v-hw,#md) .plate .pr{font-size:10.6cqw;position:relative;z-index:1}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate .pm{font-size:13.2cqw;letter-spacing:0;padding:0 2cqw 0 max(6cqw,13px);overflow:hidden;position:relative;z-index:1}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate:has(.fl-BY) .pm{font-size:11.4cqw}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate .pr{font-size:10.6cqw;position:relative;z-index:1}
 
 /* Сила проклятия меняет саму плашку, а не только свечение:
    1 — материал хранителя и тонкая рамка; 2 — двойная рамка и водяной знак хранителя;
    3 — эмблемы вместо заклёпок, блик, толстая рамка; 4 — бегущее световое кольцо, пульс, крупные эмблемы */
-:is(#v-hw,#md) .plate.hwp.hwc1{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--k) 70%,#000),0 6px 14px #000a,0 0 10px -2px color-mix(in srgb,var(--k) 60%,transparent)}
-:is(#v-hw,#md) .plate.hwp.hwc2{box-shadow:0 0 0 2px var(--k),0 6px 16px #000a,0 0 20px -2px color-mix(in srgb,var(--k) 70%,transparent),inset 0 0 0 3px color-mix(in srgb,var(--k) 40%,transparent)}
-:is(#v-hw,#md) .plate.hwp.hwc2::before{border-style:double;border-width:4px}
-:is(#v-hw,#md) .plate.hwp.hwc3{box-shadow:0 0 0 3px var(--k),0 6px 18px #000a,0 0 32px 2px color-mix(in srgb,var(--k) 80%,transparent),inset 0 0 0 4px color-mix(in srgb,var(--k) 55%,transparent),inset 0 0 24px color-mix(in srgb,var(--k) 35%,transparent)}
-:is(#v-hw,#md) .plate.hwp.hwc3::before,:is(#v-hw,#md) .plate.hwp.hwc4::before{border-style:double;border-width:4px;background:radial-gradient(circle at max(7px,1.9cqw) 50%,#fff 0 .45cqw,var(--k) .6cqw 1.3cqw,transparent 2.4cqw),radial-gradient(circle at calc(100% - max(7px,1.9cqw)) 50%,#fff 0 .45cqw,var(--k) .6cqw 1.3cqw,transparent 2.4cqw)}
-:is(#v-hw,#md) .plate.hwp.hwc4{box-shadow:0 0 0 3px var(--k),0 6px 20px #000a,0 0 46px 6px var(--k),inset 0 0 0 4px color-mix(in srgb,var(--k) 75%,#fff 15%),inset 0 0 30px color-mix(in srgb,var(--k) 55%,transparent);animation:hwPl 1.9s ease-in-out infinite}
-:is(#v-hw,#md) .plate.hwp.hwc4.in{animation:flip .9s cubic-bezier(.2,1.2,.3,1),hwPl 1.9s .9s ease-in-out infinite}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc1{box-shadow:0 0 0 1.5px color-mix(in srgb,var(--k) 70%,#000),0 6px 14px #000a,0 0 10px -2px color-mix(in srgb,var(--k) 60%,transparent)}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc2{box-shadow:0 0 0 2px var(--k),0 6px 16px #000a,0 0 20px -2px color-mix(in srgb,var(--k) 70%,transparent),inset 0 0 0 3px color-mix(in srgb,var(--k) 40%,transparent)}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc2::before{border-style:double;border-width:4px}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc3{box-shadow:0 0 0 3px var(--k),0 6px 18px #000a,0 0 32px 2px color-mix(in srgb,var(--k) 80%,transparent),inset 0 0 0 4px color-mix(in srgb,var(--k) 55%,transparent),inset 0 0 24px color-mix(in srgb,var(--k) 35%,transparent)}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc3::before,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc4::before{border-style:double;border-width:4px;background:radial-gradient(circle at max(7px,1.9cqw) 50%,#fff 0 .45cqw,var(--k) .6cqw 1.3cqw,transparent 2.4cqw),radial-gradient(circle at calc(100% - max(7px,1.9cqw)) 50%,#fff 0 .45cqw,var(--k) .6cqw 1.3cqw,transparent 2.4cqw)}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc4{box-shadow:0 0 0 3px var(--k),0 6px 20px #000a,0 0 46px 6px var(--k),inset 0 0 0 4px color-mix(in srgb,var(--k) 75%,#fff 15%),inset 0 0 30px color-mix(in srgb,var(--k) 55%,transparent);animation:hwPl 1.9s ease-in-out infinite}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc4.in{animation:flip .9s cubic-bezier(.2,1.2,.3,1),hwPl 1.9s .9s ease-in-out infinite}
 @keyframes hwPl{50%{box-shadow:0 0 0 3px var(--k),0 6px 20px #000a,0 0 70px 12px color-mix(in srgb,var(--k) 90%,transparent),inset 0 0 0 4px color-mix(in srgb,var(--k) 75%,#fff 15%),inset 0 0 38px color-mix(in srgb,var(--k) 70%,transparent)}}
-:is(#v-hw,#md) .plate.hwp.hwc3::after,:is(#v-hw,#md) .plate.hwp.hwc4::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 38%,color-mix(in srgb,var(--k) 40%,#fff) 50%,transparent 62%);opacity:.6;transform:translateX(-130%);animation:shine 3.2s 1s infinite;z-index:2}
-:is(#v-hw,#md) .plate.hwp.hwc4::after{animation-duration:2.1s}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc3::after,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc4::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 38%,color-mix(in srgb,var(--k) 40%,#fff) 50%,transparent 62%);opacity:.6;transform:translateX(-130%);animation:shine 3.2s 1s infinite;z-index:2}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc4::after{animation-duration:2.1s}
 .hwe{position:absolute;pointer-events:none;font-style:normal;line-height:1;z-index:0;filter:drop-shadow(0 0 3px var(--k))}
 .hwe.w{left:50%;top:50%;transform:translate(-62%,-50%);font-size:17cqw;opacity:.13;filter:grayscale(1) brightness(1.6)}
 @property --hwa{syntax:'<angle>';inherits:false;initial-value:0deg}
 .hwe.rg{inset:0;border-radius:inherit;padding:2.2px;z-index:3;background:conic-gradient(from var(--hwa),transparent 0 55%,var(--k) 80%,#fff 90%,transparent 100%);
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);animation:hwRg 2.6s linear infinite;filter:none}
 @keyframes hwRg{to{--hwa:360deg}}
-.hw-mini :is(#v-hw,#md) .plate.hwp.hwc4,.hw-mini :is(#v-hw,#md) .plate.hwp.hwc4.in{animation:none}
+.hw-mini :is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc4,.hw-mini :is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc4.in{animation:none}
 
 #v-hw :focus-visible{outline:2px solid var(--hw-ember)}
-@media (prefers-reduced-motion:reduce){.hw-stars,.hw-moon,.hw-bat,.hw-fog,.hw-em,.hw-flame,.hw-aura,.hw-sparks,.hw-rib.blood,.hw-keeper::after,.hw-go,.hw-ghost span,.hw-stage::before,.hw-row.c4,.hw-g.on::before,:is(#v-hw,#md) .plate.hwp.hwc4,:is(#v-hw,#md) .plate.hwp.hwc3::after,:is(#v-hw,#md) .plate.hwp.hwc4::after,.hwe{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.hw-stars,.hw-moon,.hw-bat,.hw-fog,.hw-em,.hw-flame,.hw-aura,.hw-sparks,.hw-rib.blood,.hw-keeper::after,.hw-go,.hw-ghost span,.hw-stage::before,.hw-row.c4,.hw-g.on::before,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc4,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc3::after,:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwp.hwc4::after,.hwe{animation:none!important}}
 
 /* ======================================================================
    ОБЫЧНЫЕ (НЕПРОКЛЯТЫЕ) НОМЕРА: материал плашки по редкости hwn0..hwn5, надпись — js/ui/hwplate.js
    ====================================================================== */
-:is(#v-hw,#md) .plate.hwn .pm{font-family:Georgia,'Times New Roman',serif;font-weight:800;letter-spacing:.02em;white-space:nowrap;text-align:center}
-:is(#v-hw,#md) .plate.hwn .hwsub{font-size:1.5em;line-height:1}
-:is(#v-hw,#md) .plate.hwn0{background:linear-gradient(180deg,#d9d6cf,#b9b5ab);--tx1:#2b2a28}
-:is(#v-hw,#md) .plate.hwn1{background:linear-gradient(180deg,#d7efd2,#9fd39a);--tx1:#12361a}
-:is(#v-hw,#md) .plate.hwn2{background:linear-gradient(180deg,#cfe0ff,#8fb0f5);--tx1:#10234f}
-:is(#v-hw,#md) .plate.hwn3{background:linear-gradient(180deg,#e6d2ff,#b58cf0);--tx1:#2a0f4d}
-:is(#v-hw,#md) .plate.hwn4{background:linear-gradient(180deg,#ffe9a8,#f2b43a);--tx1:#4a2a00}
-:is(#v-hw,#md) .plate.hwn5{background:linear-gradient(180deg,#3a0a0a,#120202);--tx1:#ff6a3d}
-:is(#v-hw,#md) .plate.hwn:is(.hwn0,.hwn1,.hwn2,.hwn3,.hwn4,.hwn5) .pm,
-:is(#v-hw,#md) .plate.hwn:is(.hwn0,.hwn1,.hwn2,.hwn3,.hwn4,.hwn5) .pr{color:var(--tx1)}
-:is(#v-hw,#md) .plate.hwn5 .pm{text-shadow:0 0 10px #ff4d1a,0 2px 0 #000}
-:is(#v-hw,#md) .plate.hwn4 .pm{text-shadow:0 1px 0 #fff6cf}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn .pm{font-family:Georgia,'Times New Roman',serif;font-weight:800;letter-spacing:.02em;white-space:nowrap;text-align:center}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn .hwsub{font-size:1.5em;line-height:1}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn0{background:linear-gradient(180deg,#d9d6cf,#b9b5ab);--tx1:#2b2a28}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn1{background:linear-gradient(180deg,#d7efd2,#9fd39a);--tx1:#12361a}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn2{background:linear-gradient(180deg,#cfe0ff,#8fb0f5);--tx1:#10234f}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn3{background:linear-gradient(180deg,#e6d2ff,#b58cf0);--tx1:#2a0f4d}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn4{background:linear-gradient(180deg,#ffe9a8,#f2b43a);--tx1:#4a2a00}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn5{background:linear-gradient(180deg,#3a0a0a,#120202);--tx1:#ff6a3d}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn:is(.hwn0,.hwn1,.hwn2,.hwn3,.hwn4,.hwn5) .pm,
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn:is(.hwn0,.hwn1,.hwn2,.hwn3,.hwn4,.hwn5) .pr{color:var(--tx1)}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn5 .pm{text-shadow:0 0 10px #ff4d1a,0 2px 0 #000}
+:is(#v-hw,#md,#v-pub,#v-profile) .plate.hwn4 .pm{text-shadow:0 1px 0 #fff6cf}
 
 /* Кнопка музыки в шапке экрана ивента */
 .hw-mus{width:36px;height:36px;flex:none;display:grid;place-items:center;border-radius:50%;border:1px solid var(--hw-line);background:#ffffff0d;color:var(--hw-ember);cursor:pointer;padding:0;transition:transform .15s,opacity .2s}
 .hw-mus:active{transform:scale(.92)}.hw-mus.off{opacity:.55;color:var(--hw-mut)}.hw-mus svg{display:block}
+
+/* ---------- Музей ночи: номера ивента, которые остаются навсегда (вкладка «Профиль» ивента и чужой профиль) ---------- */
+#v-pub,#v-profile{--hw-ink:#08040f;--hw-plum:#1b0f2e;--hw-plum2:#2a1745;--hw-pump:#ff8a1f;--hw-ember:#ffb454;--hw-bone:#f3e9d6;--hw-mut:#a99fc4;--hw-line:#ffb45438;--hw-card:#1a1030}
+.hw-museum{background:linear-gradient(#1f1336f2,#170d2af2);border:1px solid var(--hw-line,#ffb45438);border-radius:16px;padding:14px;margin:0 0 12px;color:var(--hw-bone,#f3e9d6)}
+.hw-museum h3{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 10px;color:var(--hw-ember,#ffb454)}
+.hw-mcs{display:flex;flex-direction:column;gap:12px}
+.hw-mc{display:flex;flex-direction:column;gap:6px}
+.hw-mcn{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;color:var(--hw-mut,#a99fc4)}
+.hw-mcn b{color:var(--hw-bone,#f3e9d6)}.hw-mcn em{font-style:normal;color:var(--gc)}

@@ -7,6 +7,7 @@ import {nickCls, plateHTML, titleHTML} from '../ui/plate.js';
 import {ctagHTML, plate} from './clans.js';
 import {styleCls} from './clanext.js';
 import {pubShowcase} from './showcase.js';
+import {hwMuseumCard} from './hw.js';
 import {startTrade} from './trade.js';
 import {$, esc, fmt} from '../util.js';
 
@@ -57,11 +58,12 @@ DRAW.top=drawTop;
 on({topRefresh:()=>{ATS[KIND]=0;render(true)},topMenu:()=>{OPEN=!OPEN;render(true)},topKind:k=>{OPEN=false;if(k!=KIND)KIND=k;render(true)}});
 
 // Профиль другого игрока (только просмотр): имя, уровень, статистика и самый дорогой номер. Баланс не показываем.
-let PUB=null,PERR=false,PID=null,PSC=[];
+let PUB=null,PERR=false,PID=null,PSC=[],PHW=[];
 async function openPlayer(id){
- PID=id;PUB=null;PERR=false;PSC=[];go('pub');
+ PID=id;PUB=null;PERR=false;PSC=[];PHW=[];go('pub');
  try{PUB=await rpc('get_player_profile',{pid:id});if(!STY[id])await loadStyles([id])}catch(e){console.error(e)}
  try{PSC=await rpc('get_showcase',{pid:id})||[]}catch(e){console.warn('showcase',e)}
+ try{PHW=await rpc('hw_museum_public',{pid:id})||[]}catch(e){console.warn('hw museum',e)}
  if(!PUB)PERR=true;
  render(true)}
 export function drawPub(){
@@ -73,6 +75,7 @@ export function drawPub(){
  ${p.me?'':`<button class="btn" style="width:100%;margin-bottom:10px" data-click="newTrade">Предложить обмен</button>`}
  <div class="st2"><div><b>${fmt(st.n)}</b><span>Выпало номеров</span></div><div><b>${fmt(st.best)} ₽</b><span>Рекорд цены</span></div><div><b>${fmt(p.count)}</b><span>Номеров сейчас</span></div><div><b>${fmt(p.value)} ₽</b><span>Общая стоимость</span></div></div>
  ${p.me?'':pubShowcase(PSC,sy.skin)}
+ ${hwMuseumCard(PHW)}
  ${p.top?`<div class="card"><h3>Самый дорогой сейчас<span class="tl">${fmt(p.top.price)} ₽</span></h3><div class="tp">${plateHTML(p.top,'',sy.skin||'')}</div></div>`:''}
  <div class="card"><h3>Редкости</h3><div class="bars" style="margin:6px 0 0">${RAR.map((R,i)=>`<span>${R.n}</span><div class="pb" style="background:${R.c}33"><i style="width:${(st.cls[i]||0)/mx*100}%;background:${R.c}"></i></div><span class="tl" style="text-align:right">${st.cls[i]||0}</span>`).join('')}</div></div>`}
 DRAW.pub=drawPub;

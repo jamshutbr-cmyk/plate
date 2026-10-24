@@ -18,7 +18,7 @@ import {hwMusicInit} from '../ui/hwmusic.js';
 // Шансы, цены, награды и лимиты считает только сервер (supabase/hw.sql, функция hw-roll); здесь данные для показа
 // и действия игрока. Из режима нет дороги в рынок, магазин, банк и прочее: нижняя панель ведёт только по этим вкладкам.
 // Вёрстка: css/hw.css. Все классы с префиксом hw-, чтобы не пересекаться с остальной игрой.
-const COLS='id,country,type,main,reg,region_name,cls,mu,price,curse,guardian,pv,created_at';
+const COLS='id,country,type,main,reg,region_name,cls,mu,price,curse,guardian,pv,created_at,kept,season';
 // Значки нижней панели: свои SVG вместо системных эмодзи (рисуются цветом текста кнопки, поэтому одинаково выглядят на всех устройствах)
 const IC=d=>`<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
 const TABS=[
@@ -32,7 +32,7 @@ const TABS=[
 const SORTS=[['date','Новые'],['price','Дорогие'],['curse','Сильные']];
 const ERR=[['season','Ивент сейчас не идёт'],['collection full','Коллекция полна: продайте номера'],['full','Коллекция полна: продайте номера'],
  ['not enough pumpkins','Не хватает тыковок'],['money','Не хватает тыковок'],['not enough rub','Не хватает рублей'],['limit','Лимит обмена на сегодня исчерпан'],
- ['claimed','Уже получено'],['not done','Условие ещё не выполнено'],['too many','Слишком много номеров сразу'],['not needed','Тыковок пока хватает']];
+ ['claimed','Уже получено'],['not done','Условие ещё не выполнено'],['too many','Слишком много номеров сразу'],['museum full','Музей полон: максимум '+20+' номеров'],['not needed','Тыковок пока хватает']];
 const errMsg=e=>{const m=String(e&&e.message||e),f=ERR.find(x=>m.includes(x[0]));return f?f[1]:'Не удалось выполнить, попробуйте ещё раз'};
 const fail=e=>{if(e&&e.banned)return;console.error(e);banner('Не получилось',errMsg(e))};
 
@@ -46,7 +46,7 @@ const phase=()=>{const t=now();return !H.cfg.on||t<H.cfg.s?'soon':t>=H.cfg.e?'ov
 const blood=()=>phase()=='live'&&now()>=H.cfg.b;
 const claimOpen=()=>H.cfg.on&&now()>=H.cfg.s&&now()<H.cfg.e+7*864e5;
 const fromRow=r=>({id:r.id,country:r.country,type:r.type,main:r.main,reg:r.reg,rn:r.region_name,cls:r.cls,mu:r.mu,price:+r.price,
- curse:r.curse,guardian:r.guardian,pv:+r.pv,ts:Date.parse(r.created_at)});
+ curse:r.curse,guardian:r.guardian,pv:+r.pv,ts:Date.parse(r.created_at),kept:!!r.kept,season:r.season||'hw2026'});
 // Плашка режима: проклятые номера получают свой скин по хранителю (hwg-*) и силе (hwc1..4), см. css/hw.css
 const hp=(p,c='')=>{
   const t=hwText(p);
@@ -59,6 +59,12 @@ const hp=(p,c='')=>{
   const e=hwGuard(p.guardian).e;
   return h.replace(/<\/div>$/,`<i class="hwe w">${e}</i>${p.curse>=4?'<i class="hwe rg"></i>':''}</div>`);
 };
+// Карточка «Музей ночи» для профилей. list: номера в формате клиента или ответа hw_museum_public (ключи совпадают)
+export function hwMuseumCard(list){
+  if(!list||!list.length)return '';
+  const cells=list.map(r=>{const p={...r,price:0,pv:+r.pv},R=RAR[p.cls],g=p.curse?hwGuard(p.guardian):null;
+    return `<div class="hw-mc" style="--gc:${g?g.c:R.c}">${hp(p,'sh')}<div class="hw-mcn"><span style="color:${R.c}">${R.n}</span><b>🎃 ${fmt(p.pv)}</b>${g?`<em>${g.e} ${HW.powers[p.curse]}</em>`:''}</div></div>`}).join('');
+  return `<div class="card hw-museum"><h3>🎃 Ночь тыкв · 2026<span class="tl">${list.length}</span></h3><div class="hw-mcs">${cells}</div></div>`}
 const pips=n=>`<span class="hw-pips">${[1,2,3,4].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</span>`;
 const gCount=()=>Object.keys(H.gd).length;
 const gSum=()=>Object.values(H.gd).reduce((a,b)=>a+b,0);
@@ -223,13 +229,13 @@ function flash(c){const f=document.createElement('div');f.className='hw-flash';f
 // ---------- Коллекция ----------
 function listOf(){
   let a=H.plates.slice();
-  if(H.flt=='curse')a=a.filter(p=>p.curse);else if(H.flt!='all')a=a.filter(p=>p.guardian==H.flt);
+  if(H.flt=='curse')a=a.filter(p=>p.curse);else if(H.flt=='kept')a=a.filter(p=>p.kept);else if(H.flt!='all')a=a.filter(p=>p.guardian==H.flt);
   const key={date:p=>p.id,price:p=>p.pv,curse:p=>p.curse*1e12+p.pv}[H.sort];
   return a.sort((x,y)=>key(y)-key(x));
 }
 function drawCol(){
-  const a=listOf(),tot=H.plates.reduce((s,p)=>s+p.pv,0),junk=H.plates.filter(p=>!p.curse&&p.cls<=1).length;
-  const fl=[['all','Все'],['curse','☠ Проклятые'],...HW.guardians.map(g=>[g.id,g.e])];
+  const a=listOf(),tot=H.plates.reduce((s,p)=>s+p.pv,0),junk=H.plates.filter(p=>!p.curse&&p.cls<=1&&!p.kept).length;
+  const fl=[['all','Все'],['kept','★ Музей'],['curse','☠ Проклятые'],...HW.guardians.map(g=>[g.id,g.e])];
   return `<div class="hw-col"><div class="hw-hd"><h2 class="hw-h">🗂 Коллекция</h2><b>${H.plates.length} / ${HW.cap}</b></div>
    <div class="hw-sub">Стоимость 🎃 ${fmt(tot)}</div>
    <div class="hw-chipsrow">${SORTS.map(([k,n])=>`<button class="${H.sort==k?'a':''}" data-click="hwSort" data-arg="${k}">${n}</button>`).join('')}</div>
@@ -241,7 +247,7 @@ function rowHTML(p,i){
   const R=RAR[p.cls],g=p.curse?hwGuard(p.guardian):null;
   return `<div class="hw-row${g?' cursed c'+p.curse:''}" style="--gc:${g?g.c:R.c};animation-delay:${Math.min(i,12)*25}ms" data-click="hwOpenP" data-arg="${p.id}">
    <div class="hw-mini">${hp(p)}</div>
-   <div class="hw-ri"><span style="color:${R.c}">${R.n}</span><b>🎃 ${fmt(p.pv)}</b></div>
+   <div class="hw-ri"><span style="color:${R.c}">${p.kept?'★ ':''}${R.n}</span><b>🎃 ${fmt(p.pv)}</b></div>
    ${g?`<div class="hw-rc"><span>${g.e} ${HW.powers[p.curse]} ×${HW.mult[p.curse-1]}</span>${pips(p.curse)}</div>`:'<div class="hw-rc dim"><span>Без проклятия</span></div>'}</div>`;
 }
 function openPlate(id){
@@ -250,11 +256,21 @@ function openPlate(id){
   sm(`<div class="dlg hw-dlg" style="--gc:${g?g.c:R.c}"><div class="hw-dp">${hp(p,'sh')}</div>
     <div class="hw-dn" style="color:${R.c}">${R.n}</div>${g?curseHTML(p,g):''}
     <div class="hw-val">Цена 🎃 ${fmt(p.pv)}<span>Продажа ${HW.sellPct}%: 🎃 ${fmt(sellOf(p))}</span></div>
-    <button class="btn red hw-btn" data-click="hwSell" data-arg="${p.id}">${g?'Развеять и продать':'Продать'} · 🎃 ${fmt(sellOf(p))}</button>
+    <button class="btn hw-btn" data-click="hwKeep" data-arg="${p.id}">${p.kept?'★ Убрать из музея':'☆ В музей (навсегда)'}</button>
+    ${p.kept?'':`<button class="btn red hw-btn" data-click="hwSell" data-arg="${p.id}">${g?'Развеять и продать':'Продать'} · 🎃 ${fmt(sellOf(p))}</button>`}
     <button class="btn hw-btn" data-click="hwClose">Закрыть</button></div>`);
 }
-function sellAsk(id){
+async function keep(id){
   const p=H.plates.find(x=>x.id==id);if(!p)return;
+  cm();
+  try{
+    const r=await rpc('hw_museum',{ids:[+id],keep:!p.kept});
+    p.kept=!p.kept;haptic('light');burst('#ffb454',p.kept?14:6);
+    banner(p.kept?'Номер в музее':'Убран из музея',p.kept?'Остаётся навсегда: '+r.kept+' / 20':'Его снова можно продать');draw();
+  }catch(e){fail(e)}
+}
+function sellAsk(id){
+  const p=H.plates.find(x=>x.id==id);if(!p||p.kept)return;
   if(p.curse>=3){const g=hwGuard(p.guardian);
     sm(`<div class="dlg hw-dlg"><h3>Развеять ${HW.powers[p.curse].toLowerCase()} проклятие?</h3><div class="hw-sub" style="text-align:center">${g.e} ${g.n} · ×${HW.mult[p.curse-1]}<br>Номер уйдёт навсегда. Прогресс хранителя в Алтаре останется.</div>
     <button class="btn red hw-btn" data-click="hwSellOk" data-arg="${p.id}">Продать · 🎃 ${fmt(sellOf(p))}</button><button class="btn" data-click="hwClose">Оставить</button></div>`);return}
@@ -270,7 +286,7 @@ async function sellDo(id){
   }catch(e){fail(e)}
 }
 function junkAsk(){
-  const j=H.plates.filter(p=>!p.curse&&p.cls<=1);if(!j.length){banner('Мелочи нет','Проклятые и редкие номера остаются');return}
+  const j=H.plates.filter(p=>!p.curse&&p.cls<=1&&!p.kept);if(!j.length){banner('Мелочи нет','Проклятые и редкие номера остаются');return}
   const gain=Math.floor(j.reduce((s,p)=>s+p.pv,0)*HW.sellPct/100);
   sm(`<div class="dlg hw-dlg"><h3>Продать мелочь?</h3><div class="hw-sub" style="text-align:center">${j.length} обычных и необычных номеров без проклятия.<br>Вы получите 🎃 ${fmt(gain)}</div>
     <button class="btn red hw-btn" data-click="hwJunkOk">Продать</button><button class="btn" data-click="hwClose">Отмена</button></div>`);
@@ -370,6 +386,7 @@ function drawProf(){
    <div class="hw-st"><div><b>${fmt(p.pumpkins)}</b><span>Тыковки 🎃</span></div><div><b>${fmt(p.n)}</b><span>Выпало номеров</span></div><div><b>${fmt(p.curses)}</b><span>Проклятий</span></div>
     <div><b>${fmt(p.best)}</b><span>Лучший, 🎃</span></div><div><b>${gCount()} / 5</b><span>Хранителей</span></div><div><b>${fmt(tot)}</b><span>Стоимость коллекции</span></div></div>
    ${mine.length?`<div class="hw-card"><h3 class="hw-h2" style="margin-top:0">Титулы ночи</h3><div class="hw-titles">${mine.map(t=>`<button class="${cur==t.id?'a':''}" style="--tc:${t.c}" data-click="hwTitle" data-arg="${cur==t.id?'':t.id}">${t.n}${cur==t.id?' · надет':''}</button>`).join('')}</div></div>`:''}
+   ${hwMuseumCard(H.plates.filter(x=>x.kept))}
    <div class="hw-card"><h3 class="hw-h2" style="margin-top:0">Редкости</h3>${rarBars()}</div></div>`;
 }
 function rarBars(){
@@ -416,7 +433,7 @@ setInterval(()=>{
 
 DRAW.hw=draw;
 on({hwOpen:openHW,hwReload:()=>{H.err=null;load();draw()},hwTab:a=>{H.tab=a;draw();scrollTo(0,0)},hwGen:gen,hwDaily:daily,hwRescue:rescue,hwQuest:a=>quest(a),hwExch:a=>exch(a),
- hwClaim:a=>claim(a),hwSort:a=>{H.sort=a;draw()},hwFlt:a=>{H.flt=a;draw()},hwOpenP:a=>openPlate(+a),hwClose:cm,hwSell:a=>sellAsk(+a),hwSellOk:a=>sellDo(+a),
+ hwClaim:a=>claim(a),hwSort:a=>{H.sort=a;draw()},hwFlt:a=>{H.flt=a;draw()},hwOpenP:a=>openPlate(+a),hwClose:cm,hwSell:a=>sellAsk(+a),hwKeep:a=>keep(+a),hwSellOk:a=>sellDo(+a),
  hwJunk:junkAsk,hwJunkOk:junkDo,hwTitle:a=>equipTitle(a),hwKind:a=>{H.kind=a;draw()}});
 
 // Музыка экрана: сама включается, когда открыт экран ивента, кнопка звука в шапке (js/ui/hwmusic.js)

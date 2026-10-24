@@ -224,7 +224,7 @@ export const convOut=(mc,rate,fee)=>Math.floor(mc*rate*(100-fee)/100);
 // Хэллоуин «Ночь тыкв» (supabase/hw.sql, supabase/functions/hw-roll). Своя валюта 🎃 и свои номера, основной баланс не трогаются.
 // Цифры зеркалят SQL; шансы, цену и награды считает только сервер, здесь данные для показа (совпадение проверяет tests/hw.test.mjs).
 export const HW={cost:100,cap:300,sellPct:90,start:1000,daily:1500,streakStep:100,streakMax:6,
- chance:12,chanceBlood:25,pityAt:20,vbase:[15,45,225,1800,13500,60000],mult:[2,4,7,10],lvlMul:400,lvlBonus:50,
+ chance:12,chanceBlood:25,pityAt:20,vbase:[60,75,140,1500,12000,60000],mult:[2,4,7,10],lvlMul:400,lvlBonus:50,
  powers:['','Слабое','Среднее','Сильное','Древнее'],pw:[50,30,15,5],pwBlood:[46,29,15,10],
  exch:{rate:500,limit:600},
  guardians:[{id:'cat',n:'Чёрный кот',e:'🐈\u200d⬛',c:'#a78bfa',w:24},{id:'pumpkin',n:'Тыква-фонарь',e:'🎃',c:'#ff8a1f',w:24},
