@@ -17,6 +17,7 @@ import './views/auction.js';
 import './views/gai.js';
 import './views/road.js';
 import './views/evshop.js';
+import './views/hw.js';
 import './views/parts.js';
 import './views/clans.js';
 import './views/lab.js';
