@@ -136,7 +136,21 @@ function drawRoll(){
     <div class="hw-stat">Выпало: ${fmt(p.n)} · Лучший: 🎃 ${fmt(p.best)}</div>
     <div class="hw-chips">${candle}${gift}</div></div>`;
 }
-const spin=el=>!S.reel?Promise.resolve():new Promise(res=>{let i=0;const t=setInterval(()=>{el.innerHTML=`<div class="hw-res spin"><div class="hw-plwrap">${hp(fake())}</div></div>`;if(++i>=9){clearInterval(t);res()}},75)});
+// Прокрут: 12 кадров по 75 мс. Не зависит от настройки S.reel (раньше при выключенной/неопределённой настройке кадров не было вообще),
+// а любой сбой при отрисовке кадра не может повесить промис: по ошибке показываем запасной кадр и всё равно завершаемся.
+const GH='<div class="hw-ghost"><span>🎃</span><span>🕯</span><span>🦇</span><span>🕷</span><span>👻</span><span>💀</span></div>';
+const spin=el=>new Promise(res=>{
+  if(!el){res();return}
+  let i=0,done=false;
+  const end=()=>{if(done)return;done=true;clearInterval(t);res()};
+  const frame=()=>{
+    try{el.innerHTML=`<div class="hw-res spin"><div class="hw-plwrap">${hp(fake())}</div></div>`}
+    catch(e){console.error('hw spin frame',e);try{el.innerHTML=`<div class="hw-res spin">${GH}</div>`}catch(_){}}
+    if(++i>=12)end();
+  };
+  const t=setInterval(frame,75);frame();
+  setTimeout(end,3000); // страховка
+});
 async function callRoll(){
   const {data,error}=await sb.functions.invoke('hw-roll');
   if(error){
@@ -144,6 +158,9 @@ async function callRoll(){
     if(e&&e.error=='banned'){handleBan({reason:e.reason,until:e.until});return {err:'banned'}}
     if(e&&['full','money','season'].includes(e.error)){await load();return {err:e.error}}
     await load();return {err:'net'}}
+  if(!data)return {err:'net'};
+  if(data.error){if(data.error=='banned'){handleBan({reason:data.reason,until:data.until});return {err:'banned'}}return {err:data.error}}
+  if(!data.plate||!data.p)return {err:'net'};
   return data;
 }
 async function gen(){
@@ -154,13 +171,18 @@ async function gen(){
   if(H.plates.length>=HW.cap){banner('Коллекция полна','Продайте номера, чтобы освободить место');return}
   H.busy=true;haptic('light');
   const st=$('hwStage');
-  const [r]=await Promise.all([callRoll(),spin(st)]);
-  H.busy=false;
-  if(r.err){
-    if(r.err=='banned')return;
-    banner(r.err=='money'?'Не хватает тыковок':r.err=='full'?'Коллекция полна':r.err=='season'?'Ивент сейчас не идёт':'Нет связи','Попробуйте ещё раз');
+  let r;
+  try{[r]=await Promise.all([callRoll(),spin(st)])}
+  catch(e){console.error(e);r={err:'net'}}
+  finally{H.busy=false}
+  if(!r||r.err){
+    // кадр прокрута остаётся на сцене: возвращаем нормальный вид
+    if(H.tab=='roll'){const s0=$('hwStage');if(s0)s0.innerHTML=H.last?resultHTML(H.last,false):phHTML()}
+    if(r&&r.err=='banned')return;
+    const e=r&&r.err;
+    banner(e=='money'?'Не хватает тыковок':e=='full'?'Коллекция полна':e=='season'?'Ивент сейчас не идёт':'Нет связи','Попробуйте ещё раз');
     return}
-  Object.assign(H.p,r.p);H.gd=r.gd;H.dq=r.dq;H.plates.push(r.plate);H.last=r;
+  Object.assign(H.p,r.p);H.gd=r.gd||H.gd;H.dq=r.dq||H.dq;H.plates.push(r.plate);H.last=r;
   const p=r.plate;
   if(H.tab=='roll'){const s=$('hwStage');if(s)s.innerHTML=resultHTML(r,true)}
   $('hwBal').innerHTML=`<span class="hw-pm">🎃</span>${fmt(H.p.pumpkins)}`;
