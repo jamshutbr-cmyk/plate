@@ -157,7 +157,7 @@ async function callRoll(){
     let e=null;try{e=await error.context.json()}catch(_){}
     if(e&&e.error=='banned'){handleBan({reason:e.reason,until:e.until});return {err:'banned'}}
     if(e&&['full','money','season'].includes(e.error)){await load();return {err:e.error}}
-    await load();return {err:'net'}}
+    await load();return {err:(e&&e.error)||('http'+((error.context&&error.context.status)||''))}}
   if(!data)return {err:'net'};
   if(data.error){if(data.error=='banned'){handleBan({reason:data.reason,until:data.until});return {err:'banned'}}return {err:data.error}}
   if(!data.plate||!data.p)return {err:'net'};
@@ -180,7 +180,7 @@ async function gen(){
     if(H.tab=='roll'){const s0=$('hwStage');if(s0)s0.innerHTML=H.last?resultHTML(H.last,false):phHTML()}
     if(r&&r.err=='banned')return;
     const e=r&&r.err;
-    banner(e=='money'?'Не хватает тыковок':e=='full'?'Коллекция полна':e=='season'?'Ивент сейчас не идёт':'Нет связи','Попробуйте ещё раз');
+    banner(e=='money'?'Не хватает тыковок':e=='full'?'Коллекция полна':e=='season'?'Ивент сейчас не идёт':e=='server'||String(e).startsWith('http')?'Ошибка сервера ('+e+')':'Нет связи','Попробуйте ещё раз');
     return}
   Object.assign(H.p,r.p);H.gd=r.gd||H.gd;H.dq=r.dq||H.dq;H.plates.push(r.plate);H.last=r;
   const p=r.plate;
