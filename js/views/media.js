@@ -77,11 +77,11 @@ const car=(id,x,r,z)=>`<img class="md-car" src="img/cars/${id}.webp" alt="" styl
 function preview(i,m){
   if(m.pv=='frame')return ['frm',plateHTML(SAMPLE,'',m.sk),''];
   if(m.pv=='title'){const t=MEDIA.items.find(x=>x.id==m.tt)||{n:'Медиа',c:'#e5484d'};return ['tt',`<b>${esc(S.nick||'Ваш ник')}</b><span class="ttl ${m.tt}" style="--tc:${t.c}">${esc(t.n)}</span>`,'']}
-  if(m.pv=='drop')return ['fxd',`${fxDots(m.fx)}<span class="md-play">▶ Показать</span>`,`data-click="fxTest" data-arg="${m.fx}" role="button" aria-label="Показать эффект"`];
+  if(m.pv=='drop')return ['fxd',`${fxDots(m.fx)}<span class="md-play">:pi/play: Показать</span>`,`data-click="fxTest" data-arg="${m.fx}" role="button" aria-label="Показать эффект"`];
   if(m.pv=='bg')return ['bgv scn-med_b_studio',`<div class="md-mini">${plateHTML(SAMPLE,'','')}</div>`,''];
   if(m.pv=='case')return ['case',car('granta',-34,-14,1)+car('m5',34,14,1)+car('huracan',0,0,2),''];
   if(m.pv=='luck')return ['luck',`${CLOVER}<b class="md-x">${esc((i.name.match(/×\s*\d+/)||['×10'])[0])}</b>`,''];
-  return ['','<span class="md-gift">🎁</span>',''];
+  return ['','<span class="md-gift">:pi/cases:</span>',''];
 }
 function itemCard(i){
   const m=IT[i.id]||{k:'Предмет',pv:''};
@@ -94,7 +94,7 @@ function itemCard(i){
   else if(MS.debt>0){st='out';lbl='Есть долг по МК'}
   else if(short){st='short';lbl='Ещё '+fmt(i.price-MS.coins)+' МК'}
   const [pc,pin,pat]=preview(i,m);
-  const badge=st=='own'?'<span class="md-bdg g">✓</span>':st=='lock'?'<span class="md-bdg">🔒</span>':'';
+  const badge=st=='own'?'<span class="md-bdg g">✓</span>':st=='lock'?'<span class="md-bdg">:pi/safe:</span>':'';
   const pips=left!=null?`<div class="md-lim"><span class="md-pips">${Array.from({length:i.per_month},(_,n)=>`<i class="${n<i.bought?'on':''}"></i>`).join('')}</span><em>осталось ${left} из ${i.per_month}</em></div>`:'';
   let extra='';
   if(m.pv=='case'){const od=caseOdds(CASE_W);extra=`<div class="md-odds">${od.map((x,r)=>x?`<i style="flex:${x};background:${RAR[r].c}"></i>`:'').join('')}</div><div class="md-oddl">${od.map((x,r)=>x?`<span><i style="background:${RAR[r].c}"></i>${CAR_CLS[r]} ${pct(x)}%</span>`:'').join('')}</div>`}
@@ -113,7 +113,7 @@ function serState(){
 function serUpd(){const v=serState(),a=$('mdStage'),b=$('mdTot'),c=$('mdBtn');if(a)a.innerHTML=v.stage;if(b)b.innerHTML=v.total;if(c)c.innerHTML=v.btn}
 function plateBuilder(){
   const P=MEDIA.plate,tiers=`<div class="md-tiers"><span>обычные <b>${fmt(P.base)}</b></span><span>ровные <b>${fmt(P.round)}</b></span><span>777 · 001 · 999 <b>${fmt(P.top)}</b></span></div>`;
-  if(MS.level<2)return `<div class="md-card md-ser"><h3>Номера серии «Медиа»</h3><div class="md-stage ghost">${plateHTML({type:'media',main:'К777ЕК',reg:'77',country:'RU',cls:4},'','')}<small>Пример номера серии</small><span class="md-lockb">🔒 Доступ с уровня «${lvName(2)}»</span></div>${tiers}</div>`;
+  if(MS.level<2)return `<div class="md-card md-ser"><h3>Номера серии «Медиа»</h3><div class="md-stage ghost">${plateHTML({type:'media',main:'К777ЕК',reg:'77',country:'RU',cls:4},'','')}<small>Пример номера серии</small><span class="md-lockb">:pi/safe: Доступ с уровня «${lvName(2)}»</span></div>${tiers}</div>`;
   const sr=MS.series,r=SER||(sr[0]&&sr[0].series)||'',v=serState();
   return `<div class="md-card md-ser"><h3>Номера серии «Медиа»</h3>
    <div class="md-stage" id="mdStage">${v.stage}</div>

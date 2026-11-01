@@ -1,3 +1,4 @@
+import {guardedInvoke} from './ui/fairplay.js';
 import {AUTO, CASES, CCO, CST, COST, RAR, RESCUE_MS, SCO, SST, TYPES, itemOf} from './config.js';
 import {genCost, trackSession} from './engine.js';
 import {handleBan, loadAll, loadPlates, loadPlayer, loadState, rpc, sb} from './server.js';
@@ -53,14 +54,15 @@ export const api={
  // Тройная прокрутка (supabase/triple_roll.sql): покупка пасса, бросок пакета, решение по номерам
  async buyPass(){const {error}=await sb.functions.invoke('buy-pass');if(error){const err=await errCode(error);await loadAll().catch(()=>{});return {err}}await loadAll();return {ok:1}},
  // При любой ошибке (в т.ч. обрыв связи, когда сервер мог успеть выполнить запрос) сверяем кэш с сервером: баланс и пакет не должны оставаться устаревшими
- async multiRoll(n){const {error}=await sb.functions.invoke('multi-roll',{body:{n}});if(error){const err=await errCode(error);await loadAll().catch(()=>{});return {err}}await loadAll();return {ok:1}},
+ async multiRoll(n){const {error}=await guardedInvoke('multi-roll',{n});if(error){if(error.fairplay)return {err:'fairplay'};const err=await errCode(error);await loadAll().catch(()=>{});return {err}}await loadAll();return {ok:1}},
  // 'none' = пакет уже закрыт (повторный тап или первый запрос дошёл, а ответ потерялся): это не ошибка, кэш просто догоняем
  async resolveRolls(decisions){const {data,error}=await sb.functions.invoke('resolve-rolls',{body:{decisions}});if(error){const err=await errCode(error);await loadAll().catch(()=>{});return err=='none'?{done:1}:{err}}await loadAll();return data},
  async autoResolve(){const {data,error}=await sb.functions.invoke('resolve-rolls',{body:{auto:true}});if(error)return null;await loadAll();return data&&data.auto?data:null},
  async generatePlate(){
   if(S.col.length>=S.capC||S.bal<genCost())return null;
-  const {data,error}=await sb.functions.invoke('generate');
+  const {data,error}=await guardedInvoke('generate');
   if(error){
+   if(error.fairplay)return null;
    let e=null;try{e=await error.context.json()}catch(_){}
    if(e&&(e.error=='full'||e.error=='money')){await loadAll();return null}   // кэш разошёлся с сервером
    if(e&&e.error=='banned'){handleBan({reason:e.reason,until:e.until});return null}

@@ -1,6 +1,7 @@
 import {RAR} from '../config.js';
 import {DRAW, go, render} from '../router.js';
 import {rpc} from '../server.js';
+import {icon} from '../ui/design.js';
 import {on} from '../ui/actions.js';
 import {S} from '../state.js';
 import {nickCls, plateHTML, titleHTML} from '../ui/plate.js';
@@ -13,7 +14,7 @@ import {$, esc, fmt} from '../util.js';
 
 // Таблица лидеров, три вида (выбор в выпадающем списке): по самому дорогому номеру ('best'), по монетам ('coins') и по числу перерождений ('rebirths').
 // Данные приходят с сервера (get_leaderboard) и кэшируются на 30 секунд отдельно для каждого вида.
-const KINDS=[['best','🏆','Дорогой номер'],['coins','💰','Монеты'],['rebirths','♻️','Перерождения'],['clans','🛡️','Кланы: сезон'],['clanlvl','🏰','Кланы: уровень']];
+const KINDS=[['best',':pi/top:','Дорогой номер'],['coins',':pi/bank:','Монеты'],['rebirths',':pi/prestige:','Перерождения'],['clans',':pi/clans:','Кланы: сезон'],['clanlvl',':pi/clans:','Кланы: уровень']];
 const CLK=k=>k=='clans'||k=='clanlvl';   // виды рейтинга кланов: данные из clan_leaderboard, строки другие
 let KIND='best',OPEN=false,TOPS={},ATS={},LOAD=false,ERR=false;   // вид, ответы сервера и время загрузки по видам
 let CT={};   // теги кланов игроков {id:{tag,lvl,medal,fr,fx}} (clan_tags): lvl красит тег как плашку клана, fr и fx рамка и эффект
@@ -22,8 +23,8 @@ const titleOf=r=>r.me?S.equip.title:(STY[r.id]||{}).title;
 const nickOf=r=>r.me?S.equip.nick:(STY[r.id]||{}).nick;
 async function loadStyles(ids){ids=ids.filter(Boolean);if(!ids.length)return;try{Object.assign(STY,await rpc('get_styles',{ids})||{})}catch(e){console.warn('styles',e)}
  try{const t=await rpc('clan_tags',{ids})||{};for(const i of ids){delete CT[i];if(t[i])CT[i]=t[i]}}catch(e){console.warn('clan tags',e)}}
-const MEDAL=['🥇','🥈','🥉'],MIN=10;   // сколько мест показывать минимум: пустые рисуются заглушками
-const row=(r,me)=>`<div class="tr${me?' me':''}" data-click="openPlayer" data-arg="${r.id}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><div class="tnr">${ctagHTML(CT[r.id])}<b class="${nickCls(nickOf(r)).trim()}">${esc(r.nick||'Игрок')}</b>${titleHTML(titleOf(r))}</div><div class="tsb"><span class="tl">${KIND!='rebirths'&&r.rb?`<span class="rbb" title="Перерождений: ${r.rb}">♻ ${r.rb}</span>`:''}Ур. ${r.lvl}</span><b class="tpr">${KIND=='rebirths'?'♻ '+fmt(r.val):fmt(r.val)+' ₽'}</b></div></div></div>`;
+const MEDAL=[':pi/top:',':pi/top:',':pi/top:'],MIN=10;   // сколько мест показывать минимум: пустые рисуются заглушками
+const row=(r,me)=>`<div class="tr${me?' me':''}" data-click="openPlayer" data-arg="${r.id}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><div class="tnr">${ctagHTML(CT[r.id])}<b class="${nickCls(nickOf(r)).trim()}">${esc(r.nick||'Игрок')}</b>${titleHTML(titleOf(r))}</div><div class="tsb"><span class="tl">${KIND!='rebirths'&&r.rb?`<span class="rbb" title="Перерождений: ${r.rb}">:pi/prestige: ${r.rb}</span>`:''}Ур. ${r.lvl}</span><b class="tpr">${KIND=='rebirths'?':pi/prestige: '+fmt(r.val):fmt(r.val)+' ₽'}</b></div></div></div>`;
 const clanRow=r=>`<div class="tr cl${r.mine?' me':''}"><span class="rk">${MEDAL[r.rk-1]||r.rk}</span><div class="tn"><div class="tnr">${plate(r.tag,r.lvl,'cl-md-p'+styleCls(r.fr,r.fx))}${r.medal?`<span>${MEDAL[r.medal-1]}</span>`:''}<b>${esc(r.name)}</b></div><div class="tsb"><span class="tl">${r.n} из ${r.cap} мест</span><b class="cl-ps">${KIND=='clans'?fmt(r.pts)+' очк.':r.lvl+' ур.'}</b></div></div></div>`;
 const empty=n=>`<div class="tr emp"><span class="rk">${MEDAL[n-1]||n}</span><div class="tn"><b>Свободно</b></div></div>`;
 async function load(){
@@ -42,14 +43,14 @@ export function drawTop(){
  const TOP=TOPS[KIND];
  if(!LOAD&&Date.now()-(ATS[KIND]||0)>30000)load();
  const cur=KINDS.find(x=>x[0]==KIND);
- let h=`<div class="tt-dd${OPEN?' open':''}"><button class="tt-cur" data-click="topMenu" aria-haspopup="listbox" aria-expanded="${OPEN}"><i>${cur[1]}</i><span>${cur[2]}</span><em>▾</em></button>${OPEN?`<div class="tt-menu" role="listbox">${KINDS.map(([k,i,n])=>`<button role="option" aria-selected="${KIND==k}" class="${KIND==k?'a':''}" data-click="topKind" data-arg="${k}"><i>${i}</i>${n}</button>`).join('')}</div>`:''}</div>`;
+ let h=`<div class="league-intro"><span class="v3-kicker">COLLECTOR’S LEAGUE</span><h1>Имя в коллекции.<br><em>Место в истории.</em></h1></div><div class="league-kinds">${KINDS.map(([k,i,n])=>`<button class="${KIND===k?'a':''}" data-click="topKind" data-arg="${k}">${n}</button>`).join('')}</div>`;
  if(!TOP)h+=ERR?`<p class="tl" style="text-align:center">Не удалось загрузить рейтинг</p>`:`<p class="tl" style="text-align:center">Загрузка…</p>`;
  else{
   const me=TOP.me;
   h+=TOP.top.length?'':`<p class="tl" style="text-align:center">${KIND=='rebirths'?'Пока никто не переродился.':CLK(KIND)?(KIND=='clans'?'В этом сезоне ещё никто не вносил в казну.':'Кланов пока нет.'):'Пока никого. Сгенерируйте номер!'}</p>`;
   const cl=CLK(KIND),rw=cl?r=>clanRow(r):r=>row(r,r.me);
   if(KIND=='clans'&&TOP.season_end)h+=`<p class="cl-season">Очки: 1 за каждый внесённый в казну миллион. Сезон закончится ${new Date(+TOP.season_end).toLocaleString('ru-RU',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</p>`;
-  h+=TOP.top.map(rw).join('');
+  if(!cl&&TOP.top.length){h+=`<div class="league-podium">${TOP.top.slice(0,3).map(r=>`<button class="rank-${r.rk}" data-click="openPlayer" data-arg="${r.id}"><span class="league-rank">${String(r.rk).padStart(2,'0')}</span><span class="league-monogram">${esc([...(r.nick||'P')][0])}</span><b>${esc(r.nick||'Игрок')}</b><small>Уровень ${r.lvl}</small><strong>${KIND==='rebirths'?fmt(r.val)+' циклов':fmt(r.val)+' ₽'}</strong></button>`).join('')}</div><div class="league-table-label">КОЛЛЕКЦИОНЕР / УРОВЕНЬ<span>РЕЗУЛЬТАТ</span></div>`+TOP.top.slice(3).map(rw).join('')}else h+=TOP.top.map(rw).join('');
   for(let n=TOP.top.length+1;n<=MIN;n++)h+=empty(n);
   if(me&&me.rk>(cl?30:50))h+=`<div class="tsep">· · ·</div>`+rw(me);
  }
@@ -70,13 +71,7 @@ export function drawPub(){
  if(!PUB){$('pubC').innerHTML=`<p class="tl" style="text-align:center">${PERR?'Не удалось загрузить профиль':'Загрузка…'}</p>`;return}
  const p=PUB,sy=p.me?S.equip:(STY[PID]||{}),st=p.stats,nm=p.nick||'Игрок',need=p.lvl*1250,mx=Math.max(1,...st.cls),
   days=Math.max(1,Math.ceil((Date.now()-new Date(p.since))/864e5));
- $('pubC').innerHTML=`<div class="card"><div class="phd"><div class="pav">${esc([...nm][0].toUpperCase())}</div><div>${ctagHTML(CT[PID])}<b class="pn${nickCls(sy.nick)}">${esc(nm)}</b>${titleHTML(sy.title)}<span class="tl">Уровень ${p.lvl} · в игре ${days} дн.</span></div></div>
- <div class="sub" style="font-size:16px;gap:14px;align-items:center"><div class="pb" style="flex:1"><i style="width:${Math.min(100,p.xp/need*100)}%"></i></div><span>${fmt(p.xp)} / ${fmt(need)}</span></div></div>
- ${p.me?'':`<button class="btn" style="width:100%;margin-bottom:10px" data-click="newTrade">Предложить обмен</button>`}
- <div class="st2"><div><b>${fmt(st.n)}</b><span>Выпало номеров</span></div><div><b>${fmt(st.best)} ₽</b><span>Рекорд цены</span></div><div><b>${fmt(p.count)}</b><span>Номеров сейчас</span></div><div><b>${fmt(p.value)} ₽</b><span>Общая стоимость</span></div></div>
- ${p.me?'':pubShowcase(PSC,sy.skin)}
- ${hwMuseumCard(PHW)}
- ${p.top?`<div class="card"><h3>Самый дорогой сейчас<span class="tl">${fmt(p.top.price)} ₽</span></h3><div class="tp">${plateHTML(p.top,'',sy.skin||'')}</div></div>`:''}
- <div class="card"><h3>Редкости</h3><div class="bars" style="margin:6px 0 0">${RAR.map((R,i)=>`<span>${R.n}</span><div class="pb" style="background:${R.c}33"><i style="width:${(st.cls[i]||0)/mx*100}%;background:${R.c}"></i></div><span class="tl" style="text-align:right">${st.cls[i]||0}</span>`).join('')}</div></div>`}
+ $('pubC').innerHTML=`<div class="passport-cover public-passport"><span class="v3-kicker">PLATE / COLLECTOR PASSPORT</span><span class="passport-number">LEVEL ${p.lvl}</span><div class="passport-avatar"><span>${esc([...nm][0].toUpperCase())}</span></div><div class="passport-name">${ctagHTML(CT[PID])}<h1 class="${nickCls(sy.nick).trim()}">${esc(nm)}</h1>${titleHTML(sy.title)}<span>${days} дней в клубе · публичный профиль</span></div><div class="passport-cover-line"><span>COLLECT. CURATE. CONNECT.</span>${p.me?'<button data-click="go" data-arg="profile">Мой паспорт :pi/external:</button>':'<button data-click="newTrade">Предложить обмен :pi/external:</button>'}</div></div><div class="public-profile-summary"><div><strong>${fmt(p.count)}</strong><span>номеров сейчас</span></div><div><strong>${fmt(p.value)} ₽</strong><span>оценка коллекции</span></div><div><strong>${fmt(st.n)}</strong><span>открытий за всё время</span></div></div>${p.me?'':pubShowcase(PSC,sy.skin)}${hwMuseumCard(PHW)}${p.top?`<section class="public-best"><span class="v3-kicker">ГЛАВНЫЙ ЭКСПОНАТ</span><h2>Визитная карточка.</h2><div>${plateHTML(p.top,'',sy.skin||'')}</div><span>${RAR[p.top.cls]?.n||'Номер коллекции'}<b>${fmt(p.top.price)} ₽</b></span></section>`:''}<details class="public-profile-history"><summary>История редкостей <span>+</span></summary><div>${RAR.map((r,i)=>`<div><span><i style="background:${r.c}"></i>${r.n}</span><b>${fmt(st.cls[i]||0)}</b></div>`).join('')}</div></details>`;
+}
 DRAW.pub=drawPub;
 on({openPlayer,newTrade:()=>startTrade(PID,(PUB&&PUB.nick)||'Игрок')});

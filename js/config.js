@@ -1,6 +1,6 @@
 // Константы и таблицы баланса. Здесь нет логики: только данные.
 export const COST=3000,START=50000;
-export const RAR=[{n:'Обычный',en:'Common',p:53.81,c:'#9a9aab',m:1},{n:'Необычный',en:'Uncommon',p:37.96,c:'#4ade80',m:11.55},{n:'Редкий',en:'Rare',p:7.98,c:'#5b8cff',m:661.2},{n:'Эпический',en:'Epic',p:.24,c:'#a855f7',m:9955},{n:'Легендарный',en:'Legendary',p:.01,c:'#f5b82e',m:242550},{n:'Мифический',en:'Mythic',p:0,ps:'до 0,005',c:'#ff4d6d',m:1500000}];
+export const RAR=[{n:'Обычный',en:'Common',p:53.81,c:'#9a9aab',m:1},{n:'Необычный',en:'Uncommon',p:37.96,c:'#4ade80',m:11.55},{n:'Редкий',en:'Rare',p:7.98,c:'#5b8cff',m:661.2},{n:'Эпический',en:'Epic',p:.24,c:'#a855f7',m:9955},{n:'Легендарный',en:'Legendary',p:.01,c:'#f5b82e',m:242550},{n:'Мифический',en:'Mythic',p:0,ps:'0,005',c:'#ff4d6d',m:1500000}];
 // Типы номеров. k — тип, p — шанс в % (сумма 100), m — множитель цены, c — страны, где тип выпадает (в Беларуси только civil/taxi/police/transit).
 // Должны совпадать с TYPES в supabase/functions/_shared/engine.ts и check в SQL, это сверяет tests/types.test.mjs.
 export const TYPES=[{k:'civil',p:92.86,m:1,n:'Гражданский',c:['RU','BY']},{k:'taxi',p:4,m:24,n:'Такси',c:['RU','BY']},{k:'police',p:1,m:50,n:'Полиция',c:['RU','BY']},{k:'transit',p:2,m:.5,n:'Транзит',c:['RU','BY']},{k:'military',p:.07,m:80,n:'Военный',c:['RU']},{k:'diplomat',p:.06,m:120,n:'Дипломат',c:['RU']},{k:'retro',p:.01,m:200,n:'Ретро',c:['RU']},{k:'blat',p:0,m:150,n:'Блатной',c:['RU']},{k:'media',p:0,m:150,n:'Медиа',c:['RU']},{k:'friends',p:0,m:150,n:'Друзья',c:['RU']}];   // blat — приз ивента (supabase/event.sql), из генератора не выпадает
@@ -8,9 +8,9 @@ export const NOREG=['military','diplomat','retro'];   // у этих плаше�
 export const CN={RU:{n:'Россия',cc:'RUS'},BY:{n:'Беларусь',cc:'BY'}};
 export const RU_L='АВЕКМНОРСТУХ',BY_L='ABEIKMHOPCTX';
 export const THEMES={
-dark:{n:'Тёмная',v:{bg:'#0f1015',card:'#1a1b23',tx:'#ececf1',mut:'#8b8d9b',b1:'#262833',b2:'#1a1b23',sheet:'#1a1b23',m1:'#27427a',m2:'#141c33',ac:'#3b82f6',off:'#34363f',pl1:'#e6e6e9',pl2:'#a8a8ae'}},
+dark:{n:'Тёмная iOS',v:{bg:'#101216',card:'#191c22',tx:'#f4f5f7',mut:'#9ba2b0',b1:'#232832',b2:'#191c22',sheet:'#191c22',m1:'#284dd6',m2:'#1c294d',ac:'#456cee',off:'#343a45',pl1:'#e6e6e9',pl2:'#a8a8ae'}},
 gold:{n:'Золото',v:{bg:'#12100a',card:'#1e1a10',tx:'#f4ead0',mut:'#a39874',b1:'#2c2517',b2:'#1e1a10',sheet:'#1e1a10',m1:'#6b5316',m2:'#2a210b',ac:'#d9a932',off:'#3a3220',pl1:'#f4d77f',pl2:'#c9972c'}},
-light:{n:'Светлая',v:{bg:'#f2f3f7',card:'#ffffff',tx:'#1b1d27',mut:'#6c7184',b1:'#ffffff',b2:'#eef0f5',sheet:'#ffffff',m1:'#7ea3f5',m2:'#4a73d9',ac:'#3b6ef0',off:'#d7dae3',pl1:'#fcfcfd',pl2:'#d4d5db'}},
+light:{n:'Светлая iOS',v:{bg:'#f6f5f2',card:'#ffffff',tx:'#1c1c1e',mut:'#636368',b1:'#ffffff',b2:'#eaeaef',sheet:'#ffffff',m1:'#dceaff',m2:'#f0f5ff',ac:'#005fca',off:'#d1d1d6',pl1:'#ffffff',pl2:'#e5e7eb'}},
 pink:{n:'Розовая',v:{bg:'#fbeff5',card:'#ffffff',tx:'#3a1c2e',mut:'#94677f',b1:'#ffffff',b2:'#fde4ef',sheet:'#ffffff',m1:'#f08cb9',m2:'#d65b95',ac:'#e0488a',off:'#f0cfe0',pl1:'#ffd6e8',pl2:'#f09bc2'}},
 silver:{n:'Серебро',v:{bg:'#1c1f26',card:'#2a2e38',tx:'#eef1f6',mut:'#9ba3b4',b1:'#353a47',b2:'#2a2e38',sheet:'#2a2e38',m1:'#5d6a85',m2:'#2f3646',ac:'#9fb4de',off:'#444a58',pl1:'#eef0f4',pl2:'#a6adba'}}};
 export const XPV=[5,8,20,100,500,2500];
@@ -67,7 +67,7 @@ export const AUCTION={fee:5,min:1000,max:100000000000,lots:5,hours:[1,6,12,24],s
 // ГАИ (gai.sql): константы зеркалят функции в SQL, сверяет tests/gai.test.mjs. g — рост множителя: x(t)=exp(g·t), t в секундах заезда. kmh — км/ч на единицу множителя (x2 = 120 км/ч).
 // Дорожные работы 3D (road.sql): константы зеркалят функции в SQL, сверяет tests/road.test.mjs. rate — ₽ за очко, maxPps — потолок очков в секунду, dayCap — ₽ в сутки.
 export const ROAD={rate:2,maxPps:60,dayCap:150000,minSecs:8,maxAge:1800};
-// Ивент «Полицейский беспредел» (supabase/event.sql). Жетоны 🚧 вместо рублей; цифры зеркалят константы SQL, совпадение проверяет tests/event.test.mjs.
+// Ивент «Полицейский беспредел» (supabase/event.sql). Жетоны :pi/road: вместо рублей; цифры зеркалят константы SQL, совпадение проверяет tests/event.test.mjs.
 // titles — только для показа титулов в профиле и рейтинге (остальной каталог приходит с сервера: rpc ev_state); frame/drop/bg/car/trail рисуются по id.
 export const EVENT={scoreDiv:20,maxPps:60,bonusPps:40,maxSpeed:80,minSecs:8,maxAge:1800,dayCap:3000,ptsCap:30000,boostMax:30,
  chase:{starM:2000,perM:100,maxStars:5},case:{price:350,pityAt:20,forcedMin:3,dupPct:35},
@@ -127,9 +127,9 @@ export const clanUpkeep=l=>CLAN.upkeep*l*l;
 export const clanCap=l=>Math.min(CLAN.capMax,CLAN.capStep*l);
 export const PRESTIGE={lvlBase:5,lvlStep:1,starsDiv:1,cashStep:50000,usdStep:5,
  perks:[
-  {k:'sell',n:'Торговец',max:5,ic:'🤝',d:'+1% к цене при продаже номеров (до 100%)'},
-  {k:'cash',n:'Стартовый капитал',max:10,ic:'💰',d:'+50 000 ₽ к деньгам после перерождения'},
-  {k:'usd',n:'Валютная подушка',max:10,ic:'💵',d:'+5 $ после перерождения'}]};
+  {k:'sell',n:'Торговец',max:5,ic:':pi/trades:',d:'+1% к цене при продаже номеров (до 100%)'},
+  {k:'cash',n:'Стартовый капитал',max:10,ic:':pi/bank:',d:'+50 000 ₽ к деньгам после перерождения'},
+  {k:'usd',n:'Валютная подушка',max:10,ic:':pi/bank:',d:'+5 $ после перерождения'}]};
 export const rebNeed=n=>PRESTIGE.lvlBase+PRESTIGE.lvlStep*n;          // уровень для перерождения при n сделанных
 export const rebStars=lvl=>Math.floor(lvl/PRESTIGE.starsDiv);          // звёзд за перерождение с уровня lvl
 export const perkCost=lv=>lv+1;                                        // цена следующего уровня бонуса, когда сейчас lv
@@ -147,29 +147,29 @@ export const LAB={
 export const PATRON={titles:[{id:'sponsor',n:'Спонсор',c:'#2dd4bf',d:'Выдаётся тем, кто оплатил хостинг проекта'},{id:'patron',n:'Меценат',c:'#ff4fa3',d:'Выдаётся тем, кто поддержал проект'}]};
 export const TRIPLE={usd:30,hours:24,max:3};
 
-// Донат-шоп и «Поддержать проект» (Telegram Stars ⭐). Цены, составы и пороги выдаёт ТОЛЬКО сервер (supabase/donate.sql);
+// Донат-шоп и «Поддержать проект» (Telegram Stars :pi/ach:). Цены, составы и пороги выдаёт ТОЛЬКО сервер (supabase/donate.sql);
 // здесь данные для показа. Совпадение с donate.sql сверяет tests/donate.test.mjs.
-// k — вкладка, st — цена в ⭐, g — что выдаётся (usd, rub, luck, pass_days, items), x2 — первая покупка даёт вдвое больше валюты, max — сколько раз можно купить.
+// k — вкладка, st — цена в :pi/ach:, g — что выдаётся (usd, rub, luck, pass_days, items), x2 — первая покупка даёт вдвое больше валюты, max — сколько раз можно купить.
 export const DONATE={
  tip:{min:10,max:10000,amounts:[25,50,100,250,500,1000]},
  // Именной номер: любой текст такой длины (зеркало NAMED_MIN и NAMED_MAX в supabase/functions/_shared/moderation.ts)
  named:{min:2,max:10},
  tabs:[['named','Номер'],['boost','Бусты'],['bundle','Наборы'],['item','Стиль']],
- // Роли (титулы благодарности): выдаются автоматически за сумму ⭐ и вручную через grant_role (donate.sql). id patron и sponsor совпадают с уже выданными в базе
+ // Роли (титулы благодарности): выдаются автоматически за сумму :pi/ach: и вручную через grant_role (donate.sql). id patron и sponsor совпадают с уже выданными в базе
  tiers:[{n:1,need:100,id:'sup1',t:'Друг проекта',c:'#4ade80'},{n:2,need:500,id:'patron',t:'Меценат',c:'#ec4899'},{n:3,need:1000,id:'sponsor',t:'Спонсор',c:'#2dd4bf'},{n:4,need:3000,id:'sup3',t:'Покровитель',c:'#a855f7'},{n:5,need:10000,id:'sup4',t:'Легенда проекта',c:'#f5b82e'}],
  packs:[
-  {id:'named',k:'named',ic:'🪪',t:'Именной номер',st:149,g:{},max:3,d:'Любой текст на плашке: имя, ник, слово. Навсегда в вашей коллекции'},
-  {id:'pass7',k:'boost',ic:'🎟️',t:'Тройной пасс на 7 дней',st:90,g:{pass_days:7},d:'Каждая прокрутка даёт три номера на выбор. Время добавляется к текущему пассу'},
-  {id:'luck2x',k:'boost',ic:'🍀',t:'Удача ×2 навсегда',st:399,g:{luck2:1},max:1,d:'Шанс редких номеров и типов (такси, полиция, военные, дипломаты, ретро) вдвое выше на каждой прокрутке. Навсегда, один раз на игрока'},
-  {id:'starter',k:'bundle',ic:'🎁',t:'Стартовый набор',st:49,g:{pass_days:3,luck:20},max:1,d:'Один раз на игрока'},
-  {id:'founder',k:'bundle',ic:'👑',t:'Набор Основателя',st:349,g:{pass_days:7,luck:50,items:['dn_obsidian','dn_prism','ndn_plasma','ndn_void','bgdn_nebula','dn_nova']},max:1,d:'Вся эксклюзивная косметика со скидкой 33% и бусты. Один раз на игрока'},
-  {id:'it_obsidian',k:'item',ic:'🖤',t:'Рамка «Обсидиан»',st:99,g:{items:['dn_obsidian']},max:1},
-  {id:'it_prism',k:'item',ic:'🔮',t:'Рамка «Призма»',st:149,g:{items:['dn_prism']},max:1},
-  {id:'it_plasma',k:'item',ic:'🟣',t:'Ник «Плазма»',st:49,g:{items:['ndn_plasma']},max:1},
-  {id:'it_void',k:'item',ic:'🌌',t:'Ник «Бездна»',st:79,g:{items:['ndn_void']},max:1},
-  {id:'it_nebula',k:'item',ic:'🪐',t:'Фон «Туманность»',st:79,g:{items:['bgdn_nebula']},max:1},
-  {id:'it_nova',k:'item',ic:'💥',t:'Эффект «Сверхновая»',st:69,g:{items:['dn_nova']},max:1}],
- // Эксклюзивная косметика: продаётся только за ⭐, надевается через общие слоты (equip_item). Вид — css/donate.css
+  {id:'named',k:'named',ic:':pi/profile:',t:'Именной номер',st:149,g:{},max:3,d:'Любой текст на плашке: имя, ник, слово. Навсегда в вашей коллекции'},
+  {id:'pass7',k:'boost',ic:':pi/multi:',t:'Тройной пасс на 7 дней',st:90,g:{pass_days:7},d:'Каждая прокрутка даёт три номера на выбор. Время добавляется к текущему пассу'},
+  {id:'luck2x',k:'boost',ic:':pi/ach:',t:'Удача ×2 навсегда',st:399,g:{luck2:1},max:1,d:'Шанс редких номеров и типов (такси, полиция, военные, дипломаты, ретро) вдвое выше на каждой прокрутке. Навсегда, один раз на игрока'},
+  {id:'starter',k:'bundle',ic:':pi/cases:',t:'Стартовый набор',st:49,g:{pass_days:3,luck:20},max:1,d:'Один раз на игрока'},
+  {id:'founder',k:'bundle',ic:':pi/dshop:',t:'Набор Основателя',st:349,g:{pass_days:7,luck:50,items:['dn_obsidian','dn_prism','ndn_plasma','ndn_void','bgdn_nebula','dn_nova']},max:1,d:'Вся эксклюзивная косметика со скидкой 33% и бусты. Один раз на игрока'},
+  {id:'it_obsidian',k:'item',ic:':pi/theme:',t:'Рамка «Обсидиан»',st:99,g:{items:['dn_obsidian']},max:1},
+  {id:'it_prism',k:'item',ic:':pi/theme:',t:'Рамка «Призма»',st:149,g:{items:['dn_prism']},max:1},
+  {id:'it_plasma',k:'item',ic:':pi/theme:',t:'Ник «Плазма»',st:49,g:{items:['ndn_plasma']},max:1},
+  {id:'it_void',k:'item',ic:':pi/theme:',t:'Ник «Бездна»',st:79,g:{items:['ndn_void']},max:1},
+  {id:'it_nebula',k:'item',ic:':pi/theme:',t:'Фон «Туманность»',st:79,g:{items:['bgdn_nebula']},max:1},
+  {id:'it_nova',k:'item',ic:':pi/studio:',t:'Эффект «Сверхновая»',st:69,g:{items:['dn_nova']},max:1}],
+ // Эксклюзивная косметика: продаётся только за :pi/ach:, надевается через общие слоты (equip_item). Вид — css/donate.css
  items:[
   {id:'dn_obsidian',slot:'skin',n:'Обсидиан',d:'Чёрное стекло с алым свечением'},
   {id:'dn_prism',slot:'skin',n:'Призма',d:'Переливающаяся рамка, меняющая цвет'},
@@ -185,8 +185,8 @@ export const donateVal=(p,x2)=>{const m=x2?2:1,g=p.g;return {usd:(g.usd||0)*m,ru
 export const CARPARTS={base:20,cap:200,rar:[100,150,220,320,450],lvlStep:25,maxLvl:5,upBase:100,upStep:[1,2,4,8],
   run:3,day:8,chance:35,gap:10,pickW:[60,28,10,2],
   rarN:['Обычная','Необычная','Редкая','Эпическая','Легендарная'],
-  slots:[{k:'engine',n:'Двигатель',st:'acc',ic:'⚙️'},{k:'tires',n:'Шины',st:'grip',ic:'🛞'},{k:'susp',n:'Подвеска',st:'hand',ic:'🔧'},
-         {k:'brakes',n:'Тормоза',st:'brk',ic:'🛑'},{k:'turbo',n:'Турбо',st:'tb',ic:'🌀'},{k:'body',n:'Кузов',st:'dur',ic:'🛡️'}],
+  slots:[{k:'engine',n:'Двигатель',st:'acc',ic:':pi/set:'},{k:'tires',n:'Шины',st:'grip',ic:':pi/garage:'},{k:'susp',n:'Подвеска',st:'hand',ic:':pi/gen:'},
+         {k:'brakes',n:'Тормоза',st:'brk',ic:':pi/close:'},{k:'turbo',n:'Турбо',st:'tb',ic:':pi/refresh:'},{k:'body',n:'Кузов',st:'dur',ic:':pi/clans:'}],
   stats:{acc:'Разгон',grip:'Сцепление',hand:'Управление',brk:'Торможение',tb:'Турбо',dur:'Прочность'}};
 export const cpPm=(rar,lvl)=>{const c=CARPARTS,r=c.rar[Math.min(Math.max(rar|0,0),4)],l=100+c.lvlStep*(Math.min(Math.max(lvl|0||1,1),c.maxLvl)-1);return Math.min(c.cap,Math.floor(c.base*r*l/10000))};
 export const cpCost=(rar,lvl)=>lvl>=1&&lvl<=4?CARPARTS.upBase*(Math.min(Math.max(rar|0,0),4)+1)*CARPARTS.upStep[lvl-1]:null;
@@ -221,16 +221,16 @@ export const MEDIA={platforms:[['tiktok','TikTok'],['youtube','YouTube Shorts'],
 export const platePrice=(d,r)=>Math.ceil((['777','001','999'].includes(d)?MEDIA.plate.top:/^([1-9])\1\1$/.test(d)||/^00[1-9]$/.test(d)?MEDIA.plate.round:MEDIA.plate.base)*(MEDIA.plate.popRegs.includes(r)?1+MEDIA.plate.popPct/100:1));
 export const convOut=(mc,rate,fee)=>Math.floor(mc*rate*(100-fee)/100);
 
-// Хэллоуин «Ночь тыкв» (supabase/hw.sql, supabase/functions/hw-roll). Своя валюта 🎃 и свои номера, основной баланс не трогаются.
+// Хэллоуин «Ночь тыкв» (supabase/hw.sql, supabase/functions/hw-roll). Своя валюта :pi/hw: и свои номера, основной баланс не трогаются.
 // Цифры зеркалят SQL; шансы, цену и награды считает только сервер, здесь данные для показа (совпадение проверяет tests/hw.test.mjs).
 export const HW={cost:100,cap:300,sellPct:90,start:1000,daily:1500,streakStep:100,streakMax:6,
  chance:12,chanceBlood:25,pityAt:20,vbase:[60,75,140,1500,12000,60000],mult:[2,4,7,10],lvlMul:400,lvlBonus:50,
  powers:['','Слабое','Среднее','Сильное','Древнее'],pw:[50,30,15,5],pwBlood:[46,29,15,10],
  exch:{rate:500,limit:600},
- guardians:[{id:'cat',n:'Чёрный кот',e:'🐈\u200d⬛',c:'#a78bfa',w:24},{id:'pumpkin',n:'Тыква-фонарь',e:'🎃',c:'#ff8a1f',w:24},
-  {id:'moon',n:'Полнолуние',e:'🌕',c:'#f6e7b4',w:20},{id:'web',n:'Паутина',e:'🕸️',c:'#9fb4c7',w:18},{id:'fire',n:'Могильный огонь',e:'🔥',c:'#4ff0b7',w:14}],
+ guardians:[{id:'cat',n:'Чёрный кот',e:':pi/hw:\u200d:pi/menu:',c:'#a78bfa',w:24},{id:'pumpkin',n:'Тыква-фонарь',e:':pi/hw:',c:'#ff8a1f',w:24},
+  {id:'moon',n:'Полнолуние',e:':pi/theme:',c:'#f6e7b4',w:20},{id:'web',n:'Паутина',e:':pi/hw:',c:'#9fb4c7',w:18},{id:'fire',n:'Могильный огонь',e:':pi/studio:',c:'#4ff0b7',w:14}],
  quests:[{k:'rolls',n:'Выбить номера',need:20,rew:300},{k:'curses',n:'Поймать проклятия',need:2,rew:400},{k:'sold',n:'Продать номера',need:8,rew:200}],
  rewards:{g3:{need:3,pum:800,pct:2,min:150000,max:20000000},g5:{need:5,pum:5000,title:'hw_t_keeper'},gold:{need:5,minPw:3,pum:20000,title:'hw_t_lord'}},
  titles:[{id:'hw_t_keeper',n:'Хранитель ночи',c:'#ff9a3c'},{id:'hw_t_lord',n:'Повелитель ночи',c:'#c084fc'}],
- tops:[['best','🏆','Дорогой номер'],['guard','🕯','Хранители'],['curses','☠','Проклятия']]};
+ tops:[['best',':pi/top:','Дорогой номер'],['guard',':pi/candle:','Хранители'],['curses',':pi/hw:','Проклятия']]};
 export const hwGuard=id=>HW.guardians.find(g=>g.id==id);

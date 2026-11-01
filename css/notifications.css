@@ -1,0 +1,38 @@
+/* One shared status notification; no pseudo-icons or inherited plate typography. */
+html body #banner{
+ --notice-accent:var(--ac,#005fca);
+ position:fixed;inset:auto 16px auto auto;top:calc(16px + env(safe-area-inset-top,0px));
+ width:min(440px,calc(100vw - 32px));max-width:none;margin:0;box-sizing:border-box;
+ display:grid;grid-template-columns:36px minmax(0,1fr) 28px;gap:12px;align-items:start;
+ padding:16px;border:1px solid var(--line,#dedfe3);border-radius:16px;
+ background:var(--card,#fff);color:var(--tx,#202126);
+ font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-style:normal;
+ font-size:14px;font-weight:400;line-height:1.45;letter-spacing:normal;text-align:left;
+ box-shadow:0 8px 28px #07132218,0 2px 5px #07132206;
+ opacity:0;transform:translateY(calc(-100% - 32px));visibility:hidden;pointer-events:none;
+ transition:opacity .18s ease,transform .22s ease,visibility .22s;z-index:80;
+}
+html body #banner.on{opacity:1;transform:none;visibility:visible;pointer-events:auto}
+html body #banner[data-kind=success]{--notice-accent:#23845b}
+html body #banner[data-kind=error]{--notice-accent:#c4464c}
+html body #banner .notice-icon{
+ display:grid;place-items:center;width:36px;height:36px;min-width:36px;margin:0;
+ border:0;border-radius:11px;background:color-mix(in srgb,var(--notice-accent) 10%,var(--card,#fff));
+ color:var(--notice-accent);line-height:1;font-size:0;flex:none;
+}
+html body #banner .notice-icon::before,html body #banner .notice-icon::after{content:none!important;display:none!important}
+html body #banner .notice-icon svg{display:block;width:22px;height:22px}
+html body #banner .notice-copy{min-width:0;padding:0;margin:0}
+html body #banner #bt{display:block;margin:0 0 4px;padding:0;font-family:inherit;font-size:14px;font-weight:650;line-height:1.4;letter-spacing:normal;color:var(--tx,#202126);overflow-wrap:anywhere}
+html body #banner #bn{display:block;margin:0;padding:0;font-family:inherit;font-size:12px;font-weight:400;line-height:1.55;letter-spacing:normal;color:var(--mut,#636368);overflow-wrap:anywhere;white-space:pre-line}
+html body #banner #bn:empty{display:none}
+html body #banner .notice-close{
+ appearance:none;display:grid;place-items:center;position:relative;inset:auto;width:28px;height:28px;min-width:28px;min-height:28px;
+ padding:0;margin:-3px -3px 0 0;border:0;border-radius:8px;box-shadow:none;background:none;color:var(--mut,#636368);cursor:pointer;
+}
+html body #banner .notice-close::before{content:'';position:absolute;inset:-7px}
+html body #banner .notice-close svg{display:block;width:18px;height:18px}
+html body #banner .notice-close:hover{background:var(--surface-2,#f0f0f2);color:var(--tx,#202126)}
+html body #banner .notice-close:focus-visible{outline:2px solid var(--ac,#005fca);outline-offset:2px}
+@media(max-width:760px){html body #banner{left:12px;right:12px;top:calc(12px + env(safe-area-inset-top,0px));width:auto;grid-template-columns:34px minmax(0,1fr) 24px;gap:10px;padding:14px;border-radius:14px}html body #banner .notice-icon{width:34px;height:34px;min-width:34px}html body #banner .notice-close{width:24px;height:28px;min-width:24px}}
+@media(prefers-reduced-motion:reduce){html body #banner{transition:none;transform:none}}

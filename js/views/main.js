@@ -19,7 +19,7 @@ let busy=false;
 const autoDue=()=>S.as.lvl&&S.as.on&&(S.col.length>=S.capC||(S.as.low&&S.bal<genCost()))&&S.col.some(p=>autoMatch(p,S.as));
 async function runAuto(){const r=await api.autosell();if(r){banner('Автопродажа','Продано '+r.n+' · '+fmt(r.gain)+' ₽');render(true)}}
 export async function gen(e){
-  if(busy)return;ripple(e);busy=true;
+  if(busy)return;ripple(e);busy=true;const cta=document.querySelector('.generate-button'),label=cta?.querySelector('span'),original=label?.innerHTML;if(cta){cta.disabled=true;cta.setAttribute('aria-busy','true')}if(label)label.textContent='Создаём номер…';
   try{
     if(S.mul>1&&S.pass>Date.now()){await multiGen();return}
     if(autoDue())await runAuto();
@@ -29,7 +29,7 @@ export async function gen(e){
     if(S.reel!==false)await new Promise(done=>reel(p,done));
     show(p,un);
     if(flags.lvup){flags.lvup=0;setTimeout(()=>banner('Новый уровень','Уровень '+S.lvl+' · +'+10*S.lvl+' $'),un?2900:300)}
-  }finally{busy=false}}
+  }finally{busy=false;if(cta){cta.disabled=false;cta.removeAttribute('aria-busy')}if(label&&original)label.innerHTML=original}}
 export function reel(p,done){
   const D=[...Array(9).fill(55),80,110,160,230,330,450],st=$('stage');let i=0;
   (function step(){
@@ -65,7 +65,7 @@ function mainPaint(keepStage){
   $('chip').innerHTML=`<i class="flag fl-${S.country}"></i> ${CN[S.country].n}`;
   const ph=document.querySelector('#stage .ph span');if(ph)ph.textContent=mulLbl();
   const ST=S.stats;$('st').textContent=`Выпало: ${ST.n} · Лучший: ${fmt(ST.best)} ₽`;
-  if(!keepStage&&!$('stage').innerHTML.trim())$('stage').innerHTML=`<div class="ph"><b>Нажмите в любом месте</b><span>${mulLbl()}</span></div>`;
+  if(!keepStage&&!$('stage').innerHTML.trim())$('stage').innerHTML=`<div class="stage-caption"><span>Новая комбинация</span><span class="sample-label">Образец</span></div>${plateHTML({country:'RU',type:'civil',main:'А777АА',reg:'777'},'preview-plate','')}<div class="stage-idle-note">Твоя новая комбинация — в одном нажатии</div>`;
 }
 painters.push(mainPaint);
 export async function daily(){const r=await api.claimDaily();if(!r)return;render(true);setTimeout(()=>banner('Ежедневный бонус · день '+r.ds,r.text),500)}

@@ -35,7 +35,7 @@ const lot=(l,kind)=>{   // kind: 'buy' | 'mine' | 'bid'
   const click=kind=='mine'?'aMineDlg':'aBidDlg',sub=kind=='mine'?'Ваш лот':kind=='bid'?'Ваша ставка':esc(l.nick||'Игрок');
   const lead=kind=='bid'||l.me;
   return `<div class="row2 lot r${l.cls}" data-click="${click}" data-arg="${l.id}">${plateHTML(l,'',kind=='mine'?S.equip.skin:'')}
-  <div class="ac-top"><span class="chip-t">⏱ ${timer(l.ends)}</span><span class="chip-n">${l.bids?l.bids+' '+plural(l.bids,'ставка','ставки','ставок'):'без ставок'}</span>${lead?'<span class="chip-me">Вы лидируете</span>':''}</div>
+  <div class="ac-top"><span class="chip-t">:pi/stat: ${timer(l.ends)}</span><span class="chip-n">${l.bids?l.bids+' '+plural(l.bids,'ставка','ставки','ставок'):'без ставок'}</span>${lead?'<span class="chip-me">Вы лидируете</span>':''}</div>
   <div class="ac-bot"><div class="ac-who"><b>${sub}</b><span>${typeName(l.type)}</span>${dots(l.cls)}</div>
   <div class="ac-pr"><small>${l.bids?'Ставка':'Старт'}</small><b>${fmt(l.cur)} ₽</b><em>оценка ${fmt(l.price)} ₽</em></div></div></div>`};
 const nb=n=>fmt(n).replace(/ /g,'\u00a0');                       // число без переноса посреди разряда

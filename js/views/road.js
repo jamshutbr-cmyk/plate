@@ -31,7 +31,7 @@ function result(html){const e=$('roadRes');e.innerHTML=html;e.classList.toggle('
 function failMsg(){result('<b>Нет связи с сервером</b><span>Награда за этот заезд не начислена</span>')}
 
 // Деталь с трассы: выдаёт сервер по результату заезда (ev_finish), здесь только показ
-const partsLine=res=>{const l=(res.parts||[]).map(x=>x.dup?`${esc(x.n)} (дубль, +${fmt(x.refund)} 🚧)`:esc(x.n));return l.length?`<span>🔧 Деталь: ${l.join(', ')}</span>`:res.pk_plan>0&&res.pk_left===0?'<span>🔧 Суточный лимит деталей достигнут</span>':''};
+const partsLine=res=>{const l=(res.parts||[]).map(x=>x.dup?`${esc(x.n)} (дубль, +${fmt(x.refund)} :pi/road:)`:esc(x.n));return l.length?`<span>:pi/gen: Деталь: ${l.join(', ')}</span>`:res.pk_plan>0&&res.pk_left===0?'<span>:pi/gen: Суточный лимит деталей достигнут</span>':''};
 async function onGameOver(r){
   bar(true);
   const my=++SEQ,p=RUNP,mode=MODE;
@@ -42,7 +42,7 @@ async function onGameOver(r){
   if(my!==SEQ)return;
   if(res.err){result(res.err=='cheat'?'<b>Заезд не засчитан</b><span>Показатели выше возможных</span>':res.err=='season'?'<b>Сезон закончился</b><span>Жетоны за этот заезд не начислены</span>':r.score>=10?'<b>Жетонов нет</b><span>Заезд слишком короткий</span>':'');return}
   const ex=mode=='chase'?` (дистанция +${fmt(res.bonus)})`:'';
-  result(`<b>+${fmt(res.tokens)} 🚧${res.boosted?' ×2':''}</b><span>${res.capped?'Суточный лимит жетонов достигнут':'Сегодня '+fmt(res.today)+' из '+fmt(res.cap)}${ex} · очки карты +${fmt(res.pts_gain)} · уровень ${res.level}</span>${partsLine(res)}`);
+  result(`<b>+${fmt(res.tokens)} :pi/road:${res.boosted?' ×2':''}</b><span>${res.capped?'Суточный лимит жетонов достигнут':'Сегодня '+fmt(res.today)+' из '+fmt(res.cap)}${ex} · очки карты +${fmt(res.pts_gain)} · уровень ${res.level}</span>${partsLine(res)}`);
   render(true)}
 
 async function open(){

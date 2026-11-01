@@ -1,3 +1,4 @@
+import {icon} from '../ui/design.js';
 import {api} from '../api.js';
 import {DONATE, FXE, donateTier, donateVal, itemOf} from '../config.js';
 import {haptic} from '../platform.js';
@@ -16,7 +17,7 @@ import {namedHTML, namedPlateSpec, namedQuoted} from './named.js';
 let TAB='named',D=null,WALL=null,LOADING=0,LOADED=0,TIP=0,BUSY=0;
 const SAMPLE={type:'civil',main:'А777АА',reg:'77',country:'RU',cls:1};
 
-const ERR={unsupported:['Оплата недоступна','Откройте игру из Telegram и обновите его до последней версии'],nopack:['Товар недоступен','Он снят с продажи'],amount:['Неверная сумма','Можно от '+DONATE.tip.min+' до '+fmt(DONATE.tip.max)+' ⭐'],
+const ERR={unsupported:['Оплата недоступна','Откройте игру из Telegram и обновите его до последней версии'],nopack:['Товар недоступен','Он снят с продажи'],amount:['Неверная сумма','Можно от '+DONATE.tip.min+' до '+fmt(DONATE.tip.max)+' :pi/ach:'],
  limit:['Уже куплено','Этот товар покупается один раз'],owned:['Уже есть','Все предметы из набора у вас'],many:['Слишком много счетов','Оплатите или подождите немного'],
  taken:['Текст уже занят','Выберите другой'],blocked:['Текст не подошёл','Придумайте другой'],'bad text':['Текст не подошёл','От 2 до 10 знаков: буквы, цифры, пробел, дефис'],'bad region':['Нет такого региона','Введите код региона'],plate:['Номер не подошёл','Проверьте текст и регион'],
  telegram:['Telegram не ответил','Попробуйте ещё раз через минуту'],failed:['Оплата не прошла','Звёзды не списаны'],server:['Ошибка сервера','Попробуйте позже']};
@@ -60,12 +61,12 @@ function preview(it){
   if(it.slot=='bg')return `<div class="dn-pv bg scn-${it.id}"></div>`;
   if(it.slot=='drop'){const E=FXE[it.id];return `<div class="dn-pv fx" data-click="fxTest" data-arg="${it.id}" role="button" aria-label="Показать эффект">${E.pal.map(c=>`<i style="background:${c}"></i>`).join('')}<small>нажмите</small></div>`}
   return ''}
-const rowBoost=p=>`<div class="dn-row2"><div class="dn-tileic" style="--ic:${IC[p.k]}">${p.ic}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div>${buyBtn(p)}</div>`;
+const rowBoost=p=>`<div class="dn-row2"><div class="dn-tileic" style="--ic:${IC[p.k]}">${icon(p.k==='bundle'?'cases':p.id.includes('luck')?'ach':'studio')}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div>${buyBtn(p)}</div>`;
 function tileBundle(p){
   const v=donateVal(p,0),chips=[];
   if(v.days)chips.push(`Пасс ${v.days} дн.`);if(v.luck)chips.push(`Удача ${v.luck}`);if(v.luck2)chips.push('Удача ×2 навсегда');if(v.items.length)chips.push(`Предметов: ${v.items.length}`);
   const sep=v.items.length?sumItems(v.items):0;
-  return `<div class="dn-bun"><div class="dn-bh"><div class="dn-tileic" style="--ic:${IC.bundle}">${p.ic}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div></div>
+  return `<div class="dn-bun"><div class="dn-bh"><div class="dn-tileic" style="--ic:${IC.bundle}">${icon(p.k==='bundle'?'cases':p.id.includes('luck')?'ach':'studio')}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div></div>
    <div class="dn-chips">${chips.map(c=>`<i>${c}</i>`).join('')}</div>
    <div class="dn-bf">${sep?`<div class="dn-was"><s>${price(sep)}</s><em>−${Math.round((1-p.st/sep)*100)}%</em></div>`:'<div></div>'}${buyBtn(p)}</div></div>`}
 const tileItem=p=>{const it=itemOf(p.g.items[0]);return `<div class="dn-tile">${preview(it)}<div class="tx"><b>${slotName(it.slot)} «${it.n}»</b><span>${it.d}</span></div>${buyBtn(p)}</div>`};
@@ -91,11 +92,11 @@ function history(){
 
 // ---------- Подтверждение и оплата ----------
 function ask(id,amount){
-  const p=id=='tip'?{id:'tip',t:'Поддержка проекта',ic:'💛',st:amount,g:{}}:packOf(id);if(!p)return;
+  const p=id=='tip'?{id:'tip',t:'Поддержка проекта',ic:':pi/support:',st:amount,g:{}}:packOf(id);if(!p)return;
   const q=id=='named'?namedQuoted():null;
   if(id=='named'&&!q){banner('Сначала проверьте номер','Введите номер и регион');return}
   const x2=p.x2&&bought(p.id)==0,g=id=='tip'?[]:q?[`Текст на плашке: <b>${esc(q.main)}</b>`,'Навсегда в вашей коллекции','Продать, обменять и передать нельзя']:gives(p,x2);
-  sm(`<div class="dn-sheet">${q?`<div class="nm-pv">${plateHTML(q)}</div>`:`<div class="dn-big">${p.ic}</div>`}<h2>${p.t}</h2>
+  sm(`<div class="dn-sheet">${q?`<div class="nm-pv">${plateHTML(q)}</div>`:`<div class="dn-big">${icon(p.k==='bundle'?'cases':p.id.includes('luck')?'ach':'studio')}</div>`}<h2>${p.t}</h2>
    ${g.length?`<ul class="dn-g">${g.map(x=>`<li>${x}</li>`).join('')}</ul>`:`<p class="tl" style="text-align:center">Добровольное пожертвование. Игровых бонусов нет, только титул благодарности за накопленную сумму</p>`}
    <div class="dn-sum"><span>К оплате</span><b>${STAR} ${fmt(p.st)}</b></div>
    <button class="big2 dn-buy" data-click="dnGo" data-arg="${id}:${p.st}"><span>Оплатить ${STAR} ${fmt(p.st)}</span></button>
@@ -126,7 +127,7 @@ function success(id,res){
   if(res.luck2)lines.push('Удача ×2 навсегда');
   for(const x of res.items||[]){const it=itemOf(x);if(it)lines.push(`${slotName(it.slot)} «${it.n}»`)}
   const tiers=(res.tiers||[]).map(x=>itemOf(x)).filter(Boolean);
-  sm(`<div class="dn-sheet"><div class="dn-big">${id=='tip'?'💛':'✅'}</div><h2>${id=='tip'?'Спасибо!':res.plate?'Номер ваш!':'Покупка зачислена'}</h2>${res.plate?`<div class="nm-pv">${plateHTML({...res.plate,bound:true})}</div><p class="tl" style="text-align:center">🔒 Именной номер навсегда в вашей коллекции</p>`:''}
+  sm(`<div class="dn-sheet"><div class="dn-big">${id=='tip'?':pi/support:':':pi/check:'}</div><h2>${id=='tip'?'Спасибо!':res.plate?'Номер ваш!':'Покупка зачислена'}</h2>${res.plate?`<div class="nm-pv">${plateHTML({...res.plate,bound:true})}</div><p class="tl" style="text-align:center">:pi/safe: Именной номер навсегда в вашей коллекции</p>`:''}
    ${lines.length?`<ul class="dn-g">${lines.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}
    ${tiers.map(t=>`<div class="dn-new">Новый титул: ${titleHTML(t.id)}</div>`).join('')}
    <p class="tl" style="text-align:center">Всего вы поддержали проект на ${STAR} ${fmt(res.donated)}</p>
@@ -153,7 +154,7 @@ function wallCard(){
 export function drawSupport(){
   ensure();
   const keep=$('tipIn')?$('tipIn').value:'';
-  $('supC').innerHTML=`<div class="dn-panel dn-ph"><div class="dn-tileic" style="--ic:#c23d7a">💛</div><div class="tx"><b>Спасибо, что вы здесь</b><span>Игру делает один человек. Звёзды идут на сервер, хостинг и новые функции. Покупать ничего не нужно: это просто «спасибо».</span></div></div>
+  $('supC').innerHTML=`<div class="dn-panel dn-ph"><div class="dn-tileic" style="--ic:#c23d7a">${icon('support')}</div><div class="tx"><b>Спасибо, что вы здесь</b><span>Игру делает один человек. Звёзды идут на сервер, хостинг и новые функции. Покупать ничего не нужно: это просто «спасибо».</span></div></div>
    ${goalCard()}
    <div class="dn-panel"><h3 class="dn-t">Закинуть звёздочки</h3><p class="dn-hint">Любая сумма помогает</p>
     <div class="dn-tips">${DONATE.tip.amounts.map(a=>`<button data-click="dnTip" data-arg="${a}">${price(a)}</button>`).join('')}</div>
@@ -168,7 +169,7 @@ on({
  dnTip:a=>ask('tip',+a),
  dnTipIn:(a,el)=>{TIP=Math.floor(+el.value)||0;$('tipBtn').innerHTML=TIP>=DONATE.tip.min?`Отправить ${price(Math.min(TIP,DONATE.tip.max))}`:'Отправить'},
  dnTipGo:()=>{
-  if(TIP<DONATE.tip.min||TIP>DONATE.tip.max){banner('Неверная сумма','От '+DONATE.tip.min+' до '+fmt(DONATE.tip.max)+' ⭐');return}
+  if(TIP<DONATE.tip.min||TIP>DONATE.tip.max){banner('Неверная сумма','От '+DONATE.tip.min+' до '+fmt(DONATE.tip.max)+' :pi/ach:');return}
   ask('tip',TIP)},
  dnEq:async a=>{const [slot,id]=String(a).split(':');await api.equipItem(slot,id);haptic('light');render(true)},
  dnPub:async(a,el)=>{try{await api.donatePublic(el.checked)}catch(e){el.checked=!el.checked;throw e}ensure(true)}});

@@ -1,3 +1,6 @@
+import './ui/design.js';
+import './ui/pictograms.js';
+import {DEMO} from './mode.js';
 // Точка входа: подключает экраны (они сами регистрируют себя и свои действия), входит через Telegram и запускает игру.
 import './views/main.js';
 import './views/list.js';
@@ -31,6 +34,7 @@ import './views/multi.js';
 import {initFriends} from './views/friends.js';
 import './views/media.js';
 import './ui/scene.js';
+import './ui/experience.js';
 import {LOGIN, login, loadAll, serverDown} from './server.js';
 import {render} from './router.js';
 import {bind, on} from './ui/actions.js';
@@ -53,6 +57,7 @@ on({retry:()=>location.reload()});
 window.addEventListener('unhandledrejection',e=>{if(e.reason&&(e.reason.banned||/^banned$/i.test(e.reason.message||'')))return;console.error(e.reason);banner('Нет связи с сервером','Повторите действие')});
 
 async function boot(){
+  if(DEMO){const {startDemo}=await import('./demo.js');await startDemo();return}
   try{await login();await loadAll()}
   catch(e){if(e&&e.code==='not_subscribed'){showGate(boot);return}if(e&&e.code==='banned'){showBan({reason:e.reason,until:e.until});return}console.error(e);$('boot').innerHTML=`<div class="bootmsg"><b>Не удалось войти</b><span>${(e&&e.message)||'Ошибка'}</span><button class="btn" data-click="retry">Повторить</button></div>`;return}
   // Ник по умолчанию — имя из Telegram, чтобы в рейтинге были имена, а не «Игрок»

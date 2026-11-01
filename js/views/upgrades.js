@@ -2,7 +2,8 @@ import {api} from '../api.js';
 import {AUTO, CCO, CST, RAR, SCO, SELL_PCT, SST, autoMatch, sellGain} from '../config.js';
 import {DRAW, go, render} from '../router.js';
 import {S} from '../state.js';
-import {banner} from '../ui/modal.js';
+import {icon} from '../ui/design.js';
+import {banner,sm,cm} from '../ui/modal.js';
 import {on} from '../ui/actions.js';
 import {$, fmt} from '../util.js';
 
@@ -11,12 +12,11 @@ export async function buyAuto(){const r=await api.buyAutosell();if(r.err)banner(
 export async function aset(a){const [k,v]=a.split(':');await api.autoSet(k,+v);render()}
 export async function autoNow(){const r=await api.autosell();if(r)banner('Автопродажа','Продано '+r.n+' · '+fmt(r.gain)+' ₽');else banner('Автопродажа','Сейчас продавать нечего');render()}
 export async function buy(k){const r=await api.buyCapacity(k);if(r.err)banner('Не хватает денег','Нужно '+fmt(r.need)+(k=='c'?' ₽':' $'));else render()}
-export function drawUp(){
- const ci=CST.indexOf(S.capC)+1,si=SST.indexOf(S.capS)+1;
- const blk=(t,n,cap,txt,b)=>`<div class="card"><h3>${t}<span class="tl">${n} / ${cap}</span></h3><div class="pb"><i style="width:${Math.min(100,n/cap*100)}%"></i></div><p>${txt}</p>${b}</div>`;
- $('upC').innerHTML=blk('Коллекция',S.col.length,S.capC,'Здесь хранятся выпавшие номера. Когда место кончится, прокрутить не получится, пока не продашь что-нибудь.',ci>=CST.length?'<button class="big2" disabled>Максимум</button>':`<button class="big2" data-click="buy" data-arg="c">Расширить до ${CST[ci]} · ${fmt(CCO[ci-1])} ₽</button>`)
- +blk('Сейф',S.safe.length,S.capS,'Номера в сейфе нельзя продать ни случайно, ни автопродажей.',si>=SST.length?'<button class="big2" disabled>Максимум</button>':`<button class="big2" data-click="buy" data-arg="s">Расширить до ${SST[si]} · ${SCO[si-1]} $</button>`)
- +`<div class="card" style="cursor:pointer" data-click="go" data-arg="auto"><h3>Автопродажа<span>›</span></h3><span class="tl">${S.as.lvl?(S.as.on?'Включена':'Выключена'):'Не приобретено · '+AUTO.cost+' $'}</span></div>`}
+let SPACE='c';
+export function drawUp(){const safe=SPACE==='s',n=safe?S.safe.length:S.col.length,cap=safe?S.capS:S.capC,steps=safe?SST:CST,costs=safe?SCO:CCO,i=steps.indexOf(cap)+1,max=i>=steps.length,price=max?0:costs[i-1];
+ $('upC').innerHTML=`<div class="space-intro"><span class="v3-kicker">ROOM FOR MORE</span><h1>Хорошему<br><em>нужно место.</em></h1></div><div class="space-switch"><button class="${!safe?'a':''}" data-click="spaceTab" data-arg="c">${icon('col')}Библиотека</button><button class="${safe?'a':''}" data-click="spaceTab" data-arg="s">${icon('safe')}Приватный сейф</button></div><section class="space-capacity"><span class="v3-kicker">ЗАНЯТО СЕЙЧАС</span><div class="space-numbers"><strong>${n}</strong><span>/ ${cap}<small>${Math.max(0,cap-n)} свободных мест</small></span></div><div class="space-meter"><i style="width:${Math.min(100,n/cap*100)}%"></i></div><p>${safe?'Сейф защищает номер от случайной и автоматической продажи.':'Здесь остаются новые находки. Когда библиотека заполнена, новые номера не поместятся.'}</p></section><div class="space-next"><div><span class="v3-kicker">${max?'МАКСИМАЛЬНЫЙ ОБЪЁМ':'СЛЕДУЮЩЕЕ РАСШИРЕНИЕ'}</span><h2>${max?cap:steps[i]} <span>мест</span></h2><p>${max?'Все доступные улучшения приобретены.':'Ещё '+(steps[i]-cap)+' мест для твоей коллекции.'}</p></div><button class="v3-primary" ${max?'disabled':''} data-click="spaceAsk" data-arg="${SPACE}">${max?'Максимум':fmt(price)+(safe?' $':' ₽')} ${icon('plus')}</button></div><button class="space-autopilot" data-click="go" data-arg="auto"><span>${icon('auto')}</span><div><b>Не только больше. Умнее.</b><small>Автопилот продаст лишнее по твоим правилам.</small></div>:pi/external:</button>`;
+}
+on({spaceTab:a=>{SPACE=a;render(true)},spaceAsk:k=>{const safe=k==='s',steps=safe?SST:CST,costs=safe?SCO:CCO,i=steps.indexOf(safe?S.capS:S.capC)+1;if(i>=steps.length)return;sm(`<div class="v3-tools"><span class="v3-kicker">РАСШИРЕНИЕ / ${safe?'СЕЙФ':'БИБЛИОТЕКА'}</span><h2>Место для новых историй.</h2><p>Вместимость увеличится до ${steps[i]} мест. Предметы и номера останутся на месте.</p><div class="v3-price-review"><span>Стоимость</span><b>${fmt(costs[i-1])}${safe?' $':' ₽'}</b></div><button class="v3-primary" data-click="spaceBuyConfirm" data-arg="${k}">Подтвердить расширение</button></div>`)},spaceBuyConfirm:k=>{cm();return buy(k)}});
 // Автопродажа: один режим. Каждая настройка с пояснением, внизу живой счётчик «что продастся прямо сейчас» по тому же правилу, что и на сервере (autoMatch).
 const seg=(k,items,cur)=>`<div class="aseg">${items.map(([v,l])=>`<button class="${cur==v?'a':''}" data-click="aset" data-arg="${k}:${v}">${l}</button>`).join('')}</div>`;
 const opt=(t,d,ctl)=>`<div class="aopt"><div class="at">${t}</div><p class="ad">${d}</p>${ctl}</div>`;

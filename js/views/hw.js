@@ -1,3 +1,4 @@
+import {guardedInvoke} from '../ui/fairplay.js';
 import {HW, RAR, hwGuard} from '../config.js';
 import {fake} from '../engine.js';
 import {haptic, tgUser} from '../platform.js';
@@ -13,7 +14,7 @@ import {pName} from './profile.js';
 import {hwText} from '../ui/hwplate.js';
 import {hwMusicInit} from '../ui/hwmusic.js';
 
-// Экран ивента «Ночь тыкв»: отдельный режим со своей валютой 🎃 и своими номерами.
+// Экран ивента «Ночь тыкв»: отдельный режим со своей валютой :pi/hw: и своими номерами.
 // Шесть вкладок: прокрут, коллекция, алтарь (хранители и награды), задания (подарок, задания, обмен), профиль, топ.
 // Шансы, цены, награды и лимиты считает только сервер (supabase/hw.sql, функция hw-roll); здесь данные для показа
 // и действия игрока. Из режима нет дороги в рынок, магазин, банк и прочее: нижняя панель ведёт только по этим вкладкам.
@@ -63,8 +64,8 @@ const hp=(p,c='')=>{
 export function hwMuseumCard(list){
   if(!list||!list.length)return '';
   const cells=list.map(r=>{const p={...r,price:0,pv:+r.pv},R=RAR[p.cls],g=p.curse?hwGuard(p.guardian):null;
-    return `<div class="hw-mc" style="--gc:${g?g.c:R.c}">${hp(p,'sh')}<div class="hw-mcn"><span style="color:${R.c}">${R.n}</span><b>🎃 ${fmt(p.pv)}</b>${g?`<em>${g.e} ${HW.powers[p.curse]}</em>`:''}</div></div>`}).join('');
-  return `<div class="card hw-museum"><h3>🎃 Ночь тыкв · 2026<span class="tl">${list.length}</span></h3><div class="hw-mcs">${cells}</div></div>`}
+    return `<div class="hw-mc" style="--gc:${g?g.c:R.c}">${hp(p,'sh')}<div class="hw-mcn"><span style="color:${R.c}">${R.n}</span><b>:pi/hw: ${fmt(p.pv)}</b>${g?`<em>${g.e} ${HW.powers[p.curse]}</em>`:''}</div></div>`}).join('');
+  return `<div class="card hw-museum"><h3>:pi/hw: Ночь тыкв · 2026<span class="tl">${list.length}</span></h3><div class="hw-mcs">${cells}</div></div>`}
 const pips=n=>`<span class="hw-pips">${[1,2,3,4].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</span>`;
 const gCount=()=>Object.keys(H.gd).length;
 const gSum=()=>Object.values(H.gd).reduce((a,b)=>a+b,0);
@@ -94,7 +95,7 @@ export function openHW(){go('hw');load()}
 // ---------- Каркас ----------
 function draw(){
   const bal=$('hwBal'),nav=$('hwNav'),c=$('hwC');if(!c)return;
-  bal.innerHTML=H.p?`<span class="hw-pm">🎃</span>${fmt(H.p.pumpkins)}`:'';
+  bal.innerHTML=H.p?`<span class="hw-pm">:pi/hw:</span>${fmt(H.p.pumpkins)}`:'';
   nav.innerHTML=TABS.map(([k,e,n])=>`<button class="${H.tab==k?'on':''}" data-click="hwTab" data-arg="${k}"><i>${e}</i>${n}</button>`).join('');
   if(!H.ok){c.innerHTML=H.err?`<div class="hw-msg"><b>Режим пока недоступен</b><span>Не удалось загрузить данные. Проверьте связь и попробуйте ещё раз.</span><button class="btn hw-btn" data-click="hwReload">Повторить</button></div>`
     :`<div class="hw-msg"><b>Зажигаем свечи…</b></div>`;return}
@@ -104,10 +105,10 @@ function draw(){
 }
 function ribbon(){
   const ph=phase();
-  if(ph=='soon')return `<div class="hw-rib" id="hwRib"><i>🌘</i><div><b>Ночь тыкв скоро начнётся</b><span>Старт ${dateRu(H.cfg.s)}</span></div></div>`;
-  if(ph=='over')return `<div class="hw-rib over" id="hwRib"><i>🌑</i><div><b>Ночь закончилась</b><span>${claimOpen()?'Награды можно забрать ещё '+left(H.cfg.e+7*864e5-now()):'Спасибо, что играли'}</span></div></div>`;
-  return blood()?`<div class="hw-rib blood" id="hwRib"><i>🩸</i><div><b>Кровавая луна</b><span>Проклятие ${HW.chanceBlood}%, Древнее вдвое чаще</span></div><em>${left(H.cfg.e-now())}</em></div>`
-    :`<div class="hw-rib" id="hwRib"><i>🌕</i><div><b>Ночь тыкв идёт</b><span>До конца ночи</span></div><em>${left(H.cfg.e-now())}</em></div>`;
+  if(ph=='soon')return `<div class="hw-rib" id="hwRib"><i>:pi/theme:</i><div><b>Ночь тыкв скоро начнётся</b><span>Старт ${dateRu(H.cfg.s)}</span></div></div>`;
+  if(ph=='over')return `<div class="hw-rib over" id="hwRib"><i>:pi/theme:</i><div><b>Ночь закончилась</b><span>${claimOpen()?'Награды можно забрать ещё '+left(H.cfg.e+7*864e5-now()):'Спасибо, что играли'}</span></div></div>`;
+  return blood()?`<div class="hw-rib blood" id="hwRib"><i>:pi/hw:</i><div><b>Кровавая луна</b><span>Проклятие ${HW.chanceBlood}%, Древнее вдвое чаще</span></div><em>${left(H.cfg.e-now())}</em></div>`
+    :`<div class="hw-rib" id="hwRib"><i>:pi/theme:</i><div><b>Ночь тыкв идёт</b><span>До конца ночи</span></div><em>${left(H.cfg.e-now())}</em></div>`;
 }
 
 // ---------- Прокрут ----------
@@ -120,7 +121,7 @@ function phHTML(){
 function resultHTML(r,anim){
   const p=r.plate||r,R=RAR[p.cls],g=p.curse?hwGuard(p.guardian):null;
   return `<div class="hw-res${g?' cursed c'+p.curse:''}${anim?' fresh':''}" style="--gc:${g?g.c:R.c}">
-    <div class="hw-badge"><span style="color:${R.c}">${R.n}</span><b>🎃 ${fmt(p.pv)}</b></div>
+    <div class="hw-badge"><span style="color:${R.c}">${R.n}</span><b>:pi/hw: ${fmt(p.pv)}</b></div>
     <div class="hw-plwrap">${g?'<i class="hw-aura"></i><i class="hw-sparks"></i>':''}${hp(p,anim?'in':'sh')}</div>
     ${g?curseHTML(p,g):'<div class="hw-clean">Без проклятия</div>'}${dots(p.cls)}</div>`;
 }
@@ -128,10 +129,10 @@ const curseHTML=(p,g)=>`<div class="hw-curse c${p.curse}" style="--gc:${g.c}"><s
 function goBtn(){
   const ph=phase(),ok=ph=='live'&&H.p.pumpkins>=HW.cost&&H.plates.length<HW.cap;
   const t=ph=='soon'?'Скоро':ph=='over'?'Ночь закончилась':H.p.pumpkins<HW.cost?'Нужны тыковки':H.plates.length>=HW.cap?'Коллекция полна':'Прокрутить';
-  return `<button class="hw-go${ok?'':' off'}" id="hwGo" data-click="hwGen"><span>${t}</span>${ph=='live'?`<b>🎃 ${HW.cost}</b>`:''}</button>`;
+  return `<button class="hw-go${ok?'':' off'}" id="hwGo" data-click="hwGen"><span>${t}</span>${ph=='live'?`<b>:pi/hw: ${HW.cost}</b>`:''}</button>`;
 }
 const RES_LIM=3;
-const rescueChip=()=>phase()=='live'&&H.p.pumpkins<HW.cost&&(H.p.rescue||0)>0?`<button class="hw-chip hot" id="hwRescue" data-click="hwRescue"><i>🕯</i><div><b>Огарок свечи</b><span>Добрать до ${HW.cost} 🎃 · осталось ${H.p.rescue} из ${RES_LIM} сегодня</span></div></button>`:'';
+const rescueChip=()=>phase()=='live'&&H.p.pumpkins<HW.cost&&(H.p.rescue||0)>0?`<button class="hw-chip hot" id="hwRescue" data-click="hwRescue"><i>:pi/candle:</i><div><b>Огарок свечи</b><span>Добрать до ${HW.cost} :pi/hw: · осталось ${H.p.rescue} из ${RES_LIM} сегодня</span></div></button>`:'';
 function syncRescue(){
   const ch=document.querySelector('.hw-chips');if(!ch)return;
   const old=$('hwRescue');if(old)old.remove();
@@ -141,24 +142,24 @@ async function rescue(){
   try{
     const r=await rpc('hw_rescue');
     H.p.pumpkins=+r.pumpkins;H.p.rescue=+r.rescue;
-    burst('#ffb454',12);haptic('light');banner('Огарок свечи','+🎃 '+fmt(r.gain)+' · осталось '+r.rescue);draw();
+    burst('#ffb454',12);haptic('light');banner('Огарок свечи','+:pi/hw: '+fmt(r.gain)+' · осталось '+r.rescue);draw();
   }catch(e){fail(e)}
 }
 function drawRoll(){
   const p=H.p,streak=p.streak;
-  const candle=phase()=='live'?(p.candle?`<div class="hw-chip hot"><i class="hw-flame">🕯</i><div><b>Свеча дня горит</b><span>Первый прокрут сегодня будет проклятым</span></div></div>`
-    :`<div class="hw-chip"><i class="hw-flame off">🕯</i><div><b>Свеча погасла</b><span id="hwCandle">Снова через ${left(toMidnight())}</span></div></div>`):'';
-  const gift=phase()=='live'?(p.daily?`<button class="hw-chip hot" data-click="hwDaily"><i>🎁</i><div><b>Подарок дня</b><span>+${fmt(HW.daily+HW.streakStep*Math.min(streak,HW.streakMax))} 🎃${streak?' · серия '+streak:''}</span></div></button>`
-    :`<div class="hw-chip"><i>🎁</i><div><b>Подарок получен</b><span>Серия ${streak} · завтра больше</span></div></div>`):'';
+  const candle=phase()=='live'?(p.candle?`<div class="hw-chip hot"><i class="hw-flame">:pi/candle:</i><div><b>Свеча дня горит</b><span>Первый прокрут сегодня будет проклятым</span></div></div>`
+    :`<div class="hw-chip"><i class="hw-flame off">:pi/candle:</i><div><b>Свеча погасла</b><span id="hwCandle">Снова через ${left(toMidnight())}</span></div></div>`):'';
+  const gift=phase()=='live'?(p.daily?`<button class="hw-chip hot" data-click="hwDaily"><i>:pi/cases:</i><div><b>Подарок дня</b><span>+${fmt(HW.daily+HW.streakStep*Math.min(streak,HW.streakMax))} :pi/hw:${streak?' · серия '+streak:''}</span></div></button>`
+    :`<div class="hw-chip"><i>:pi/cases:</i><div><b>Подарок получен</b><span>Серия ${streak} · завтра больше</span></div></div>`):'';
   return `<div class="hw-roll">${ribbon()}
     <div class="stage hw-stage" id="hwStage" data-click="hwGen">${H.last?resultHTML(H.last,false):phHTML()}</div>
     ${goBtn()}
-    <div class="hw-stat">Выпало: ${fmt(p.n)} · Лучший: 🎃 ${fmt(p.best)}</div>
+    <div class="hw-stat">Выпало: ${fmt(p.n)} · Лучший: :pi/hw: ${fmt(p.best)}</div>
     <div class="hw-chips">${rescueChip()}${candle}${gift}</div></div>`;
 }
 // Прокрут: 12 кадров по 75 мс. Не зависит от настройки S.reel (раньше при выключенной/неопределённой настройке кадров не было вообще),
 // а любой сбой при отрисовке кадра не может повесить промис: по ошибке показываем запасной кадр и всё равно завершаемся.
-const GH='<div class="hw-ghost"><span>🎃</span><span>🕯</span><span>🦇</span><span>🕷</span><span>👻</span><span>💀</span></div>';
+const GH='<div class="hw-ghost"><span>:pi/hw:</span><span>:pi/candle:</span><span>:pi/hw:</span><span>:pi/hw:</span><span>:pi/hw:</span><span>:pi/hw:</span></div>';
 const spin=el=>new Promise(res=>{
   if(!el){res();return}
   let i=0,done=false;
@@ -172,7 +173,8 @@ const spin=el=>new Promise(res=>{
   setTimeout(end,3000); // страховка
 });
 async function callRoll(){
-  const {data,error}=await sb.functions.invoke('hw-roll');
+  const {data,error}=await guardedInvoke('hw-roll');
+  if(error?.fairplay)return {err:'fairplay'};
   if(error){
     let e=null;try{e=await error.context.json()}catch(_){}
     if(e&&e.error=='banned'){handleBan({reason:e.reason,until:e.until});return {err:'banned'}}
@@ -198,18 +200,18 @@ async function gen(){
   if(!r||r.err){
     // кадр прокрута остаётся на сцене: возвращаем нормальный вид
     if(H.tab=='roll'){const s0=$('hwStage');if(s0)s0.innerHTML=H.last?resultHTML(H.last,false):phHTML()}
-    if(r&&r.err=='banned')return;
+    if(r&&['banned','fairplay'].includes(r.err))return;
     const e=r&&r.err;
     banner(e=='money'?'Не хватает тыковок':e=='full'?'Коллекция полна':e=='season'?'Ивент сейчас не идёт':e=='server'||String(e).startsWith('http')?'Ошибка сервера ('+e+')':'Нет связи','Попробуйте ещё раз');
     return}
   Object.assign(H.p,r.p);H.gd=r.gd||H.gd;H.dq=r.dq||H.dq;H.plates.push(r.plate);H.last=r;
   const p=r.plate;
   if(H.tab=='roll'){const s=$('hwStage');if(s)s.innerHTML=resultHTML(r,true)}
-  $('hwBal').innerHTML=`<span class="hw-pm">🎃</span>${fmt(H.p.pumpkins)}`;
+  $('hwBal').innerHTML=`<span class="hw-pm">:pi/hw:</span>${fmt(H.p.pumpkins)}`;
   const gb=$('hwGo');if(gb)gb.outerHTML=goBtn();
-  const s2=document.querySelector('.hw-stat');if(s2)s2.textContent=`Выпало: ${fmt(H.p.n)} · Лучший: 🎃 ${fmt(H.p.best)}`;
+  const s2=document.querySelector('.hw-stat');if(s2)s2.textContent=`Выпало: ${fmt(H.p.n)} · Лучший: :pi/hw: ${fmt(H.p.best)}`;
   effects(r,p);syncRescue();
-  if(r.candle){const c=document.querySelector('.hw-chip.hot');if(c)c.outerHTML=`<div class="hw-chip"><i class="hw-flame off">🕯</i><div><b>Свеча погасла</b><span id="hwCandle">Снова через ${left(toMidnight())}</span></div></div>`}
+  if(r.candle){const c=document.querySelector('.hw-chip.hot');if(c)c.outerHTML=`<div class="hw-chip"><i class="hw-flame off">:pi/candle:</i><div><b>Свеча погасла</b><span id="hwCandle">Снова через ${left(toMidnight())}</span></div></div>`}
 }
 function effects(r,p){
   const g=p.curse?hwGuard(p.guardian):null;
@@ -235,9 +237,9 @@ function listOf(){
 }
 function drawCol(){
   const a=listOf(),tot=H.plates.reduce((s,p)=>s+p.pv,0),junk=H.plates.filter(p=>!p.curse&&p.cls<=1&&!p.kept).length;
-  const fl=[['all','Все'],['kept','★ Музей'],['curse','☠ Проклятые'],...HW.guardians.map(g=>[g.id,g.e])];
-  return `<div class="hw-col"><div class="hw-hd"><h2 class="hw-h">🗂 Коллекция</h2><b>${H.plates.length} / ${HW.cap}</b></div>
-   <div class="hw-sub">Стоимость 🎃 ${fmt(tot)}</div>
+  const fl=[['all','Все'],['kept','★ Музей'],['curse',':pi/hw: Проклятые'],...HW.guardians.map(g=>[g.id,g.e])];
+  return `<div class="hw-col"><div class="hw-hd"><h2 class="hw-h">:pi/col: Коллекция</h2><b>${H.plates.length} / ${HW.cap}</b></div>
+   <div class="hw-sub">Стоимость :pi/hw: ${fmt(tot)}</div>
    <div class="hw-chipsrow">${SORTS.map(([k,n])=>`<button class="${H.sort==k?'a':''}" data-click="hwSort" data-arg="${k}">${n}</button>`).join('')}</div>
    <div class="hw-chipsrow">${fl.map(([k,n])=>`<button class="${H.flt==k?'a':''}" data-click="hwFlt" data-arg="${k}">${n}</button>`).join('')}</div>
    <div class="hw-rows">${a.length?a.map((p,i)=>rowHTML(p,i)).join(''):`<div class="hw-empty">${H.plates.length?'Здесь ничего нет':'Пока пусто. Нажмите «Прокрут», чтобы выбить первый номер.'}</div>`}</div>
@@ -247,7 +249,7 @@ function rowHTML(p,i){
   const R=RAR[p.cls],g=p.curse?hwGuard(p.guardian):null;
   return `<div class="hw-row${g?' cursed c'+p.curse:''}" style="--gc:${g?g.c:R.c};animation-delay:${Math.min(i,12)*25}ms" data-click="hwOpenP" data-arg="${p.id}">
    <div class="hw-mini">${hp(p)}</div>
-   <div class="hw-ri"><span style="color:${R.c}">${p.kept?'★ ':''}${R.n}</span><b>🎃 ${fmt(p.pv)}</b></div>
+   <div class="hw-ri"><span style="color:${R.c}">${p.kept?'★ ':''}${R.n}</span><b>:pi/hw: ${fmt(p.pv)}</b></div>
    ${g?`<div class="hw-rc"><span>${g.e} ${HW.powers[p.curse]} ×${HW.mult[p.curse-1]}</span>${pips(p.curse)}</div>`:'<div class="hw-rc dim"><span>Без проклятия</span></div>'}</div>`;
 }
 function openPlate(id){
@@ -255,9 +257,9 @@ function openPlate(id){
   const R=RAR[p.cls],g=p.curse?hwGuard(p.guardian):null;
   sm(`<div class="dlg hw-dlg" style="--gc:${g?g.c:R.c}"><div class="hw-dp">${hp(p,'sh')}</div>
     <div class="hw-dn" style="color:${R.c}">${R.n}</div>${g?curseHTML(p,g):''}
-    <div class="hw-val">Цена 🎃 ${fmt(p.pv)}<span>Продажа ${HW.sellPct}%: 🎃 ${fmt(sellOf(p))}</span></div>
+    <div class="hw-val">Цена :pi/hw: ${fmt(p.pv)}<span>Продажа ${HW.sellPct}%: :pi/hw: ${fmt(sellOf(p))}</span></div>
     <button class="btn hw-btn" data-click="hwKeep" data-arg="${p.id}">${p.kept?'★ Убрать из музея':'☆ В музей (навсегда)'}</button>
-    ${p.kept?'':`<button class="btn red hw-btn" data-click="hwSell" data-arg="${p.id}">${g?'Развеять и продать':'Продать'} · 🎃 ${fmt(sellOf(p))}</button>`}
+    ${p.kept?'':`<button class="btn red hw-btn" data-click="hwSell" data-arg="${p.id}">${g?'Развеять и продать':'Продать'} · :pi/hw: ${fmt(sellOf(p))}</button>`}
     <button class="btn hw-btn" data-click="hwClose">Закрыть</button></div>`);
 }
 async function keep(id){
@@ -273,7 +275,7 @@ function sellAsk(id){
   const p=H.plates.find(x=>x.id==id);if(!p||p.kept)return;
   if(p.curse>=3){const g=hwGuard(p.guardian);
     sm(`<div class="dlg hw-dlg"><h3>Развеять ${HW.powers[p.curse].toLowerCase()} проклятие?</h3><div class="hw-sub" style="text-align:center">${g.e} ${g.n} · ×${HW.mult[p.curse-1]}<br>Номер уйдёт навсегда. Прогресс хранителя в Алтаре останется.</div>
-    <button class="btn red hw-btn" data-click="hwSellOk" data-arg="${p.id}">Продать · 🎃 ${fmt(sellOf(p))}</button><button class="btn" data-click="hwClose">Оставить</button></div>`);return}
+    <button class="btn red hw-btn" data-click="hwSellOk" data-arg="${p.id}">Продать · :pi/hw: ${fmt(sellOf(p))}</button><button class="btn" data-click="hwClose">Оставить</button></div>`);return}
   sellDo(id);
 }
 async function sellDo(id){
@@ -282,13 +284,13 @@ async function sellDo(id){
     const r=await rpc('hw_sell',{ids:[+id]});
     if(!r.n){await load();return}
     H.plates=H.plates.filter(x=>x.id!=id);H.p.pumpkins=+r.pumpkins;H.dq=r.dq;
-    burst('#ff8a1f',12);haptic('light');banner('Продано','+🎃 '+fmt(r.gain));draw();
+    burst('#ff8a1f',12);haptic('light');banner('Продано','+:pi/hw: '+fmt(r.gain));draw();
   }catch(e){fail(e)}
 }
 function junkAsk(){
   const j=H.plates.filter(p=>!p.curse&&p.cls<=1&&!p.kept);if(!j.length){banner('Мелочи нет','Проклятые и редкие номера остаются');return}
   const gain=Math.floor(j.reduce((s,p)=>s+p.pv,0)*HW.sellPct/100);
-  sm(`<div class="dlg hw-dlg"><h3>Продать мелочь?</h3><div class="hw-sub" style="text-align:center">${j.length} обычных и необычных номеров без проклятия.<br>Вы получите 🎃 ${fmt(gain)}</div>
+  sm(`<div class="dlg hw-dlg"><h3>Продать мелочь?</h3><div class="hw-sub" style="text-align:center">${j.length} обычных и необычных номеров без проклятия.<br>Вы получите :pi/hw: ${fmt(gain)}</div>
     <button class="btn red hw-btn" data-click="hwJunkOk">Продать</button><button class="btn" data-click="hwClose">Отмена</button></div>`);
 }
 async function junkDo(){
@@ -296,7 +298,7 @@ async function junkDo(){
   try{
     const r=await rpc('hw_sell_junk');
     await load();
-    if(r.n){burst('#ff8a1f',16);haptic('light');banner('Продано: '+r.n,'+🎃 '+fmt(r.gain))}
+    if(r.n){burst('#ff8a1f',16);haptic('light');banner('Продано: '+r.n,'+:pi/hw: '+fmt(r.gain))}
   }catch(e){fail(e)}
 }
 
@@ -305,7 +307,7 @@ function drawAltar(){
   const gc=gCount(),p=H.p,bl=blood(),pw=bl?HW.pwBlood:HW.pw;
   const left2=Math.max(0,HW.pityAt-p.pity);
   const gs=HW.guardians.map(g=>{const v=H.gd[g.id]||0;
-    return `<div class="hw-g${v?' on':''}" style="--gc:${g.c}"><div class="hw-gi">${v?g.e:'❔'}</div><b>${v?g.n:'Не найден'}</b>
+    return `<div class="hw-g${v?' on':''}" style="--gc:${g.c}"><div class="hw-gi">${v?g.e:':pi/help:'}</div><b>${v?g.n:'Не найден'}</b>
      ${pips(v)}<span>${v?HW.powers[v]:'шанс '+g.w+'%'}</span></div>`}).join('');
   return `<div class="hw-altar">${ribbon()}
    <div class="hw-hero"><div class="hw-ring" style="--p:${gc/5*100}%"><b>${gc}<small>/5</small></b></div>
@@ -320,9 +322,9 @@ function drawAltar(){
 function rewardsHTML(){
   const R=HW.rewards,gc=gCount(),bal=Math.min(R.g3.max,Math.max(R.g3.min,Math.floor(S.bal*R.g3.pct/100)));
   const cards=[
-   ['g3','Три хранителя','💰',`${fmt(bal)} ₽ (${R.g3.pct}% баланса, от ${fmt(R.g3.min)} до ${fmt(R.g3.max)}) и 🎃 ${fmt(R.g3.pum)}`,gc>=3,`${Math.min(gc,3)} / 3`],
-   ['g5','Хранитель ночи','🕯',`Титул «${itemName('hw_t_keeper')}», тёмная рамка профиля и 🎃 ${fmt(R.g5.pum)}`,gc>=5,`${gc} / 5`],
-   ['gold','Повелитель ночи','👑',`Все пять на силе «Сильное» или «Древнее»: титул «${itemName('hw_t_lord')}» и 🎃 ${fmt(R.gold.pum)}`,gc>=5&&gMin()>=R.gold.minPw,gc>=5?`слабейший: ${HW.powers[gMin()]}`:`${gc} / 5`]];
+   ['g3','Три хранителя',':pi/bank:',`${fmt(bal)} ₽ (${R.g3.pct}% баланса, от ${fmt(R.g3.min)} до ${fmt(R.g3.max)}) и :pi/hw: ${fmt(R.g3.pum)}`,gc>=3,`${Math.min(gc,3)} / 3`],
+   ['g5','Хранитель ночи',':pi/candle:',`Титул «${itemName('hw_t_keeper')}», тёмная рамка профиля и :pi/hw: ${fmt(R.g5.pum)}`,gc>=5,`${gc} / 5`],
+   ['gold','Повелитель ночи',':pi/dshop:',`Все пять на силе «Сильное» или «Древнее»: титул «${itemName('hw_t_lord')}» и :pi/hw: ${fmt(R.gold.pum)}`,gc>=5&&gMin()>=R.gold.minPw,gc>=5?`слабейший: ${HW.powers[gMin()]}`:`${gc} / 5`]];
   return cards.map(([k,n,ic,d,ok,pr])=>{const got=H.claimed.includes(k);
     return `<div class="hw-rw${got?' got':ok?' ready':''}"><i class="hw-ic">${ic}</i><div><b>${n}</b><span>${d}</span></div>${got?'<em>✓ Получено</em>':ok&&claimOpen()?`<button class="btn hw-btn" data-click="hwClaim" data-arg="${k}">Забрать</button>`:`<em>${pr}</em>`}</div>`}).join('');
 }
@@ -332,7 +334,7 @@ async function claim(k){
     const r=await rpc('hw_claim',{kind:k});
     H.claimed.push(k);H.p.pumpkins+=r.pumpkins;await loadPlayer().catch(()=>{});
     burst('#ffb454',24);haptic('heavy');
-    banner(r.title?'Титул получен':'Награда получена',(r.rub?'+'+fmt(r.rub)+' ₽ и ':'')+'+🎃 '+fmt(r.pumpkins));draw();
+    banner(r.title?'Титул получен':'Награда получена',(r.rub?'+'+fmt(r.rub)+' ₽ и ':'')+'+:pi/hw: '+fmt(r.pumpkins));draw();
   }catch(e){fail(e)}
 }
 
@@ -341,36 +343,36 @@ function drawQuests(){
   const p=H.p,dq=H.dq,live=phase()=='live',left2=HW.exch.limit-p.exch;
   const qs=HW.quests.map((q,i)=>{const v=Math.min(q.need,dq[q.k]||0),done=v>=q.need,got=(dq.c||[]).includes(i+1);
     return `<div class="hw-q${got?' got':''}"><div class="hw-qt"><b>${q.n}</b><span>${v} / ${q.need}</span></div><div class="pb hw-pb"><i style="width:${v/q.need*100}%"></i></div>
-     ${got?'<em>✓</em>':`<button class="btn hw-btn" ${done&&live?'':'disabled'} data-click="hwQuest" data-arg="${i+1}">+🎃 ${q.rew}</button>`}</div>`}).join('');
-  const ex=[1,10,50].map(n=>`<button class="btn hw-btn" ${live&&n<=left2&&S.bal>=n*HW.exch.rate?'':'disabled'} data-click="hwExch" data-arg="${n}">+${n} 🎃<small>${fmt(n*HW.exch.rate)} ₽</small></button>`).join('');
-  const gift=p.daily?`<button class="btn hw-btn hot" ${live?'':'disabled'} data-click="hwDaily">Забрать +${fmt(HW.daily+HW.streakStep*Math.min(p.streak,HW.streakMax))} 🎃</button>`:`<em>✓ Получено, завтра больше</em>`;
+     ${got?'<em>✓</em>':`<button class="btn hw-btn" ${done&&live?'':'disabled'} data-click="hwQuest" data-arg="${i+1}">+:pi/hw: ${q.rew}</button>`}</div>`}).join('');
+  const ex=[1,10,50].map(n=>`<button class="btn hw-btn" ${live&&n<=left2&&S.bal>=n*HW.exch.rate?'':'disabled'} data-click="hwExch" data-arg="${n}">+${n} :pi/hw:<small>${fmt(n*HW.exch.rate)} ₽</small></button>`).join('');
+  const gift=p.daily?`<button class="btn hw-btn hot" ${live?'':'disabled'} data-click="hwDaily">Забрать +${fmt(HW.daily+HW.streakStep*Math.min(p.streak,HW.streakMax))} :pi/hw:</button>`:`<em>✓ Получено, завтра больше</em>`;
   return `<div class="hw-quests">${ribbon()}
-   <div class="hw-hd"><h2 class="hw-h">📜 Задания</h2><b>до ${left(toMidnight())}</b></div>
-   <div class="hw-card"><div class="hw-qt"><b>🎁 Подарок дня</b><span>Серия: ${p.streak}</span></div>
-    <div class="hw-sub">${HW.daily} 🎃 в день и ещё +${HW.streakStep} за каждый день серии подряд, до +${HW.streakStep*HW.streakMax}.</div>${gift}</div>
+   <div class="hw-hd"><h2 class="hw-h">:pi/col: Задания</h2><b>до ${left(toMidnight())}</b></div>
+   <div class="hw-card"><div class="hw-qt"><b>:pi/cases: Подарок дня</b><span>Серия: ${p.streak}</span></div>
+    <div class="hw-sub">${HW.daily} :pi/hw: в день и ещё +${HW.streakStep} за каждый день серии подряд, до +${HW.streakStep*HW.streakMax}.</div>${gift}</div>
    <h3 class="hw-h2">Задания дня</h3>${qs}
    <h3 class="hw-h2">Обмен рублей</h3>
-   <div class="hw-card"><div class="hw-sub">1 🎃 = ${fmt(HW.exch.rate)} ₽. Сегодня можно ещё ${left2} 🎃. Обратно тыковки в рубли не меняются.</div>
+   <div class="hw-card"><div class="hw-sub">1 :pi/hw: = ${fmt(HW.exch.rate)} ₽. Сегодня можно ещё ${left2} :pi/hw:. Обратно тыковки в рубли не меняются.</div>
     <div class="hw-exch">${ex}</div><div class="hw-sub">Ваш баланс: ${fmt(S.bal)} ₽</div></div></div>`;
 }
 async function daily(){
   try{
     const r=await rpc('hw_daily');
     H.p.pumpkins=+r.pumpkins;H.p.daily=false;H.p.streak=r.streak;
-    burst('#ffb454',14);haptic('light');banner('Подарок дня','+🎃 '+fmt(r.gain)+' · серия '+r.streak);draw();
+    burst('#ffb454',14);haptic('light');banner('Подарок дня','+:pi/hw: '+fmt(r.gain)+' · серия '+r.streak);draw();
   }catch(e){fail(e)}
 }
 async function quest(i){
   try{
     const r=await rpc('hw_quest_claim',{i:+i});
-    H.p.pumpkins=+r.pumpkins;H.dq=r.dq;burst('#ffb454',10);haptic('light');banner('Задание выполнено','+🎃 '+r.gain);draw();
+    H.p.pumpkins=+r.pumpkins;H.dq=r.dq;burst('#ffb454',10);haptic('light');banner('Задание выполнено','+:pi/hw: '+r.gain);draw();
   }catch(e){fail(e)}
 }
 async function exch(n){
   try{
     const r=await rpc('hw_exchange',{amount:+n});
     H.p.pumpkins=+r.pumpkins;H.p.exch=r.exch;S.bal=+r.balance;
-    burst('#ff8a1f',10);haptic('light');banner('Обмен выполнен','+🎃 '+n);draw();
+    burst('#ff8a1f',10);haptic('light');banner('Обмен выполнен','+:pi/hw: '+n);draw();
   }catch(e){fail(e)}
 }
 
@@ -383,8 +385,8 @@ function drawProf(){
   return `<div class="hw-prof"><div class="hw-card${keeper?' hw-keeper':''}"><div class="phd">${av}<div><b class="pn${nickCls(S.equip.nick)}">${esc(nm)}</b>${titleHTML(cur)}<span class="tl">Уровень ${p.lvl}</span></div></div>
     <div class="sub" style="font-size:16px;gap:14px;align-items:center"><div class="pb hw-pb" style="flex:1"><i style="width:${Math.min(100,p.xp/need()*100)}%"></i></div><span>${fmt(p.xp)} / ${fmt(need())}</span></div>
     <button class="btn hw-btn" style="width:100%;margin-top:14px" data-click="nickDlg">Сменить имя</button></div>
-   <div class="hw-st"><div><b>${fmt(p.pumpkins)}</b><span>Тыковки 🎃</span></div><div><b>${fmt(p.n)}</b><span>Выпало номеров</span></div><div><b>${fmt(p.curses)}</b><span>Проклятий</span></div>
-    <div><b>${fmt(p.best)}</b><span>Лучший, 🎃</span></div><div><b>${gCount()} / 5</b><span>Хранителей</span></div><div><b>${fmt(tot)}</b><span>Стоимость коллекции</span></div></div>
+   <div class="hw-st"><div><b>${fmt(p.pumpkins)}</b><span>Тыковки :pi/hw:</span></div><div><b>${fmt(p.n)}</b><span>Выпало номеров</span></div><div><b>${fmt(p.curses)}</b><span>Проклятий</span></div>
+    <div><b>${fmt(p.best)}</b><span>Лучший, :pi/hw:</span></div><div><b>${gCount()} / 5</b><span>Хранителей</span></div><div><b>${fmt(tot)}</b><span>Стоимость коллекции</span></div></div>
    ${mine.length?`<div class="hw-card"><h3 class="hw-h2" style="margin-top:0">Титулы ночи</h3><div class="hw-titles">${mine.map(t=>`<button class="${cur==t.id?'a':''}" style="--tc:${t.c}" data-click="hwTitle" data-arg="${cur==t.id?'':t.id}">${t.n}${cur==t.id?' · надет':''}</button>`).join('')}</div></div>`:''}
    ${hwMuseumCard(H.plates.filter(x=>x.kept))}
    <div class="hw-card"><h3 class="hw-h2" style="margin-top:0">Редкости</h3>${rarBars()}</div></div>`;
@@ -404,10 +406,10 @@ async function loadTop(k){
   try{const d=await rpc('hw_leaderboard',{p_kind:k});H.top[k]=d;topAt[k]=Date.now()}catch(e){console.error(e);H.top[k]={err:1}}
   if(H.tab=='top'&&H.kind==k&&$('hwC'))$('hwC').innerHTML=drawTop(true);
 }
-const MEDAL=['🥇','🥈','🥉'];
+const MEDAL=[':pi/top:',':pi/top:',':pi/top:'];
 function drawTop(){
   const d=H.top[H.kind];
-  const val=r=>H.kind=='best'?'🎃 '+fmt(r.val):H.kind=='guard'?`${r.gn} / 5 · сила ${r.val}`:fmt(r.val)+' ☠';
+  const val=r=>H.kind=='best'?':pi/hw: '+fmt(r.val):H.kind=='guard'?`${r.gn} / 5 · сила ${r.val}`:fmt(r.val)+' :pi/hw:';
   const row=(r,me)=>`<div class="hw-tr${me?' me':''}${r.rk<=3?' p'+r.rk:''}"><span class="hw-rk">${MEDAL[r.rk-1]||r.rk}</span><div><b>${esc(r.nick||'Игрок')}</b><span>Ур. ${r.lvl}</span></div><em>${val(r)}</em></div>`;
   let body;
   if(!d)body='<div class="hw-empty">Загрузка…</div>';
@@ -416,7 +418,7 @@ function drawTop(){
     const meIn=d.top.some(r=>r.me);
     body=(d.top.length?d.top.map(r=>row(r,r.me)).join(''):'<div class="hw-empty">Рейтинг пока пуст</div>')+(d.me&&!meIn?`<div class="hw-gap">· · ·</div>${row(d.me,true)}`:'');
   }
-  return `<div class="hw-top-v"><div class="hw-hd"><h2 class="hw-h">🏆 Топ ночи</h2></div>
+  return `<div class="hw-top-v"><div class="hw-hd"><h2 class="hw-h">:pi/top: Топ ночи</h2></div>
    <div class="hw-chipsrow">${HW.tops.map(([k,e,n])=>`<button class="${H.kind==k?'a':''}" data-click="hwKind" data-arg="${k}">${e} ${n}</button>`).join('')}</div>
    <div class="hw-trs">${body}</div></div>`;
 }

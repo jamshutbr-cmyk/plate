@@ -199,7 +199,7 @@ button.hw-chip{cursor:pointer}
 .hw-st div{background:linear-gradient(#1f1336f2,#170d2af2);border:1px solid var(--hw-line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px}
 .hw-st b{font-size:22px;color:var(--hw-ember)}.hw-st span{font-size:12.5px;color:var(--hw-mut)}
 .hw-keeper{border-color:var(--hw-pump);box-shadow:0 0 0 1px #ff8a1f55,0 0 34px -6px var(--hw-pump);background:linear-gradient(160deg,#2f1334,#1a1030 60%)}
-.hw-keeper::after{content:'🕯';position:absolute;top:10px;right:14px;font-size:20px;animation:hwFlame 1.7s ease-in-out infinite}
+.hw-keeper::after{content:'';position:absolute;top:10px;right:14px;font-size:20px;animation:hwFlame 1.7s ease-in-out infinite}
 .hw-titles{display:flex;gap:8px;flex-wrap:wrap}
 .hw-titles button{font:inherit;font-weight:700;font-size:14px;padding:8px 14px;border-radius:999px;background:#1a1030;color:var(--tc);border:1px solid color-mix(in srgb,var(--tc) 55%,transparent);cursor:pointer}
 .hw-titles button.a{background:color-mix(in srgb,var(--tc) 22%,#1a1030)}

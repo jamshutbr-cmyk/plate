@@ -1,0 +1,100 @@
+/* PLATE 04.2 — die-cast metal, enamel and collector finishes.
+   Shared renderer: ownership, country formats, paid frames and rarity stay separate.
+   No animated glow loops: readable at thumbnail size and with reduced motion. */
+html body .plate.plate-crafted{
+ --metal:linear-gradient(118deg,#e9ebef 0%,#fafbfc 23%,#d2d6dd 48%,#eff1f5 72%,#b1b8c3 100%);
+ --ink:#171d27;--edge:#68717f;--etch:#a6adb7;--rim:#f2f5f8;--aura:#8895a31c;
+ border:0;border-radius:7px;isolation:isolate;color:var(--ink);
+ box-shadow:0 1px 0 1px var(--edge),inset 0 0 0 2px var(--rim),inset 0 -3px 2px #0004,0 5px 8px -3px #09132148,0 0 17px -6px var(--aura)!important;
+ filter:none;
+}
+html body .plate.plate-crafted:not([class*="sk-"]){background:var(--metal)!important}
+html body .plate.plate-crafted::before{
+ z-index:3;inset:3px;border:1px solid var(--edge);border-radius:4px;
+ background:radial-gradient(circle at 1.6% 50%,#e7edf3 0 .35%,#65707e .5% .8%,transparent 1%),radial-gradient(circle at 98.4% 50%,#e7edf3 0 .35%,#65707e .5% .8%,transparent 1%);
+ box-shadow:inset 0 1px 0 #ffffffa0,inset 0 -1px 0 #0002;opacity:1;
+}
+html body .plate.plate-crafted::after{display:none!important}
+html body .plate.plate-crafted>.plate-surface{
+ position:absolute;inset:0;z-index:0;border-radius:inherit;pointer-events:none;opacity:.65;
+ background:linear-gradient(112deg,transparent 12%,#ffffff50 27%,transparent 39%,transparent 66%,#ffffff30 79%,transparent 91%),repeating-linear-gradient(0deg,#ffffff0c 0 1px,transparent 1px 3px);
+}
+html body .plate.plate-crafted>.pm,html body .plate.plate-crafted>.pr{
+ position:relative;z-index:2;color:var(--ink)!important;min-width:0;
+ font-family:'Barlow Semi Condensed','DIN Alternate','Arial Narrow',Arial,sans-serif;
+ font-weight:750;text-shadow:0 1px 0 #ffffff55,0 -1px 0 #00000035!important;
+}
+html body .plate.plate-crafted>.pm{border-right-color:var(--edge);letter-spacing:.005em}
+html body .plate.plate-crafted>.pr{flex-shrink:0}
+html body .plate.plate-crafted small{color:var(--ink)!important;letter-spacing:.05em;text-shadow:none}
+html body .plate.plate-crafted .flag{box-shadow:0 0 0 .5px #17202a75;border-radius:0}
+/* Six genuine surfaces. High rarities change the body, not only its outline. */
+html body .plate.plate-crafted.rz1{--metal:linear-gradient(115deg,#e3f0e8,#f8fffb 26%,#c7dfd2 54%,#e9f5ed 78%,#a1c2b2);--edge:#56856f;--rim:#e5f8ed;--aura:#31ac6a35}
+html body .plate.plate-crafted.rz2{--metal:linear-gradient(115deg,#cbdcee,#f0f8ff 24%,#a5bedb 52%,#dae9f7 76%,#7d9ebf);--ink:#18344f;--edge:#52799f;--rim:#d9eeff;--aura:#438bd850}
+html body .plate.plate-crafted.rz3{--metal:linear-gradient(115deg,#cbb6ec 0%,#f4edff 23%,#ac94d3 47%,#e2d4f4 72%,#8e79bc 100%);--ink:#32234d;--edge:#80619e;--rim:#e7d7fc;--aura:#9a67db55}
+html body .plate.plate-crafted.rz4{--metal:linear-gradient(115deg,#b78537 0%,#f2d595 17%,#fff0b9 28%,#c79a4b 48%,#eac67d 66%,#fff0bc 80%,#af7d2e 100%);--ink:#493115;--edge:#997035;--rim:#ffe3a4;--aura:#d99b3455}
+html body .plate.plate-crafted.rz5{--metal:radial-gradient(ellipse at 25% 0%,#c85972,transparent 65%),linear-gradient(115deg,#3a112b 0%,#8e264c 28%,#35152d 52%,#a53a5b 78%,#45132f 100%);--ink:#ffe9ce;--edge:#b77b86;--rim:#f3c0a4;--aura:#ba335766}
+html body .plate.plate-crafted.rz5>.plate-surface{background:linear-gradient(113deg,transparent 20%,#ffc8a52e 29%,transparent 42%),repeating-linear-gradient(135deg,transparent 0 12px,#ffe0bc0d 12px 13px,transparent 13px 24px),repeating-linear-gradient(45deg,transparent 0 12px,#ffe0bc0d 12px 13px,transparent 13px 24px)}
+html body .plate.plate-crafted.rz5>.pm,html body .plate.plate-crafted.rz5>.pr{text-shadow:0 1px 0 #0009,0 -1px 0 #ffecda45!important}
+/* Purchased finishes remain visible and distinct, including on rare plates. */
+html body .plate.plate-crafted.sk-carbon{--metal:repeating-linear-gradient(45deg,#22272d 0 3px,#30373e 3px 6px);--ink:#f0f3f7;--edge:#8c969d;--rim:#3d454d}
+html body .plate.plate-crafted.sk-silver{--metal:linear-gradient(115deg,#8a99a9,#f7fcff 26%,#a7b2bd 50%,#eaf0f6 75%,#7b8998);--ink:#25303b;--edge:#718294;--rim:#e8f4ff}
+html body .plate.plate-crafted.sk-bronze{--metal:linear-gradient(115deg,#9d6542,#f4ccac 27%,#b47e57 53%,#e9bb97 78%,#91633e);--ink:#442a1d;--edge:#865637;--rim:#ffd4af}
+html body .plate.plate-crafted.sk-gold{--metal:linear-gradient(115deg,#ae7927,#ffe6a0 26%,#c3943f 50%,#ffeab0 76%,#ac792c);--ink:#483015;--edge:#966a2b;--rim:#fff0b7}
+html body .plate.plate-crafted.sk-rose{--metal:linear-gradient(115deg,#b47c7a,#ffe3da 26%,#ca9693 52%,#f7d7ce 76%,#a97170);--ink:#552e32;--edge:#ab7478;--rim:#ffe3d7}
+html body .plate.plate-crafted.sk-emerald{--metal:linear-gradient(115deg,#092c29,#296350 27%,#0d3a32 53%,#347c62 78%,#0d332b);--ink:#d9f4d9;--edge:#86b493;--rim:#507d69}
+html body .plate.plate-crafted.sk-ruby{--metal:linear-gradient(115deg,#350e20,#8f3549 27%,#450e27 53%,#a74a60 78%,#45152d);--ink:#ffe5dc;--edge:#d09b97;--rim:#985367}
+html body .plate.plate-crafted.sk-sapphire{--metal:linear-gradient(115deg,#0d1b3a,#355480 27%,#14294e 53%,#496f9c 78%,#142545);--ink:#e3edff;--edge:#93adc9;--rim:#4f6e99}
+html body .plate.plate-crafted.sk-sunset{--metal:linear-gradient(115deg,#c49354,#f1cc9a 25%,#c2858e 60%,#674169);--ink:#3c2234;--edge:#b08283;--rim:#f0c9b1}
+html body .plate.plate-crafted.sk-neon{--metal:linear-gradient(115deg,#10262c,#1c4148 26%,#10272e 55%,#214953);--ink:#a3f8ee;--edge:#4eb3ac;--rim:#216e72;--aura:#36d7d44a}
+html body .plate.plate-crafted.sk-midnight{--metal:linear-gradient(115deg,#141b29,#303d50 26%,#17202f 55%,#36445b);--ink:#f1ddac;--edge:#b29b6b;--rim:#5b584e}
+html body .plate.plate-crafted.sk-aurora{--metal:linear-gradient(115deg,#0c2c32,#2c605a 25%,#2d3c60 55%,#68557b 80%,#263b4d);--ink:#e1f9f2;--edge:#8eafbb;--rim:#536f86}
+html body .plate.plate-crafted.sk-hologram{--metal:linear-gradient(115deg,#8fbdc1,#e7d0ee 25%,#b1cbeb 48%,#f0debb 72%,#9bbdb5);--ink:#283e4a;--edge:#859ba7;--rim:#f1f1ea}
+html body .plate.plate-crafted.sk-dn_obsidian{--metal:linear-gradient(115deg,#111520,#354051 27%,#121923 53%,#3c2939 78%,#141824);--ink:#f4e4dc;--edge:#b8747a;--rim:#6e444c;animation:none!important}
+html body .plate.plate-crafted.sk-dn_prism{--metal:linear-gradient(115deg,#2b2250,#5c467e 24%,#214954 52%,#704465 78%,#252947);--ink:#f9ecff;--edge:#b4a3d0;--rim:#77668e;animation:none!important}
+html body .plate.plate-crafted:is(.sk-carbon,.sk-silver,.sk-bronze,.sk-gold,.sk-rose,.sk-emerald,.sk-ruby,.sk-sapphire,.sk-sunset,.sk-neon,.sk-midnight,.sk-aurora,.sk-hologram,.sk-dn_obsidian,.sk-dn_prism){background:var(--metal)!important}
+/* Preserve the rare body even with a purchased rim, as in the original hierarchy. */
+html body .plate.plate-crafted.rz3:not(.is-personal){--metal:linear-gradient(115deg,#cbb6ec,#f4edff 23%,#ac94d3 47%,#e2d4f4 72%,#8e79bc);--ink:#32234d}
+html body .plate.plate-crafted.rz4:not(.is-personal){--metal:linear-gradient(115deg,#b78537,#f2d595 17%,#fff0b9 28%,#c79a4b 48%,#eac67d 66%,#fff0bc 80%,#af7d2e);--ink:#493115}
+html body .plate.plate-crafted.rz5:not(.is-personal){--metal:radial-gradient(ellipse at 25% 0%,#c85972,transparent 65%),linear-gradient(115deg,#3a112b,#8e264c 28%,#35152d 52%,#a53a5b 78%,#45132f);--ink:#ffe9ce}
+html body .plate.plate-crafted:is([class*="sk-ev_f_"],[class*="sk-med_f_"],.sk-ref_f_own){background:var(--metal)!important}
+html body .plate.plate-crafted:is([class*="sk-ev_f_"],[class*="sk-med_f_"])::before{inset:calc(var(--bz) + 1.5px);background:none}
+html body .plate.plate-crafted.sk-matrix{--metal:repeating-linear-gradient(0deg,#00ff7a0e 0 1px,transparent 1px 3px),linear-gradient(115deg,#102d23,#061c14);--ink:#a6f7cb;--edge:#639b7f;--rim:#3c6e55;background:var(--metal)!important}
+/* Personal plates are signed objects, not ordinary plates with arbitrary text. */
+html body .plate.plate-crafted.is-personal:not([class*="sk-"]){--metal:linear-gradient(115deg,#14242c 0%,#354a53 25%,#182d35 52%,#3b515a 78%,#14252d);--ink:#f6e7c2;--edge:#b39d6d;--rim:#7b795f;--aura:#bda36e3d}
+html body .plate.plate-crafted.is-personal>.pm{font-size:var(--personal-size)!important;letter-spacing:.015em;padding-left:3cqw;padding-right:2cqw;font-weight:650}
+html body .plate.plate-crafted.is-personal>.plate-surface{background:linear-gradient(115deg,transparent 12%,#ffe6b31f 28%,transparent 45%),repeating-linear-gradient(0deg,#ffffff07 0 1px,transparent 1px 3px)}
+/* Statutory / special formats keep their instantly recognisable colour coding. */
+html body .plate.plate-crafted.t-taxi:not(.is-personal){--metal:linear-gradient(115deg,#dbaa16,#ffe76a 28%,#eac135 54%,#fff08b 80%,#d1a11a);--ink:#302710;--edge:#997914;--rim:#ffe86a}
+html body .plate.plate-crafted.t-police:not(.is-personal){--metal:linear-gradient(115deg,#163f85,#3777c6 28%,#194992 54%,#3a75bf 80%,#163c7a);--ink:#f2f7ff;--edge:#d6e6ff;--rim:#789dcd}
+html body .plate.plate-crafted.t-transit:not(.is-personal){--metal:linear-gradient(115deg,#a22e32,#ed6b5c 28%,#b3383b 54%,#ef7868 80%,#a32c31);--ink:#fff2e8;--edge:#ffd8c9;--rim:#e5aaa0}
+html body .plate.plate-crafted.t-military:not(.is-personal){--metal:linear-gradient(115deg,#343e29,#697345 28%,#3d492e 54%,#748057 80%,#3b442c);--ink:#eff0d3;--edge:#c2c49b;--rim:#8e936c}
+html body .plate.plate-crafted.t-diplomat:not(.is-personal){--metal:linear-gradient(115deg,#152942,#354b66 28%,#192c44 54%,#475e76 80%,#182d47);--ink:#f1dc9c;--edge:#bca369;--rim:#6e7060}
+html body .plate.plate-crafted.t-retro:not(.is-personal){--metal:linear-gradient(115deg,#c3b9a0,#f4ead1 28%,#d8cdb3 54%,#faf0d9 80%,#c9bea4);--ink:#34332b;--edge:#8c8270;--rim:#f3e9cf}
+html body .plate.plate-crafted.t-blat:not(.is-personal){--metal:linear-gradient(115deg,#111921,#323b42 28%,#151d24 54%,#3d4446 80%,#151d24);--ink:#f1d28b;--edge:#a88e52;--rim:#6f654b}
+html body .plate.plate-crafted.t-media:not(.is-personal){--metal:linear-gradient(115deg,#dedfe4,#fff 28%,#c6cbd4 54%,#f3f5f7 80%,#bdc5d2);--ink:#303c50;--edge:#9d6778;--rim:#f5d9df}
+html body .plate.plate-crafted.t-friends:not(.is-personal){--metal:linear-gradient(115deg,#a5b3c5,#eaf1fa 28%,#bac8dc 54%,#eef5ff 80%,#a1b1ca);--ink:#273b55;--edge:#7b91ad;--rim:#dbe8f8}
+html body .plate.plate-crafted.nr>.pm{border-right:0}
+/* Never let the app theme invert ink on a physical plate. Event frames retain
+   their existing decorative xf/xl layers; high-rarity type colours stay legible. */
+html body .plate.plate-crafted:is(.t-police,.t-transit,.t-military,.t-diplomat,.t-blat)>.pm,
+html body .plate.plate-crafted:is(.t-police,.t-transit,.t-military,.t-diplomat,.t-blat)>.pr{text-shadow:0 1px 1px #0007!important}
+html body .plate.plate-crafted.t-retro>.pm{font-family:'Courier New',Courier,monospace}
+@media(prefers-reduced-motion:reduce){html body .plate.plate-crafted,html body .plate.plate-crafted *{animation:none!important;transition:none!important}}
+
+/* Named editor: preview first, availability and payment still verified by server. */
+.named-workbench{margin:22px 0 18px;padding:24px 18px 22px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,var(--card),var(--surface-2));text-align:center}
+.named-workbench-head{display:flex;justify-content:space-between;gap:12px;text-align:left;margin-bottom:26px;font-size:9px;letter-spacing:.1em;color:var(--mut);text-transform:uppercase}
+.named-workbench .dn-stand{padding:0!important;margin:0!important;background:none!important;border:0!important}
+html body .named-workbench .plate{width:100%;max-width:460px;zoom:1!important;margin:0 auto}
+.named-workbench>small{display:block;margin-top:20px;font-size:11px;color:var(--mut);line-height:1.5}
+
+html body .plate.plate-crafted.t-media .pm::before{animation:none!important}
+html body .plate.plate-crafted.sk-ref_f_own{--edge:#b99847;--rim:#e7ce88}
+html body .plate.plate-crafted.t-media>.pr{background:linear-gradient(135deg,#e45b56,#ac2b2e);color:#fff7ed!important}
+html body .plate.plate-crafted.t-media>.pr small{color:#fff7ed!important}
+/* Thick event bezels need their own optical text inset at every scale. */
+html body .plate.plate-crafted:is([class*="sk-ev_f_"],[class*="sk-med_f_"])>.pm{font-size:13.5cqw;padding-left:2cqw;padding-right:1.5cqw}
+html body .plate.plate-crafted:is([class*="sk-ev_f_"],[class*="sk-med_f_"]):has(.fl-BY)>.pm{font-size:11cqw}
+html body .plate.plate-crafted.is-personal:is([class*="sk-ev_f_"],[class*="sk-med_f_"])>.pm{font-size:calc(var(--personal-size)*.86)!important}
+.named-workbench .dn-stand{border-radius:0!important;overflow:visible!important;display:block!important}

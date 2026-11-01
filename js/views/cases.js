@@ -4,6 +4,7 @@ import {CARS, carById, carsOfClass, caseOdds} from '../data/cars.js';
 import {haptic, hapticDrop} from '../platform.js';
 import {DRAW, go, render} from '../router.js';
 import {S} from '../state.js';
+import {icon} from '../ui/design.js';
 import {on} from '../ui/actions.js';
 import {beep, burst, count, dropSound, riser} from '../ui/fx.js';
 import {banner} from '../ui/modal.js';
@@ -15,7 +16,6 @@ import {$, fmt} from '../util.js';
 const STEP=136,IW=128,N=46,T=38;   // шаг ленты, ширина карточки, длина ленты, индекс карточки с результатом
 let busy=false,skip=false;
 
-const crate=(c,w=120)=>`<svg viewBox="0 0 120 80" width="${w}"><ellipse cx="60" cy="74" rx="46" ry="5" fill="${c}" opacity=".28"/><rect x="14" y="28" width="92" height="44" rx="8" fill="#1d2236" stroke="${c}" stroke-width="3"/><rect x="54" y="16" width="12" height="56" fill="${c}" opacity=".45"/><rect x="10" y="16" width="100" height="18" rx="6" fill="${c}" opacity=".9"/><rect x="54" y="16" width="12" height="18" fill="#fff" opacity=".25"/><circle cx="60" cy="48" r="7" fill="#0c1020" stroke="#fff" stroke-opacity=".6" stroke-width="2"/><rect x="58.5" y="46" width="3" height="7" rx="1" fill="#fff" opacity=".8"/></svg>`;
 const pct=x=>(Math.round(x*10)/10).toString().replace('.',',');
 
 function oddsRows(c,od){
@@ -29,15 +29,16 @@ function thumbs(c,od){
   return list.length?`<div class="cs-th">${list.map(x=>`<img class="${S.cars.includes(x.id)?'':'lk'}" style="--c:${RAR[x.r].c}" src="${x.img}" alt="${x.n}" title="${x.n}">`).join('')}</div>`:''}
 const card=c=>{
   const od=caseOdds(c.w),can=S.bal>=c.p;
-  return `<div class="card cs-card" style="--cc:${c.col}"><div class="cs-art">${crate(c.col,110)}</div><h3>${c.n}<span class="tl">${fmt(c.p)} ₽</span></h3><div class="tl" style="margin-bottom:10px">${c.d}</div>
+  return `<div class="card cs-card" style="--cc:${c.col}"><div class="cs-art"><img src="${{garage:'img/cars/bmw.webp',standard:'img/cars/rs6.webp',premium:'img/cars/m5.webp',legend:'img/cars/huracan.webp'}[c.id]||'img/cars/huracan.webp'}" alt="Автомобили кейса ${c.n}"></div><h3>${c.n}<span class="tl">${fmt(c.p)} ₽</span></h3><div class="tl" style="margin-bottom:10px">${c.d}</div>
    <div class="cs-od">${oddsRows(c,od)}</div>${thumbs(c,od)}
    <button class="big2${can?'':' alt'}" data-click="csOpen" data-arg="${c.id}">Открыть · ${fmt(c.p)} ₽</button></div>`};
+let selectedCase=CASES[0].id,casePane='overview';
 export function drawCases(){
-  const hid=CASES.some(c=>c.w.some((w,r)=>w>0&&!carsOfClass(r).length));
-  $('casesC').innerHTML=`<div class="sub" style="margin:0 6px 4px"><span>Баланс</span><b style="color:var(--tx)">${fmt(S.bal)} ₽</b></div>
-   <div class="sub" style="margin:0 6px 12px"><span>В гараже машин</span><b style="color:var(--tx)">${CARS.filter(x=>S.cars.includes(x.id)).length} из ${CARS.length}</b></div>
-   ${CASES.map(card).join('')}
-   <p class="tl" style="text-align:center">Шансы показаны как есть.${hid?' Класс, в котором пока нет машин, не выпадает: его шанс делят остальные классы.':''} Если машина уже есть, вы получаете ${CAR_CLS.map((n,r)=>n.toLowerCase()+' — '+fmt(dupRefund(r))+' ₽').join(', ')}.</p>`}
+ const c=CASES.find(x=>x.id===selectedCase)||CASES[0],od=caseOdds(c.w),eligible=CARS.filter(x=>od[x.r]>0),art={garage:'img/cars/bmw.webp',standard:'img/cars/rs6.webp',premium:'img/cars/m5.webp',legend:'img/cars/huracan.webp'}[c.id]||eligible.at(-1)?.img||CARS.at(-1).img;
+ let pane=casePane==='odds'?`<div class="dealer-probabilities"><h2>Шансы без мелкого шрифта.</h2>${oddsRows(c,od)}<p>Классы без доступных машин исключаются из расчёта. Вероятности пересчитаны по текущему составу автомобилей.</p></div>`:casePane==='models'?`<div class="dealer-models">${eligible.map(x=>`<button data-click="dealerCar" data-arg="${x.id}"><img src="${x.img}" alt="${x.n}"><span><b>${x.n}</b><small>${S.cars.includes(x.id)?'Уже в гараже':CAR_CLS[x.r]}</small></span>${icon(S.cars.includes(x.id)?'check':'plus')}</button>`).join('')}</div>`:`<div class="dealer-overview"><div><span class="v3-kicker">ЧТО ВНУТРИ</span><h2>${eligible.length} моделей.<br>Один новый характер.</h2><p>${c.d}</p></div><div class="dealer-refund"><span>Если машина уже есть</span><p>Дубликат превращается в рубли. Размер возврата зависит от класса.</p><button data-click="dealerRules">Все условия ${icon('cat')}</button></div></div>`;
+ $('casesC').innerHTML=`<div class="dealer-intro"><div><span class="v3-kicker">PLATE / AUTO GALLERY</span><h1>Выбери<br><em>свой следующий.</em></h1></div><button class="v3-text" data-click="go" data-arg="garage">Гараж ${S.cars.length}/${CARS.length} ${icon('garage')}</button></div><div class="dealer-layout"><div class="dealer-selector">${CASES.map((x,i)=>`<button class="${x.id===c.id?'a':''}" data-click="dealerSelect" data-arg="${x.id}"><span>0${i+1}</span><b>${x.n}<small>${fmt(x.p)} ₽</small></b><em>${x.id===c.id?'●':':pi/external:'}</em></button>`).join('')}</div><div class="dealer-content"><section class="dealer-stage"><span class="v3-kicker">${c.n.toUpperCase()} / КОЛЛЕКЦИЯ АВТОМОБИЛЕЙ</span><img src="${art}" alt="Пример автомобиля коллекции ${c.n}"><div><span>Случайный автомобиль</span><span>${eligible.length} возможных моделей</span></div></section><div class="dealer-purchase"><div><span>Стоимость открытия</span><strong>${fmt(c.p)} ₽</strong><small>На счёте ${fmt(S.bal)} ₽</small></div><button class="v3-primary" data-click="csOpen" data-arg="${c.id}" ${S.bal<c.p?'disabled':''}>Открыть ${icon('cases')}</button></div><div class="dealer-tabs">${[['overview','Коллекция'],['models','Модели'],['odds','Вероятности']].map(([k,n])=>`<button class="${casePane===k?'a':''}" data-click="dealerPane" data-arg="${k}">${n}</button>`).join('')}</div>${pane}</div></div>`;
+}
+on({dealerSelect:a=>{selectedCase=a;render(true)},dealerPane:a=>{casePane=a;render(true)},dealerRules:()=>{import('../ui/modal.js').then(({sm})=>sm(`<div class="v3-tools"><span class="v3-kicker">ДУБЛИКАТЫ / ВОЗВРАТ</span><h2>Уже есть? Не потеря.</h2><p>Вместо второй такой же машины приходит игровая компенсация.</p>${CAR_CLS.map((n,r)=>`<div class="v3-price-review"><span>${n}</span><b>${fmt(dupRefund(r))} ₽</b></div>`).join('')}</div>`))},dealerCar:a=>{const c=carById(a);import('../ui/modal.js').then(({sm})=>sm(`<div class="v3-tools dealer-car-detail"><img src="${c.img}" alt="${c.n}"><span class="v3-kicker">${CAR_CLS[c.r]}</span><h2>${c.n}</h2><p>${S.cars.includes(a)?'Эта машина уже есть в твоём гараже.':'Может выпасть из выбранной коллекции. Покупка конкретной модели здесь недоступна.'}</p><button class="v3-primary" data-click="go" data-arg="garage">Посмотреть гараж</button></div>`))}});
 
 // ---------- Открытие ----------
 async function openCase(id){

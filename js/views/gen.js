@@ -4,6 +4,7 @@ import {regList} from '../data/regions.js';
 import {genCost, onTypes, regFeeNow} from '../engine.js';
 import {DRAW, go, render} from '../router.js';
 import {S} from '../state.js';
+import {icon} from '../ui/design.js';
 import {on} from '../ui/actions.js';
 import {cm, sm} from '../ui/modal.js';
 import {plateHTML} from '../ui/plate.js';
@@ -20,10 +21,8 @@ export function openRegions(){RL=regList(S.country);sm(`<div class="bd"><h2>Ре
 export const PIN='<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.2A7 7 0 0 1 19 9.8C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.6"/></svg>';
 export function drawGen(){
   const c=S.country,on=onTypes(),tot=on.reduce((a,b)=>a+b.p,0),smp=c=='RU'?{civil:'А001АА',taxi:'АА 001',police:'А 0001',transit:'А001АА',military:'0001 АА',diplomat:'001 CD 01',retro:'00-01 ААА'}:Object.fromEntries(TYPES.map(t=>[t.k,'0001 AA-'])),rg=c=='RU'?'01':'1',cs=genCost(),TC={civil:'#9aa3b8',taxi:'#f0b800',police:'#4a7ee8'},nr=regList(c).length,rsel=S.reg?regList(c).find(r=>r.n==S.reg):null;
-  $('genC').innerHTML=`<div class="gcard"><button class="grow" data-click="openCountries"><span class="ic"><i class="flag fl-${c}"></i></span><span class="tx"><b>${CN[c].n}</b><span>Страна · ${nr} ${c=='RU'?'регионов':'областей'}</span></span><span class="go">›</span></button><button class="grow" data-click="openRegions"><span class="ic">${PIN}</span><span class="tx"><b>${S.reg||'Все регионы'}</b><span>${rsel?'Регион · коды '+rsel.ks.join(', ')+' · +'+fmt(regFeeNow())+' ₽':'Регион · случайный, бесплатно'}</span></span><span class="go">›</span></button></div>
-  <div class="gh">Шансы типов номеров</div>
-  <div class="gcard">${on.map(t=>`<div class="grow row2 st">${plateHTML({type:t.k,main:smp[t.k],reg:rg,country:c})}<div class="rt"><div class="tx"><b>${t.n}</b><span>${pct(t.p/tot*100)}%</span></div></div></div>`).join('')}</div>
-  <div class="gfoot"><div class="cs"><small>Стоимость генерации${S.reg?' · '+fmt(COST)+' + регион':''}</small><b>${fmt(cs)} ₽</b></div><button class="btn" data-click="go" data-arg="main">Готово</button></div>`}
+  $('genC').innerHTML=`<div class="configuration-intro"><span class="v3-kicker">НАСТРОЙ СВОЮ НАХОДКУ</span><h1>С чего<br><em>начнём поиск?</em></h1></div><div class="configuration-steps"><button data-click="openCountries"><span class="configuration-step">01</span><div><small>Страна выпуска</small><h2><i class="flag fl-${c}"></i>${CN[c].n}</h2><p>${nr} ${c==='RU'?'регионов':'областей'} в каталоге</p></div><i>${icon('arrow')}</i></button><button data-click="openRegions"><span class="configuration-step">02</span><div><small>География</small><h2>${S.reg||'Без границ'}</h2><p>${S.reg?'Выбранный регион · +'+fmt(regFeeNow())+' ₽':'Случайный регион · без доплаты'}</p></div><i>${icon('album')}</i></button></div><details class="configuration-chances"><summary><span>${icon('cat')}</span><div><b>Что может выпасть</b><small>Все типы и реальные шансы</small></div><em>+</em></summary><div>${on.map(t=>`<div class="configuration-chance"><span>${plateHTML({type:t.k,main:smp[t.k]||smp.civil,reg:rg,country:c})}</span><span><b>${t.n}</b><strong>${pct(t.p/tot*100)}%</strong></span></div>`).join('')}</div></details><div class="configuration-total"><div><small>Одно открытие${S.reg?' · включая регион':''}</small><strong>${fmt(cs)} ₽</strong></div><button class="v3-primary" data-click="go" data-arg="studio">В студию ${icon('studio')}</button></div>`;
+}
 export function setRegIdx(i){setReg(RL[i].n)}
 DRAW.gen=drawGen;
 on({setCountry,setReg,setRegIdx:a=>setRegIdx(+a),openCountries,openRegions,fillReg:(a,el)=>fillReg(el.value)});
