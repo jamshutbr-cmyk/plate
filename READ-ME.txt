@@ -1,28 +1,32 @@
-PLATE 04.3.3 — frontend patch, existing Supabase server
+PLATE 04.3.5 — ONE VERSIONED FRONTEND, CURRENT SUPABASE
 
-1. Extract the ZIP. Open your GitHub repository ROOT (where index.html is).
-2. Upload the css and js folders and index.html, preserving their paths.
-   Do not upload the ZIP or put the js folder inside js.
-3. Commit. If using update-043, merge into main after reviewing the changes.
-4. Wait for a successful GitHub Pages deployment. Close/reopen the Telegram Mini App.
+This replaces the old multi-file module loader with one JS bundle and one CSS file.
+Their content-based filenames prevent old cached module dependencies from mixing.
+Includes all previous UI patches and removal of hw/road/gai/evshop.
 
-Includes the previous 04.3.1 compatibility patch. No SQL or Edge deployment needed.
+INSTALL IN TWO COMMITS (GitHub Pages main/root):
+1. Upload the css and js folders from this ZIP to the repository ROOT. Commit.
+   Do not delete existing js/css/img files. Wait for successful Pages deployment.
+2. Upload this index.html to the repository ROOT, replacing the old file. Commit.
+   Wait for successful Pages deployment again.
+3. Close/reopen the Mini App and use its Reload action if still showing the old screen.
+   Below the profile in the desktop sidebar / mobile workspace navigation,
+   the release label should include 04.3.5.
 
-Removed from the active frontend: hw, road, gai, evshop.
-Removed navigation, search entries, saved shortcuts and screen registration.
-Old route calls redirect to menu; old demo screen links open the main screen.
-No retired event screen modules are loaded. The old event museum block in public
-profiles and its request are also removed. Earned items/titles/data are NOT deleted.
+Do NOT change SQL, RLS, grants, keys or Edge Functions.
+This is the non-demo production frontend, using current server contracts.
+No new anti-bot backend is installed. No automatic retries of purchases.
 
-Fix: purchase confirmation icons in support and donate shop are now bounded.
-No price, invoice, payment processing or reward changes.
+If errors persist, take a screenshot of the NEW error text. It includes operation,
+HTTP status and error code when returned by Supabase. Do not send access tokens.
+The common handler no longer claims every error is a network outage.
+Permission/session/quota errors still require diagnosis; this build does not bypass them.
 
-If uploading this patch over an existing GitHub repository, unused old files can
-remain on disk: they are no longer imported or linked from the game. Their presence
-does NOT keep the event screens enabled. The full frontend ZIP omits those files.
-Supabase functions/tables are deliberately unchanged. This is not a backend shutdown.
-New anti-automation backend is NOT installed by this patch.
+Rollback: restore the previous index.html only. Old css/js files are untouched.
 
-04.3.3 adds a custom library/safe sorting menu with checked selection,
-keyboard navigation, Escape and outside-click dismissal.
-This patch is cumulative: includes 04.3.1 compatibility and 04.3.2 fixes.
+QA: local mocked Telegram/Supabase boot and market success/rejection;
+local responsive demo checks. No production login or real purchase was performed.
+
+04.3.5: fixes the library/safe selection toolbar on desktop/tablet/mobile.
+Direct SVG icons in the toolbar are fixed at 18x18; actions no longer stretch.
+Checked 48 combinations of theme/viewport/library or safe/gallery or list.
