@@ -18,7 +18,7 @@ export function playerToState(r){
 // Строка таблицы plates → номер в формате клиента
 // У старых игроков на сервере cls из 5 элементов (до первого выпадения после обновления): добиваем нулями до 6
 export function normStats(st){const c=Array.isArray(st.cls)?st.cls.slice():[];while(c.length<6)c.push(0);st.cls=c;return st}
-export function plateFromRow(r){return {id:r.id,country:r.country,type:r.type,main:r.main,reg:r.reg,rn:r.region_name,cls:r.cls,mu:r.mu,price:+r.price,ts:ms(r.created_at)}}
+export function plateFromRow(r){return {id:r.id,bound:!!r.bound,country:r.country,type:r.type,main:r.main,reg:r.reg,rn:r.region_name,cls:r.cls,mu:r.mu,price:+r.price,ts:ms(r.created_at)}}
 export function applyPlayer(r){Object.assign(S,playerToState(r))}
 // Тройная прокрутка: пасс (мс до конца), ближайшее окно продажи, пакет номеров, ждущих решения
 export function applyTriple(pass,win,pend){S.pass=pass?Date.parse(pass.expires_at):0;S.win=win?{a:Date.parse(win.starts_at),b:Date.parse(win.ends_at)}:null;S.pend=(pend||[]).map(r=>({...r.plate,id:r.id,price:+r.price,ts:Date.parse(r.created_at)}));if(!S.pend.length&&S.mul>1&&!S.pass)S.mul=1}
