@@ -2,7 +2,7 @@ import {START} from './config.js';
 
 // Состояние игрока. Один объект S, который меняется «на месте» (его нельзя переприсваивать).
 // Это КЭШ данных с сервера: источник правды — Supabase. Локально ничего не сохраняется.
-export function fresh(){return {pass:0,win:null,pend:[],mul:1,since:Date.now(),nick:'',bal:START,usd:0,col:[],safe:[],country:'RU',reg:'',seen:[],capC:100,capS:5,xp:0,lvl:1,theme:'dark',vol:100,vib:true,reel:true,fx:0,mute:false,music:false,dl:0,ds:0,rs:0,owned:[],cars:[],equip:{},showcase:[],rb:0,don:0,dpub:true,stars:0,perks:{sell:0,cash:0,usd:0},stats:{n:0,best:0,cls:[0,0,0,0,0,0],f:{}},as:{lvl:0,on:true,cls:0,sp:false,ceil:0,low:false}}}
+export function fresh(){return {pass:0,win:null,pend:[],mul:1,since:Date.now(),nick:'',bal:START,usd:0,col:[],safe:[],country:'RU',reg:'',seen:[],capC:100,capS:5,xp:0,lvl:1,theme:'light',vol:100,vib:true,reel:true,fx:0,mute:false,music:false,dl:0,ds:0,rs:0,owned:[],cars:[],equip:{},showcase:[],rb:0,don:0,dpub:true,stars:0,perks:{sell:0,cash:0,usd:0},stats:{n:0,best:0,cls:[0,0,0,0,0,0],f:{}},as:{lvl:0,on:true,cls:0,sp:false,ceil:0,low:false}}}
 export const S=fresh();
 export const SESS={n:0,best:0,cls:[0,0,0,0,0,0],f:{}};   // статистика «за сессию», живёт только в памяти
 export const flags={lvup:0};   // одноразовые флаги интерфейса (например «новый уровень»)

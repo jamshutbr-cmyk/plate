@@ -19,7 +19,7 @@ let SQ='',SR=null,SMORE=false,SLOAD=false;             // поиск: запро
 let F={name:'',tag:'',mode:'open',min:'1'},DT='';      // форма создания и текст взноса
 let ST={mode:'open',min:'1',tg:''};                    // черновик настроек клана
 
-const MED=['🥇','🥈','🥉'],MODE={open:'открытый',request:'по заявке',closed:'закрытый'},ROLE={leader:'Глава',deputy:'Заместитель',member:'Участник'},RIC={leader:'👑',deputy:'🛡️',member:''};
+const MED=[':pi/top:',':pi/top:',':pi/top:'],MODE={open:'открытый',request:'по заявке',closed:'закрытый'},ROLE={leader:'Глава',deputy:'Заместитель',member:'Участник'},RIC={leader:':pi/dshop:',deputy:':pi/clans:',member:''};
 const ERRS={level:'Уровень слишком мал',minlvl:'Ваш уровень ниже, чем требует клан',inclan:'Вы уже в клане',noclan:'Вы не в клане',name:'Название: 3–20 символов, буквы, цифры, пробел, дефис',tag:'Тег: 2–4 буквы или цифры',
  nametaken:'Такое название уже занято',tagtaken:'Такой тег уже занят',word:'Недопустимое слово в названии или теге',cooldown:'Пока нельзя: действует пауза',rub:'Не хватает рублей',usd:'Не хватает долларов',
  amount:'Взнос от '+fmt(CLAN.donateMin)+' ₽',treasury:'В казне не хватает денег',overdue:'Сначала нужно погасить содержание',maxlvl:'Максимальный уровень',full:'В клане нет мест',closed:'Набор закрыт',

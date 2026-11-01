@@ -1,14 +1,16 @@
 import {ACH, tier, tiers} from '../data/achievements.js';
-import {DRAW, painters} from '../router.js';
+import {DRAW, painters,render} from '../router.js';
+import {icon} from '../ui/design.js';
+import {on} from '../ui/actions.js';
 import {banner} from '../ui/modal.js';
 import {$, fmt} from '../util.js';
 
 // Экран достижений + уведомление о новой ступени.
-export function drawAch(){
-  const T=tiers(),got=Object.values(T).reduce((s,x)=>s+x,0),all=ACH.reduce((s,a)=>s+a.g.length,0);
-  $('achC').innerHTML=`<div class="card"><h3><span>Получено ступеней</span><span>${got} / ${all}</span></h3><div class="pb"><i style="width:${got/all*100}%"></i></div></div>`+
-  ACH.map(a=>{const v=a.v(),t=T[a.id],max=t>=a.g.length,prev=t?a.g[t-1]:0,nx=a.g[Math.min(t,a.g.length-1)],pc=max?100:Math.max(0,(v-prev)/(nx-prev)*100),u=a.u||'';
-    return `<div class="card ach ${max?'max':''}"><h3><span>${a.i} ${a.n}</span><span class="stars">${a.g.map((_,i)=>i<t?'★':'☆').join('')}</span></h3><div class="tl">${a.d}</div><div class="pb" style="margin:10px 0 6px"><i class="${max?'max':''}" style="width:${pc}%"></i></div><div class="sub"><span>${fmt(v)}${u}${max?'':' / '+fmt(nx)+u}</span><span>${max?'Максимум ✓':'Ступень '+(t+1)+' из '+a.g.length}</span></div></div>`}).join('')}
+let EXPANDED=null,ACHFILTER='all';
+export function drawAch(){const T=tiers(),got=Object.values(T).reduce((s,x)=>s+x,0),total=ACH.reduce((s,a)=>s+a.g.length,0),shown=ACH.filter(a=>ACHFILTER==='all'||(ACHFILTER==='done'?T[a.id]>=a.g.length:T[a.id]<a.g.length));
+ $('achC').innerHTML=`<div class="reward-overview"><div><span class="v3-kicker">ТВОЯ ЛИЧНАЯ ДИСТАНЦИЯ</span><h1>Каждый шаг<br><em>оставляет след.</em></h1></div><div class="reward-total"><strong>${got}<small> / ${total}</small></strong><span>ступеней пройдено</span></div></div><div class="reward-filter">${[['all','Все направления'],['progress','В пути'],['done','Завершены']].map(([k,n])=>`<button class="${ACHFILTER===k?'a':''}" data-click="achFilter" data-arg="${k}">${n}</button>`).join('')}</div><div class="reward-paths">${shown.map((a,i)=>{const v=a.v(),t=T[a.id],max=t>=a.g.length,prev=t?a.g[t-1]:0,nx=a.g[Math.min(t,a.g.length-1)],pc=max?100:Math.max(0,(v-prev)/(nx-prev)*100),open=EXPANDED===a.id;return `<section class="reward-path ${open?'open':''} ${max?'complete':''}"><button class="reward-path-heading" data-click="achExpand" data-arg="${a.id}" aria-expanded="${open}"><span class="reward-index">${String(i+1).padStart(2,'0')}</span><span><b>${a.n}</b><small>${max?'Все ступени пройдены':fmt(v)+(a.u||'')+' / '+fmt(nx)+(a.u||'')}</small><i><u style="width:${pc}%"></u></i></span><span class="reward-stages">${t}/${a.g.length}<em>${open?'−':'+'}</em></span></button>${open?`<div class="reward-path-body"><p>${a.d}</p><div class="reward-milestones">${a.g.map((g,j)=>`<span class="${j<t?'passed':''}"><i>${j<t?'✓':j+1}</i><b>${fmt(g)}${a.u||''}</b><small>${j<t?'Пройдено':j===t?'Следующий рубеж':'Впереди'}</small></span>`).join('')}</div></div>`:''}</section>`}).join('')||'<p class="v3-search-empty">В этой категории пока нет достижений.</p>'}</div>`;
+}
+on({achExpand:a=>{EXPANDED=EXPANDED===a?null:a;render(true)},achFilter:a=>{ACHFILTER=a;render(true)}});
 // Следим за ступенями при каждой перерисовке. Первый вызов только запоминает состояние (без баннеров),
 // дальше сообщаем только о росте: после сброса прогресса или загрузки данных ничего не всплывает.
 let LAST=null;

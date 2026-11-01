@@ -1,3 +1,4 @@
+import {icon} from '../ui/design.js';
 import {api} from '../api.js';
 import {COST, RAR, SELL_PCT, TRIPLE, sellGain} from '../config.js';
 import {fake, genCost} from '../engine.js';
@@ -63,12 +64,13 @@ async function multiGen0(){
   const r=await api.multiRoll(n).finally(()=>clearInterval(iv));
   st.innerHTML='';
   if(r.err&&S.pend.length){go('multi');return}   // связь оборвалась, но сервер успел выдать пакет: показываем его
+  if(r.err==='fairplay'){render();return}
   if(r.err){const t=({money:'Не хватает денег',pass:'Пасс закончился','no pass':'Пасс закончился',pending:'Есть нерешённый пакет'})[r.err];banner(t||'Ошибка',t?(r.err=='pending'?'Сначала решите по номерам':'Попробуйте ещё раз'):String(r.err).slice(0,80));render();return}
   for(const k in D)delete D[k];go('multi')}
 
 function drawMulti(){
   const P=S.pend;
-  if(!P.length){$('multiC').innerHTML=`<div class="card"><p>Нет номеров, ждущих решения.</p><button class="big2" data-click="go" data-arg="main">На главную</button></div>`;return}
+  if(!P.length){$('multiC').innerHTML=`<div class="batch-intro"><span class="v3-kicker">DISCOVERY / BATCH</span><h1>Больше находок.<br><span>Одно решение за раз.</span></h1><p>С пассом можно открывать до трёх комбинаций за раз. Для каждой отдельно выбери: оставить, сохранить в сейф или продать.</p><div class="batch-steps"><span>${icon('studio')} Открой пакет</span><span>${icon('col')} Рассмотри номера</span><span>${icon('safe')} Реши судьбу каждого</span></div><button class="v3-primary" data-click="go" data-arg="studio">${passOn()?'Перейти к генерации':'Открыть студию'} ${icon('arrow')}</button>${S.win||passOn()?tripleCard():'<p class="tl">Сейчас пасс недоступен. Новые окна продаж появятся в полной версии игры.</p>'}</div>`;return}
   const best=Math.max(...P.map(p=>p.price));
   const keep=P.filter(p=>dec(p)=='keep').length,safe=P.filter(p=>dec(p)=='safe').length,sold=P.filter(p=>dec(p)=='sell');
   const gain=sellGain(sold.reduce((a,p)=>a+p.price,0),S.perks.sell||0);
@@ -83,12 +85,13 @@ DRAW.multi=drawMulti;
 
 on({
   mMul:()=>{S.mul=S.mul%TRIPLE.max+1;haptic('tick');render(true)},
-  mGo:()=>{S.mul=3;go('main')},
+  mGo:()=>{S.mul=3;go('studio')},
   mDec:a=>{const [id,act]=String(a).split(':');D[id]=act;drawMulti()},
   mBuy:async()=>{
     if(S.usd<TRIPLE.usd){banner('Не хватает $','Нужно '+TRIPLE.usd+' $');return}
     const r=await api.buyPass();
-    if(r.err){const t=({window:'Окно продаж закрыто',active:'Пасс уже активен',usd:'Не хватает $'})[r.err];banner(t||'Ошибка',t?'Попробуйте ещё раз':String(r.err).slice(0,80));return}
+    if(r.err==='fairplay'){render();return}
+  if(r.err){const t=({window:'Окно продаж закрыто',active:'Пасс уже активен',usd:'Не хватает $'})[r.err];banner(t||'Ошибка',t?'Попробуйте ещё раз':String(r.err).slice(0,80));return}
     S.mul=3;banner('Пасс куплен','Тройная прокрутка на '+TRIPLE.hours+' ч');render(true)},
   mOk:async()=>{
     if(busyOk)return;busyOk=true;
@@ -97,13 +100,13 @@ on({
       let r=await api.resolveRolls(ds);
       // Обрыв связи или сбой сервера: один повтор с теми же решениями
       if(r&&r.err&&!['full','safe_full','bad'].includes(r.err))r=await api.resolveRolls(ds)   // те же решения; если пакет уже закрыт, сервер ответит 'none' → done
-      if(r&&r.done){banner('Пакет закрыт','Номера уже выданы');go('main');return}
+      if(r&&r.done){banner('Пакет закрыт','Номера уже выданы');go('studio');return}
       if(r&&r.err){
         const t=({full:'Нет места в коллекции',safe_full:'Нет места в сейфе'})[r.err];
         if(t)banner(t,'Освободите место или продайте номера');
         else{banner('Не удалось закрыть пакет','Код: '+String(r.err).slice(0,60)+'. Нажмите «Подтвердить» ещё раз');render()}   // пакет на сервере цел, баланс уже сверен
         return}
-      banner('Пакет закрыт','Оставлено '+(r.kept+r.safe)+' · продано '+r.sold+(r.gain?' · +'+fmt(r.gain)+' ₽':''));go('main')
+      banner('Пакет закрыт','Оставлено '+(r.kept+r.safe)+' · продано '+r.sold+(r.gain?' · +'+fmt(r.gain)+' ₽':''));go('studio')
     }finally{busyOk=false}}
 });
 

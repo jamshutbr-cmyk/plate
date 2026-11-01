@@ -1,3 +1,4 @@
+import {DEMO} from './mode.js';
 import {createClient} from './vendor/supabase.js';
 import {SUPABASE_ANON_KEY, SUPABASE_URL} from './env.js';
 import {TG, tgUser} from './platform.js';
@@ -7,8 +8,8 @@ import {showBan} from './ban.js';
 // Связь с Supabase: вход через Telegram и загрузка данных в кэш S. Единственное место, где создаётся клиент.
 // Любой запрос к серверу обрывается через 15 с: иначе при перегрузке игра висит на «Загрузке…» бесконечно
 // Edge Functions (прокрутка ×3, подтверждение пакета) на медленной сети идут дольше 15 с: обрыв клиентом не отменяет работу сервера и оставлял игрока без номеров, поэтому им даём 45 с
-const tfetch=(u,o={})=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),String(u).includes('/functions/v1/')?45000:15000);if(o.signal)o.signal.addEventListener('abort',()=>c.abort());return fetch(u,{...o,signal:c.signal}).finally(()=>clearTimeout(t))};
-export const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:true,autoRefreshToken:true},global:{fetch:tfetch}});
+const tfetch=(u,o={})=>{if(DEMO)return Promise.reject(new Error('Live network is disabled in demo mode')); const c=new AbortController(),t=setTimeout(()=>c.abort(),String(u).includes('/functions/v1/')?45000:15000);if(o.signal)o.signal.addEventListener('abort',()=>c.abort());return fetch(u,{...o,signal:c.signal}).finally(()=>clearTimeout(t))};
+export const sb=createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:!DEMO,autoRefreshToken:!DEMO},global:{fetch:tfetch}});
 // Пауза фоновых опросов после сбоев сервера (5xx / нет связи): 15 с, 30 с, 60 с … до 5 минут. Успешный ответ сбрасывает.
 const DOWN={n:0,until:0};
 export const serverDown=()=>Date.now()<DOWN.until;
@@ -30,10 +31,10 @@ export async function login(){
   const {error}=await sb.auth.setSession({access_token:s.access_token,refresh_token:s.refresh_token});
   if(error)throw error;
 }
-export async function loadPlayer(){const {data,error}=await sb.from('players').select('*').single();if(error)throw error;applyPlayer(data)}
+export async function loadPlayer(){if(DEMO)return;const {data,error}=await sb.from('players').select('*').single();if(error)throw error;applyPlayer(data)}
 // Только нужные колонки (без owner): список номеров скачивается часто, каждый байт идёт в egress
 const PLATE_COLS='id,country,type,main,reg,region_name,cls,mu,price,in_safe,created_at';
-export async function loadPlates(){const {data,error}=await sb.from('plates').select(PLATE_COLS).order('id');if(error)throw error;applyPlates(data)}
+export async function loadPlates(){if(DEMO)return;const {data,error}=await sb.from('plates').select(PLATE_COLS).order('id');if(error)throw error;applyPlates(data)}
 // Пасс, окно продажи и пакет. Если миграция triple_roll.sql ещё не применена, функция тихо выключена.
 export async function loadTriple(){
   try{
@@ -52,4 +53,4 @@ export async function handleBan(info){
   if(!i.reason&&!i.until){try{const {data}=await sb.from('players').select('banned_until,ban_reason').single();if(data)i={reason:data.ban_reason,until:data.banned_until}}catch(_){}}
   showBan(i)}
 export const isBanErr=e=>!!e&&(e.banned===true||/^banned$/i.test(e.message||''));
-export async function rpc(name,args){const {data,error,status}=await sb.rpc(name,args);if(error){if(isBanErr(error)){handleBan();throw Object.assign(error,{banned:true})}if(status===0||status>=500)markBad();throw error}markOk();return data}
+export async function rpc(name,args){if(DEMO){const {demoRpc}=await import('./demo.js');return demoRpc(name,args)}const {data,error,status}=await sb.rpc(name,args);if(error){if(isBanErr(error)){handleBan();throw Object.assign(error,{banned:true})}if(status===0||status>=500)markBad();throw error}markOk();return data}

@@ -29,6 +29,6 @@ export function hwText(p){
   const n=t.length;
   // 13.2cqw в базовом CSS рассчитан на 6 символов; длинные надписи ужимаем, чтобы не обрезались
   const scale=n<=6?1:Math.max(.42,6.4/n);
-  const sub=['🎃','🕯','🦇','🕷','👻','💀'][cls];
+  const sub=[':pi/hw:',':pi/candle:',':pi/hw:',':pi/hw:',':pi/hw:',':pi/hw:'][cls];
   return {main:t,sub,scale:+scale.toFixed(2)};
 }

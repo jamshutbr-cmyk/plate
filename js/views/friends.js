@@ -1,16 +1,18 @@
+import {DEMO} from '../mode.js';
 import {api} from '../api.js';
 import {REF} from '../config.js';
 import {REF_LINK_BASE} from '../env.js';
 import {haptic, askWriteAccess, TG} from '../platform.js';
 import {DRAW, render} from '../router.js';
 import {S} from '../state.js';
+import {icon} from '../ui/design.js';
 import {on} from '../ui/actions.js';
 import {banner} from '../ui/modal.js';
 import {$, esc, fmt} from '../util.js';
 
 // Экран «Друзья» (referral.sql): ссылка, лестница, друзья, журнал наград, рейтинг. Всё считает сервер, экран только показывает ответ ref_state.
 // Состояния: загрузка (скелет), нет связи (кнопка «Повторить»), пусто, бан.
-let ST=null,LOAD=false,ERR=false,BUSY=false,PER='week',TOP=null,OFF=0,CODE='',FR=[];
+let FTAB='invite';let ST=null,LOAD=false,ERR=false,BUSY=false,PER='week',TOP=null,OFF=0,CODE='',FR=[];
 const ERRS={code:'Такого кода нет',self:'Нельзя ввести свой код',late:'Код можно ввести только в первые 24 часа и до 30 прокруток',already:'Вы уже привязаны к другу',banned:'Недоступно',cycle:'Этот код вам не подходит',
  locked:'Ступень ещё не достигнута',claimed:'Уже получено',review:'Награда на проверке',cancelled:'Награда отменена',hold:'Награда ещё в удержании',later:'Выдача перенесена: попробуйте позже',debt:'Сначала погасите долг',rub:'Не хватает рублей',nodebt:'Долга нет'};
 const KIND={welcome:'Стартовый набор',stage1:'Друг освоился',stage2:'Друг играет',stage3:'Друг стал своим',ladder:'Ступень лестницы',donate:'Процент с доната',week:'Приз недели',revoke:'Отзыв награды'};
@@ -34,7 +36,7 @@ function card(){
   const l=link();
   return `<div class="fr-card fr-main"><div class="fr-nums"><div><b>${ST.invited}</b><small>приглашено</small></div><div><b>${ST.active}</b><small>активных</small></div></div>
    <div class="fr-code"><small>Ваш код</small><b>${esc(ST.code)}</b></div>
-   ${l?`<div class="fr-link">${esc(l)}</div>`:`<div class="tl">Ссылка пока не настроена: отправьте другу код вручную.</div>`}
+   ${DEMO?`<div class="fr-link">Демонстрация: приглашения не отправляются.</div>`:l?`<div class="fr-link">${esc(l)}</div>`:`<div class="tl">Ссылка пока не настроена: отправьте другу код вручную.</div>`}
    <div class="fr-row"><button class="btn" data-click="frCopy">Скопировать</button><button class="btn fr-y" ${l?'':'disabled'} data-click="frShare">Поделиться</button></div>
    ${ST.boost>1?`<div class="fr-note y">Неделя друзей: награды ×${String(ST.boost).replace('.',',')}</div>`:''}
    ${ST.debt>0?`<div class="fr-note r">Долг по отозванным наградам: ${fmt(ST.debt)} ₽. Пока он не погашен, новых наград нет. <button class="btn" data-click="frDebt">Погасить из баланса</button></div>`:''}
@@ -64,7 +66,7 @@ function draw(){
   if(!ST){c.innerHTML=`<div class="fr-card fr-sk"></div><div class="fr-card fr-sk"></div>`;return}
   if(ST.banned){c.innerHTML=`<div class="fr-card" style="text-align:center"><b>Экран закрыт</b><div class="tl">Аккаунт заблокирован</div></div>`;return}
   if(ST.on===false){c.innerHTML=`<div class="fr-card" style="text-align:center"><b>Программа приостановлена</b></div>`;return}
-  c.innerHTML=card()+bindForm()+ladder()+friends()+ledger()+top()+rules()}
+  c.innerHTML=`<div class="social-cover"><span class="v3-kicker">PLATE / INNER CIRCLE</span><h1>Хорошие находки.<br><em>Хорошая компания.</em></h1><div><span><b>${ST.invited}</b> приглашено</span><span><b>${ST.active}</b> активных</span></div></div><div class="social-navigation">${[['invite','Пригласить','share'],['people','Мои люди','friends'],['rewards','Награды','ach'],['league','Лига','top'],['rules','Правила','cat']].map(([k,n,i])=>`<button class="${FTAB===k?'a':''}" data-click="frTab" data-arg="${k}">${icon(i)}${n}</button>`).join('')}</div><div class="social-content">${{invite:()=>card()+bindForm(),people:friends,rewards:()=>ladder()+ledger(),league:top,rules}[FTAB]()}</div>`}
 function drawFriends(){
   draw();
   if(!ST&&!LOAD)load().then(()=>{draw();loadTop().then(draw)});
@@ -72,7 +74,7 @@ function drawFriends(){
 const badge=()=>{const e=$('frBadge');if(e)e.style.display=ST&&ST.ladder&&ST.ladder.some(d=>d.state=='ready')?'':'none'};
 
 async function frCopy(){const t=link()||(ST&&ST.code)||'';try{await navigator.clipboard.writeText(t);banner('Скопировано',t)}catch(e){banner('Код',t)}haptic('light')}
-function frShare(){const l=link();if(!l)return;const u='https://t.me/share/url?url='+encodeURIComponent(l)+'&text='+encodeURIComponent('Заходи в «Генератор номеров»: собирай редкие номера и получи стартовый набор');
+function frShare(){if(DEMO){banner('Демонстрация','Приглашения доступны в полной версии Telegram.');return}const l=link();if(!l)return;const u='https://t.me/share/url?url='+encodeURIComponent(l)+'&text='+encodeURIComponent('Заходи в «Генератор номеров»: собирай редкие номера и получи стартовый набор');
   try{if(TG&&TG.openTelegramLink)TG.openTelegramLink(u);else window.open(u,'_blank')}catch(e){window.open(u,'_blank')}}
 async function frClaim(n){
   if(BUSY)return;BUSY=true;
@@ -87,7 +89,7 @@ function frDm(){if(!askWriteAccess(ok=>{if(ok)api.refDm(true).then(()=>{if(ST)ST
 async function frPer(p){PER=p;TOP=null;draw();await loadTop();draw()}
 async function frMore(){OFF=FR.length;await load(true);draw()}
 async function frRetry(){ERR=false;ST=null;draw();await load();draw();loadTop().then(draw)}
-on({frCopy,frShare,frClaim,frBind,frDebt,frDm,frPer,frMore,frRetry,frCode:(a,el)=>{CODE=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'');el.value=CODE}});
+on({frTab:a=>{FTAB=a;draw()},frCopy,frShare,frClaim,frBind,frDebt,frDm,frPer,frMore,frRetry,frCode:(a,el)=>{CODE=el.value.toUpperCase().replace(/[^A-Z0-9]/g,'');el.value=CODE}});
 DRAW.friends=drawFriends;
 import {painters} from '../router.js';
 painters.push(badge);
