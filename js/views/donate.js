@@ -61,12 +61,12 @@ function preview(it){
   if(it.slot=='bg')return `<div class="dn-pv bg scn-${it.id}"></div>`;
   if(it.slot=='drop'){const E=FXE[it.id];return `<div class="dn-pv fx" data-click="fxTest" data-arg="${it.id}" role="button" aria-label="Показать эффект">${E.pal.map(c=>`<i style="background:${c}"></i>`).join('')}<small>нажмите</small></div>`}
   return ''}
-const rowBoost=p=>`<div class="dn-row2"><div class="dn-tileic" style="--ic:${IC[p.k]}">${icon(p.k==='bundle'?'cases':p.id.includes('luck')?'ach':'studio')}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div>${buyBtn(p)}</div>`;
+const rowBoost=p=>`<div class="dn-row2"><div class="dn-tileic" style="--ic:${IC[p.k]}">${icon(p.id==='tip'?'support':p.k==='bundle'?'cases':p.id.includes('luck')?'ach':'studio')}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div>${buyBtn(p)}</div>`;
 function tileBundle(p){
   const v=donateVal(p,0),chips=[];
   if(v.days)chips.push(`Пасс ${v.days} дн.`);if(v.luck)chips.push(`Удача ${v.luck}`);if(v.luck2)chips.push('Удача ×2 навсегда');if(v.items.length)chips.push(`Предметов: ${v.items.length}`);
   const sep=v.items.length?sumItems(v.items):0;
-  return `<div class="dn-bun"><div class="dn-bh"><div class="dn-tileic" style="--ic:${IC.bundle}">${icon(p.k==='bundle'?'cases':p.id.includes('luck')?'ach':'studio')}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div></div>
+  return `<div class="dn-bun"><div class="dn-bh"><div class="dn-tileic" style="--ic:${IC.bundle}">${icon(p.id==='tip'?'support':p.k==='bundle'?'cases':p.id.includes('luck')?'ach':'studio')}</div><div class="tx"><b>${p.t}</b><span>${p.d||''}</span></div></div>
    <div class="dn-chips">${chips.map(c=>`<i>${c}</i>`).join('')}</div>
    <div class="dn-bf">${sep?`<div class="dn-was"><s>${price(sep)}</s><em>−${Math.round((1-p.st/sep)*100)}%</em></div>`:'<div></div>'}${buyBtn(p)}</div></div>`}
 const tileItem=p=>{const it=itemOf(p.g.items[0]);return `<div class="dn-tile">${preview(it)}<div class="tx"><b>${slotName(it.slot)} «${it.n}»</b><span>${it.d}</span></div>${buyBtn(p)}</div>`};
@@ -96,7 +96,7 @@ function ask(id,amount){
   const q=id=='named'?namedQuoted():null;
   if(id=='named'&&!q){banner('Сначала проверьте номер','Введите номер и регион');return}
   const x2=p.x2&&bought(p.id)==0,g=id=='tip'?[]:q?[`Текст на плашке: <b>${esc(q.main)}</b>`,'Навсегда в вашей коллекции','Продать, обменять и передать нельзя']:gives(p,x2);
-  sm(`<div class="dn-sheet">${q?`<div class="nm-pv">${plateHTML(q)}</div>`:`<div class="dn-big">${icon(p.k==='bundle'?'cases':p.id.includes('luck')?'ach':'studio')}</div>`}<h2>${p.t}</h2>
+  sm(`<div class="dn-sheet">${q?`<div class="nm-pv">${plateHTML(q)}</div>`:`<div class="dn-big">${icon(p.id==='tip'?'support':p.k==='bundle'?'cases':p.id.includes('luck')?'ach':'studio')}</div>`}<h2>${p.t}</h2>
    ${g.length?`<ul class="dn-g">${g.map(x=>`<li>${x}</li>`).join('')}</ul>`:`<p class="tl" style="text-align:center">Добровольное пожертвование. Игровых бонусов нет, только титул благодарности за накопленную сумму</p>`}
    <div class="dn-sum"><span>К оплате</span><b>${STAR} ${fmt(p.st)}</b></div>
    <button class="big2 dn-buy" data-click="dnGo" data-arg="${id}:${p.st}"><span>Оплатить ${STAR} ${fmt(p.st)}</span></button>

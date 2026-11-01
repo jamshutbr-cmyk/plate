@@ -8,7 +8,6 @@ import {nickCls, plateHTML, titleHTML} from '../ui/plate.js';
 import {ctagHTML, plate} from './clans.js';
 import {styleCls} from './clanext.js';
 import {pubShowcase} from './showcase.js';
-import {hwMuseumCard} from './hw.js';
 import {startTrade} from './trade.js';
 import {$, esc, fmt} from '../util.js';
 
@@ -59,19 +58,18 @@ DRAW.top=drawTop;
 on({topRefresh:()=>{ATS[KIND]=0;render(true)},topMenu:()=>{OPEN=!OPEN;render(true)},topKind:k=>{OPEN=false;if(k!=KIND)KIND=k;render(true)}});
 
 // Профиль другого игрока (только просмотр): имя, уровень, статистика и самый дорогой номер. Баланс не показываем.
-let PUB=null,PERR=false,PID=null,PSC=[],PHW=[];
+let PUB=null,PERR=false,PID=null,PSC=[];
 async function openPlayer(id){
- PID=id;PUB=null;PERR=false;PSC=[];PHW=[];go('pub');
+ PID=id;PUB=null;PERR=false;PSC=[];go('pub');
  try{PUB=await rpc('get_player_profile',{pid:id});if(!STY[id])await loadStyles([id])}catch(e){console.error(e)}
  try{PSC=await rpc('get_showcase',{pid:id})||[]}catch(e){console.warn('showcase',e)}
- try{PHW=await rpc('hw_museum_public',{pid:id})||[]}catch(e){console.warn('hw museum',e)}
  if(!PUB)PERR=true;
  render(true)}
 export function drawPub(){
  if(!PUB){$('pubC').innerHTML=`<p class="tl" style="text-align:center">${PERR?'Не удалось загрузить профиль':'Загрузка…'}</p>`;return}
  const p=PUB,sy=p.me?S.equip:(STY[PID]||{}),st=p.stats,nm=p.nick||'Игрок',need=p.lvl*1250,mx=Math.max(1,...st.cls),
   days=Math.max(1,Math.ceil((Date.now()-new Date(p.since))/864e5));
- $('pubC').innerHTML=`<div class="passport-cover public-passport"><span class="v3-kicker">PLATE / COLLECTOR PASSPORT</span><span class="passport-number">LEVEL ${p.lvl}</span><div class="passport-avatar"><span>${esc([...nm][0].toUpperCase())}</span></div><div class="passport-name">${ctagHTML(CT[PID])}<h1 class="${nickCls(sy.nick).trim()}">${esc(nm)}</h1>${titleHTML(sy.title)}<span>${days} дней в клубе · публичный профиль</span></div><div class="passport-cover-line"><span>COLLECT. CURATE. CONNECT.</span>${p.me?'<button data-click="go" data-arg="profile">Мой паспорт :pi/external:</button>':'<button data-click="newTrade">Предложить обмен :pi/external:</button>'}</div></div><div class="public-profile-summary"><div><strong>${fmt(p.count)}</strong><span>номеров сейчас</span></div><div><strong>${fmt(p.value)} ₽</strong><span>оценка коллекции</span></div><div><strong>${fmt(st.n)}</strong><span>открытий за всё время</span></div></div>${p.me?'':pubShowcase(PSC,sy.skin)}${hwMuseumCard(PHW)}${p.top?`<section class="public-best"><span class="v3-kicker">ГЛАВНЫЙ ЭКСПОНАТ</span><h2>Визитная карточка.</h2><div>${plateHTML(p.top,'',sy.skin||'')}</div><span>${RAR[p.top.cls]?.n||'Номер коллекции'}<b>${fmt(p.top.price)} ₽</b></span></section>`:''}<details class="public-profile-history"><summary>История редкостей <span>+</span></summary><div>${RAR.map((r,i)=>`<div><span><i style="background:${r.c}"></i>${r.n}</span><b>${fmt(st.cls[i]||0)}</b></div>`).join('')}</div></details>`;
+ $('pubC').innerHTML=`<div class="passport-cover public-passport"><span class="v3-kicker">PLATE / COLLECTOR PASSPORT</span><span class="passport-number">LEVEL ${p.lvl}</span><div class="passport-avatar"><span>${esc([...nm][0].toUpperCase())}</span></div><div class="passport-name">${ctagHTML(CT[PID])}<h1 class="${nickCls(sy.nick).trim()}">${esc(nm)}</h1>${titleHTML(sy.title)}<span>${days} дней в клубе · публичный профиль</span></div><div class="passport-cover-line"><span>COLLECT. CURATE. CONNECT.</span>${p.me?'<button data-click="go" data-arg="profile">Мой паспорт :pi/external:</button>':'<button data-click="newTrade">Предложить обмен :pi/external:</button>'}</div></div><div class="public-profile-summary"><div><strong>${fmt(p.count)}</strong><span>номеров сейчас</span></div><div><strong>${fmt(p.value)} ₽</strong><span>оценка коллекции</span></div><div><strong>${fmt(st.n)}</strong><span>открытий за всё время</span></div></div>${p.me?'':pubShowcase(PSC,sy.skin)}${p.top?`<section class="public-best"><span class="v3-kicker">ГЛАВНЫЙ ЭКСПОНАТ</span><h2>Визитная карточка.</h2><div>${plateHTML(p.top,'',sy.skin||'')}</div><span>${RAR[p.top.cls]?.n||'Номер коллекции'}<b>${fmt(p.top.price)} ₽</b></span></section>`:''}<details class="public-profile-history"><summary>История редкостей <span>+</span></summary><div>${RAR.map((r,i)=>`<div><span><i style="background:${r.c}"></i>${r.n}</span><b>${fmt(st.cls[i]||0)}</b></div>`).join('')}</div></details>`;
 }
 DRAW.pub=drawPub;
 on({openPlayer,newTrade:()=>startTrade(PID,(PUB&&PUB.nick)||'Игрок')});

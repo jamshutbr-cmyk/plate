@@ -12,7 +12,7 @@ import {DEMO} from '../mode.js';
 import {LST} from './uistate.js';
 const directory=[
  ['Играть','Твоя следующая находка',[
- ['studio','Студия номера','Открывай новые комбинации','studio'],['garage','Мой гараж','Подбери автомобиль и номер','garage'],['cases','Автосалон','Выбери коллекцию автомобилей','cases'],['hw','Ночь тыкв','Сезонный режим','hw'],['road','На дороге','Игровое событие','road'],['gai','ГАИ','Дорожный режим','gai'],['evshop','Бутик события','Награды за участие','evshop'],['multi','Пакетная генерация','Несколько находок за раз','multi']]],
+ ['studio','Студия номера','Открывай новые комбинации','studio'],['garage','Мой гараж','Подбери автомобиль и номер','garage'],['cases','Автосалон','Выбери коллекцию автомобилей','cases'],['multi','Пакетная генерация','Несколько находок за раз','multi']]],
  ['Коллекция','Всё, что делает тебя коллекционером',[
  ['col','Мои номера','Каталог твоих находок','col'],['safe','Приватный сейф','Номера под защитой','safe'],['album','Атлас регионов','Собери географию коллекции','album'],['cat','Энциклопедия','Разбирайся в редкостях','cat'],['ach','Награды','Твои личные рубежи','ach'],['stat','Аналитика','Посмотри на коллекцию в деталях','stat'],['prestige','Новый цикл','Продолжи с преимуществом','prestige']]],
  ['Торговля','Найди то, чего не хватает',[
@@ -30,6 +30,9 @@ const relations={studio:['gen','cat','multi','auto'],list:['safe','up','mnew','g
 let hubGroup=0,hubQuery='',showAll=false,homeShelf='best';
 const storeKey=(DEMO?'plate-demo-':'plate-')+'workspace-v3';
 let prefs={pins:['garage','bank','ach'],recent:[]};try{prefs={...prefs,...JSON.parse(localStorage.getItem(storeKey)||'{}')}}catch{}
+// Drop retired event shortcuts saved by older releases.
+const retiredRoutes=new Set(['hw','road','gai','evshop']);
+for(const key of ['pins','recent'])prefs[key]=(Array.isArray(prefs[key])?prefs[key]:[]).filter(r=>!retiredRoutes.has(r));
 function persist(){try{localStorage.setItem(storeKey,JSON.stringify(prefs))}catch{}}
 const ALIASES={bank:'банк деньги финансы капитал',cases:'кейсы сундуки автомобили',shop:'магазин оформление',col:'коллекция номера библиотека',profile:'профиль паспорт',top:'рейтинг таблица лидеров',set:'настройки',studio:'генератор генерация'};
 const searchable=x=>x.slice(1).join(' ')+' '+(ALIASES[x[0]]||'');

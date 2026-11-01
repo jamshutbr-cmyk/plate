@@ -1,0 +1,28 @@
+PLATE 04.3.3 — frontend patch, existing Supabase server
+
+1. Extract the ZIP. Open your GitHub repository ROOT (where index.html is).
+2. Upload the css and js folders and index.html, preserving their paths.
+   Do not upload the ZIP or put the js folder inside js.
+3. Commit. If using update-043, merge into main after reviewing the changes.
+4. Wait for a successful GitHub Pages deployment. Close/reopen the Telegram Mini App.
+
+Includes the previous 04.3.1 compatibility patch. No SQL or Edge deployment needed.
+
+Removed from the active frontend: hw, road, gai, evshop.
+Removed navigation, search entries, saved shortcuts and screen registration.
+Old route calls redirect to menu; old demo screen links open the main screen.
+No retired event screen modules are loaded. The old event museum block in public
+profiles and its request are also removed. Earned items/titles/data are NOT deleted.
+
+Fix: purchase confirmation icons in support and donate shop are now bounded.
+No price, invoice, payment processing or reward changes.
+
+If uploading this patch over an existing GitHub repository, unused old files can
+remain on disk: they are no longer imported or linked from the game. Their presence
+does NOT keep the event screens enabled. The full frontend ZIP omits those files.
+Supabase functions/tables are deliberately unchanged. This is not a backend shutdown.
+New anti-automation backend is NOT installed by this patch.
+
+04.3.3 adds a custom library/safe sorting menu with checked selection,
+keyboard navigation, Escape and outside-click dismissal.
+This patch is cumulative: includes 04.3.1 compatibility and 04.3.2 fixes.

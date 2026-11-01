@@ -76,3 +76,19 @@ button:hover:not(:disabled):not(.nav-item):not(.v3-primary):not(.generate-button
 #supC .dn-panel{background:none!important;border:0!important;border-radius:0!important;padding:28px 0!important;margin:0!important;border-bottom:1px solid var(--line)!important}#supC .dn-ph{padding:28px!important;margin-bottom:24px!important;border:1px solid var(--line)!important;border-radius:14px!important;align-items:flex-start}#supC .dn-ph .tx>b{font-size:27px;line-height:1.15;font-weight:500;letter-spacing:-.04em;margin-bottom:16px}#supC .dn-t{font-size:24px;font-weight:500;letter-spacing:-.035em}#supC .dn-tileic{background:none;border:1px solid var(--line);border-radius:50%;flex-shrink:0}
 .dn-tileic svg{width:24px;height:24px;stroke-width:1.6}
 .cl-find .cl-md-p{max-width:none;width:max-content;font-size:20px}.cl-find .cl-md-p>span{padding:5px 9px}.cl-find .cl-md-p em{padding:5px 8px}
+
+/* 04.3.3: library and safe custom sorting dropdown, no OS select popup. */
+.library-order>.library-sort-wrap{display:flex;align-items:center;gap:8px;margin-right:0;min-width:0;font-size:11px;color:var(--mut)}
+.library-sort{position:relative;color:var(--tx)}
+.library-sort summary{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 0;cursor:pointer;font-size:12px;list-style:none;user-select:none}
+.library-sort summary::-webkit-details-marker{display:none}
+.library-sort summary>svg{width:14px;height:14px;flex:none}
+.library-sort[open] summary>svg{transform:rotate(180deg)}
+.library-sort-options{position:absolute;right:0;top:calc(100% + 4px);z-index:50;width:200px;max-width:calc(100vw - 40px);padding:6px;background:var(--card,var(--bg));border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 36px #0002}
+.library-order .library-sort-options button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:44px;padding:10px 12px!important;border:0!important;border-radius:7px!important;color:var(--tx)!important;text-align:left;font-size:13px!important;cursor:pointer}
+.library-order .library-sort-options button[aria-checked=true]{background:var(--bg)!important;color:var(--blue,#0060d4)!important}
+.library-order .library-sort-options button:hover{background:var(--line)!important}
+.library-sort-options button i{display:flex;width:16px;height:16px;flex:none}
+.library-sort-options button svg{width:16px;height:16px}
+.library-sort summary:focus-visible,.library-sort-options button:focus-visible{outline:2px solid var(--blue,#0060d4)!important;outline-offset:2px}
+@media(max-width:760px){.library-order>.library-sort-wrap{order:3;flex:1 0 65%;margin-top:-8px;font-size:10px}.library-sort summary{font-size:11px}.library-sort-options{left:0;right:auto}}

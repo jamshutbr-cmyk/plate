@@ -8,6 +8,8 @@ export const DRAW={};
 export const painters=[];   // рисуются всегда (баланс, чип страны и т. п.)
 export function render(keepStage){applyTheme();for(const p of painters)p(keepStage);for(const k in DRAW)if($('v-'+k).classList.contains('on'))DRAW[k]()}
 export function go(v){
+  // Retired screens cannot be reopened via stale shortcuts or direct calls.
+  if(['hw','road','evshop','gai'].includes(v)||!document.getElementById('v-'+(v==='col'||v==='safe'?'list':v)))v='menu';
   document.getElementById('md')?.classList.remove('on');
   document.querySelectorAll('.view').forEach(e=>e.classList.remove('on'));
   if(v=='col'||v=='safe'){LST.ls=v;sel.clear();v='list'}
